@@ -1,23 +1,21 @@
 # backend/app/core/config.py
 import logging
 from pydantic_settings import BaseSettings
-from pydantic import AnyHttpUrl # Correct import for Pydantic v2
-from typing import List, Union # Union might be needed depending on .env format
+# Removed AnyHttpUrl import for simplicity here
+from typing import List # Removed Union
 
 class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
-    # Ensure .env uses comma-separated strings or JSON list for URLs
-    BACKEND_CORS_ORIGINS: List[Union[AnyHttpUrl, str]] = ["http://localhost:5173", "[http://127.0.0.1:5173](http://127.0.0.1:5173)"] # Example defaults
+    # Changed type hint to List[str] for simpler parsing from .env comma-separated list
+    BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:5173", "http://127.0.0.1:5173"] # Example defaults
     API_PREFIX: str = "/api"
     PROJECT_NAME: str = "Modular Dashboard API"
     LOGGING_LEVEL: int = logging.INFO
 
     class Config:
-        env_file = ".env" # Looks for .env in the same dir as this config file is run from, or needs full path
-        # To ensure it finds backend/.env, Pydantic-settings looks up the directory tree,
-        # or we might need to specify the path more explicitly if issues arise.
-        # Let's assume default behavior works first.
+        env_file = ".env"
         env_file_encoding = 'utf-8'
+        # Pydantic v2 BaseSettings should handle comma-separated strings for List[str] automatically.
 
 settings = Settings()
 

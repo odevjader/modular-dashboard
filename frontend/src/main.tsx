@@ -1,5 +1,5 @@
 // frontend/src/main.tsx
-import React from 'react';
+// REMOVED: import React from 'react'; - No longer needed for JSX transform
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import theme from './styles/theme'; // Import our custom theme
