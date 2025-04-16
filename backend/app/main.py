@@ -2,19 +2,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-# Import routers directly
-# Make sure the path is relative to the 'app' directory where main.py resides
-from api.health.v1 import endpoints as health_v1_endpoints
-# Import other module routers here later
+# Import routers directly from their module locations
+from modules.health.v1 import endpoints as health_v1_endpoints
+from modules.info.v1 import endpoints as info_v1_endpoints # ADDED IMPORT
 
-from core.config import settings, logger # Use logger from config
+from core.config import settings, logger
 
 # --- FastAPI App Initialization ---
-# Conditionally set docs/redoc/openapi URLs based on environment
 openapi_url = f"{settings.API_PREFIX}/openapi.json" if settings.ENVIRONMENT == "development" else None
 docs_url = "/docs" if settings.ENVIRONMENT == "development" else None
 redoc_url = "/redoc" if settings.ENVIRONMENT == "development" else None
-
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -25,14 +22,9 @@ app = FastAPI(
 )
 
 # --- CORS Middleware Setup ---
-# Ensure BACKEND_CORS_ORIGINS is correctly processed from List[Union[AnyHttpUrl, str]]
 allow_origins = []
 if settings.BACKEND_CORS_ORIGINS:
-    for origin in settings.BACKEND_CORS_ORIGINS:
-        if isinstance(origin, str):
-            allow_origins.append(origin.strip())
-        else: # Assuming AnyHttpUrl
-            allow_origins.append(str(origin)) # Convert AnyHttpUrl to string
+    allow_origins = [str(origin).strip() for origin in settings.BACKEND_CORS_ORIGINS if origin]
 
 if allow_origins:
      logger.info(f"Configuring CORS for origins: {allow_origins}")
@@ -48,14 +40,18 @@ else:
 
 
 # --- Include Module Routers ---
-# Include the v1 health router with its full path prefix
+# Health module
 logger.info(f"Including Health v1 router at prefix: {settings.API_PREFIX}/health/v1")
 app.include_router(
     health_v1_endpoints.router,
-    prefix=f"{settings.API_PREFIX}/health/v1",
-    # tags are defined within the router itself in endpoints.py
+    prefix=f"{settings.API_PREFIX}/health/v1"
 )
-# Include other routers here later
+# Info module - ADDED ROUTER INCLUDE
+logger.info(f"Including Info v1 router at prefix: {settings.API_PREFIX}/info/v1")
+app.include_router(
+    info_v1_endpoints.router,
+    prefix=f"{settings.API_PREFIX}/info/v1"
+)
 
 
 # --- Root Endpoint ---
@@ -64,7 +60,7 @@ async def read_root():
     return {
         "message": f"Welcome to {settings.PROJECT_NAME}",
         "environment": settings.ENVIRONMENT,
-        "docs_url": app.docs_url, # Use attribute from app instance
+        "docs_url": app.docs_url,
         "api_base_prefix": settings.API_PREFIX
     }
 

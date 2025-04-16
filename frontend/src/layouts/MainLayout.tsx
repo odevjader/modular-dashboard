@@ -1,7 +1,7 @@
 // frontend/src/layouts/MainLayout.tsx
 import React from 'react';
-import { Outlet } from 'react-router-dom';
-import { Box, AppBar, Toolbar, Typography, Container } from '@mui/material';
+import { Outlet, Link as RouterLink } from 'react-router-dom'; // Import RouterLink
+import { Box, AppBar, Toolbar, Typography, Container, Button } from '@mui/material'; // Import Button
 
 const MainLayout: React.FC = () => {
   return (
@@ -9,16 +9,26 @@ const MainLayout: React.FC = () => {
       {/* AppBar */}
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          {/* Wrap title in a Link to navigate home */}
+          <Typography variant="h6" component={RouterLink} to="/" sx={{ flexGrow: 1, color: 'inherit', textDecoration: 'none' }}>
             Modular Dashboard
           </Typography>
+
+          {/* Navigation Links */}
+          <Button color="inherit" component={RouterLink} to="/">
+            Home
+          </Button>
+          {/* ADDED: Link to System Info Page */}
+          <Button color="inherit" component={RouterLink} to="/info">
+            System Info
+          </Button>
           {/* Add other AppBar items like buttons or user menu here later */}
+
         </Toolbar>
       </AppBar>
 
       {/* Main Content Area */}
       <Container component="main" sx={{ mt: 4, mb: 4, flexGrow: 1 }}>
-        {/* Outlet renders the matched child route component (e.g., HomePage) */}
         <Outlet />
       </Container>
 
