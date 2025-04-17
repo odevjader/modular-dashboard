@@ -1,4 +1,6 @@
-# Removed obsolete top-level 'version' key for cleaner V1 syntax
+# docker-compose.yml (Frontend service commented out for local development)
+# Removed obsolete top-level 'version' key
+
 services:
   # Backend API Service (FastAPI)
   api:
@@ -8,21 +10,20 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      # Mount the local backend app code into the container for development hot-reloading
       - ./backend/app:/app/app
-      # Mount the local tests directory into the container
       - ./backend/tests:/app/app/tests
     env_file:
       - ./backend/.env
     container_name: modular_dashboard_api
 
-  # Frontend Service (React + Nginx)
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "5173:80"
-    depends_on:
-      - api
-    container_name: modular_dashboard_frontend
+  # Frontend Service (React + Nginx) - COMMENTED OUT FOR LOCAL DEV
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     # This would map host 5173 (or other) to container port 80 (Nginx) for production build serving
+  #     - "5173:80"
+  #   depends_on:
+  #     - api
+  #   container_name: modular_dashboard_frontend
