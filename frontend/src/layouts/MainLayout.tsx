@@ -1,136 +1,151 @@
 // frontend/src/layouts/MainLayout.tsx
 import React, { useState } from 'react';
 import { Outlet, Link as RouterLink, useLocation } from 'react-router-dom';
-import { mainNavItems } from '../config/navigation'; // Import the navigation config
-import { getIconComponent } from '../utils/iconMap'; // Import the icon mapping utility
+import { mainNavItems } from '../config/navigation';
+import { getIconComponent } from '../utils/iconMap';
 import {
   AppBar, Toolbar, Typography, Box, Drawer, List, ListItem, ListItemButton,
-  ListItemIcon, ListItemText, IconButton, useTheme, useMediaQuery, CssBaseline, Icon
+  ListItemIcon, ListItemText, IconButton, useTheme, useMediaQuery, CssBaseline, Icon,
+  Collapse, Button // ADDED Button to the import list
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu'; // Menu icon for mobile drawer
+import MenuIcon from '@mui/icons-material/Menu';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 
-const drawerWidth = 240; // Define standard drawer width
+const drawerWidth = 240;
+
+// Helper component to render list items recursively
+const NavListItems: React.FC<{ items: NavItem[], isMobile: boolean, handleDrawerToggle: () => void, level?: number }> =
+  ({ items, isMobile, handleDrawerToggle, level = 0 }) => {
+  const location = useLocation();
+  const [openItems, setOpenItems] = useState<{ [key: string]: boolean }>({});
+
+  const handleCollapseToggle = (label: string) => {
+    setOpenItems(prev => ({ ...prev, [label]: !prev[label] }));
+  };
+
+  return (
+    <List sx={{ pl: level * 2 }}>
+      {items.map((item) => {
+        const IconComponent = getIconComponent(item.icon);
+        const isActive = location.pathname === item.path && !item.children;
+        const isOpen = openItems[item.label] || false;
+
+        // console.log(`MainLayout - Rendering Sidebar Item (Level ${level}):`, item.label, item); // Keep debug log
+
+        if (item.children && item.children.length > 0) {
+          const visibleChildren = item.children.filter(child => child.showInSidebar);
+          if (visibleChildren.length === 0) return null;
+
+          return (
+            <React.Fragment key={item.label}>
+              <ListItemButton onClick={() => handleCollapseToggle(item.label)}>
+                <ListItemIcon sx={{ minWidth: '40px' }}>
+                  <Icon component={IconComponent} />
+                </ListItemIcon>
+                <ListItemText primary={item.label} />
+                {isOpen ? <ExpandLess /> : <ExpandMore />}
+              </ListItemButton>
+              <Collapse in={isOpen} timeout="auto" unmountOnExit>
+                <NavListItems items={visibleChildren} isMobile={isMobile} handleDrawerToggle={handleDrawerToggle} level={level + 1} />
+              </Collapse>
+            </React.Fragment>
+          );
+        }
+
+        return (
+          <ListItem key={item.label} disablePadding>
+            <ListItemButton component={RouterLink} to={item.path} selected={isActive} onClick={isMobile ? handleDrawerToggle : undefined}>
+              <ListItemIcon sx={{ minWidth: '40px' }}>
+                <Icon component={IconComponent} color={isActive ? 'primary' : 'inherit'} />
+              </ListItemIcon>
+              <ListItemText primary={item.label} />
+            </ListItemButton>
+          </ListItem>
+        );
+      })}
+    </List>
+  );
+};
+
 
 const MainLayout: React.FC = () => {
   const theme = useTheme();
-  // Check if the screen is small (mobile breakpoint)
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  // State to control mobile drawer open/close
   const [mobileOpen, setMobileOpen] = useState(false);
-  const location = useLocation(); // Get current location for active link styling
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  // Filter navigation items for sidebar and appbar
-  const sidebarItems = mainNavItems.filter(item => item.showInSidebar);
-  const appBarItems = mainNavItems.filter(item => item.showInAppBar);
+  const sidebarTopLevelItems = mainNavItems.filter(item => item.showInSidebar);
+  const appBarItems = mainNavItems.filter(item => item.showInAppBar && !item.children);
 
-  // Content of the drawer (navigation list)
+  // console.log('MainLayout - Filtered Sidebar Top-Level Items:', sidebarTopLevelItems); // Keep debug log
+  // console.log('MainLayout - Filtered AppBar Items:', appBarItems); // Keep debug log
+
   const drawerContent = (
     <div>
-      <Toolbar /> {/* Necessary spacer to position content below AppBar */}
-      <List>
-        {sidebarItems.map((item) => {
-          const IconComponent = getIconComponent(item.icon);
-          const isActive = location.pathname === item.path;
-          return (
-            <ListItem key={item.label} disablePadding>
-              <ListItemButton
-                component={RouterLink}
-                to={item.path}
-                selected={isActive} // Highlight active link
-                onClick={isMobile ? handleDrawerToggle : undefined} // Close mobile drawer on click
-                sx={{ // Custom styling for active item
-                  '&.Mui-selected': {
-                    // backgroundColor: theme.palette.action.selected, // Default selection color
-                    // '&:hover': {
-                    //   backgroundColor: theme.palette.action.hover,
-                    // },
-                  },
-                }}
-              >
-                <ListItemIcon sx={{ minWidth: '40px' }}> {/* Adjust icon padding if needed */}
-                  {/* Render the mapped icon component */}
-                  <Icon component={IconComponent} color={isActive ? 'primary' : 'inherit'} />
-                </ListItemIcon>
-                <ListItemText primary={item.label} />
-              </ListItemButton>
-            </ListItem>
-          );
-        })}
-      </List>
+      <Toolbar /> {/* Spacer */}
+      <NavListItems items={sidebarTopLevelItems} isMobile={isMobile} handleDrawerToggle={handleDrawerToggle} />
     </div>
   );
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <CssBaseline /> {/* Ensures consistent baseline styles */}
+      <CssBaseline />
       {/* AppBar */}
       <AppBar
         position="fixed"
-        sx={{
-          // Only extend app bar width beyond drawer on larger screens
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` }, // Margin-left to accommodate drawer on larger screens
-        }}
+        sx={{ width: { sm: `calc(100% - ${drawerWidth}px)` }, ml: { sm: `${drawerWidth}px` } }}
       >
         <Toolbar>
-          {/* Menu button - only shown on mobile */}
           <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }} // Only display on small screens ('xs', 'sm' threshold)
+            color="inherit" aria-label="open drawer" edge="start"
+            onClick={handleDrawerToggle} sx={{ mr: 2, display: { sm: 'none' } }}
           >
             <MenuIcon />
           </IconButton>
-
-          <Typography variant="h6" noWrap component="div">
-            Modular Dashboard
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+            Dashboard
           </Typography>
+          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+            {appBarItems.map((item) => ( // Render filtered app bar items
+              <Button // This component requires the import
+                key={item.path}
+                color="inherit"
+                component={RouterLink}
+                to={item.path}
+              >
+                {item.label}
+              </Button>
+            ))}
+          </Box>
         </Toolbar>
       </AppBar>
-      {/* Drawer for navigation (hidden on larger screens) */}
-      <Box
-        component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label="mailbox folders"
-      >
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+
+      {/* Sidebar (Drawer) */}
+      <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}>
         <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
-          sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
+          variant="temporary" open={mobileOpen} onClose={handleDrawerToggle}
+          ModalProps={{ keepMounted: true }}
+          sx={{ display: { xs: 'block', sm: 'none' }, '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth } }}
         >
           {drawerContent}
         </Drawer>
         <Drawer
           variant="permanent"
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
+          sx={{ display: { xs: 'none', sm: 'block' }, '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth } }}
           open
         >
           {drawerContent}
         </Drawer>
       </Box>
-      <Box
-        component="main"
-        sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
-      >
-        <Toolbar /> {/* Toolbar spacer */}
-        <Outlet /> {/* Render the child routes */}
+
+      {/* Main Content Area */}
+      <Box component="main" sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}>
+        <Toolbar /> {/* Spacer */}
+        <Outlet />
       </Box>
     </Box>
   );

@@ -2,9 +2,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-# Import routers directly from their module locations
-from modules.health.v1 import endpoints as health_v1_endpoints
-from modules.info.v1 import endpoints as info_v1_endpoints # ADDED IMPORT
+# Import the central API router using absolute-style import from app root
+from api_router import api_router # CHANGED: Removed leading dot
 
 from core.config import settings, logger
 
@@ -39,19 +38,9 @@ else:
      logger.warning("No valid CORS origins found or specified (BACKEND_CORS_ORIGINS). CORS middleware not added.")
 
 
-# --- Include Module Routers ---
-# Health module
-logger.info(f"Including Health v1 router at prefix: {settings.API_PREFIX}/health/v1")
-app.include_router(
-    health_v1_endpoints.router,
-    prefix=f"{settings.API_PREFIX}/health/v1"
-)
-# Info module - ADDED ROUTER INCLUDE
-logger.info(f"Including Info v1 router at prefix: {settings.API_PREFIX}/info/v1")
-app.include_router(
-    info_v1_endpoints.router,
-    prefix=f"{settings.API_PREFIX}/info/v1"
-)
+# --- Include the Central API Router ---
+logger.info(f"Including main API router with prefix: {settings.API_PREFIX}")
+app.include_router(api_router, prefix=settings.API_PREFIX)
 
 
 # --- Root Endpoint ---

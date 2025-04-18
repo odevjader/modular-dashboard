@@ -1,61 +1,66 @@
 // frontend/src/pages/HomePage.tsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { Grid, Button, Typography, Box, Paper } from '@mui/material';
-import { mainNavItems } from '../config/navigation'; // Import the config
+import { Grid, Card, CardActionArea, Typography, Box, Icon } from '@mui/material';
+import { mainNavItems } from '../config/navigation';
+import { funnyHomepageTitles } from '../config/phrases';
+import { getIconComponent } from '../utils/iconMap';
 
 const HomePage: React.FC = () => {
+  const [pageTitle, setPageTitle] = useState<string>("Dashboard Modules");
+
+  useEffect(() => {
+    const randomIndex = Math.floor(Math.random() * funnyHomepageTitles.length);
+    setPageTitle(funnyHomepageTitles[randomIndex]);
+  }, []);
+
   // Filter items to show on the homepage
   const homepageItems = mainNavItems.filter(item => item.showOnHomepage);
+  // --- ADDED DEBUG LOG ---
+  console.log('HomePage - Items filtered for homepage:', homepageItems);
+  // --- END DEBUG LOG ---
 
   return (
     <Box sx={{ flexGrow: 1, p: 2 }}>
       <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ mb: 4 }}>
-        Dashboard Modules
+        {pageTitle}
       </Typography>
       {homepageItems.length > 0 ? (
-        <Grid container spacing={4} justifyContent="center">
-          {homepageItems.map((item) => (
-            <Grid item key={item.path} xs={12} sm={6} md={4} lg={3}> {/* Adjust grid sizing */}
-              {/* Using Paper and Button for a larger clickable area */}
-              <Paper elevation={3} sx={{ height: '150px', display: 'flex' }}>
-                <Button
-                  component={RouterLink}
-                  to={item.path}
-                  variant="contained" // Use contained for a prominent button look
-                  color="primary" // Or "secondary", "inherit", etc.
+        <Grid container spacing={3} justifyContent="center">
+          {homepageItems.map((item) => {
+            const ModuleIcon = getIconComponent(item.icon);
+            return (
+              <Grid item key={item.path + item.label} xs={12} sm={6} md={4} lg={3}> {/* Added label to key for uniqueness */}
+                <Card
+                  elevation={3}
                   sx={{
-                    width: '100%',
                     height: '100%',
                     display: 'flex',
-                    flexDirection: 'column', // Arrange text vertically if needed
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    textAlign: 'center',
-                    fontSize: '1.1rem', // Larger text
-                    p: 2,
+                    maxWidth: 300,
+                    margin: 'auto',
                   }}
                 >
-                  {item.label}
-                </Button>
-              </Paper>
-              {/* Alternative: Using Card
-              <Card sx={{ height: '150px', display: 'flex' }}>
-                <CardActionArea
-                  component={RouterLink}
-                  to={item.path}
-                  sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}
-                >
-                  <CardContent sx={{ textAlign: 'center' }}>
-                    <Typography gutterBottom variant="h5" component="div">
+                  <CardActionArea
+                    component={RouterLink}
+                    to={item.path}
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      p: 3,
+                      flexGrow: 1,
+                    }}
+                  >
+                    <Icon component={ModuleIcon} sx={{ fontSize: 50, mb: 2 }} color="primary" />
+                    <Typography variant="h6" component="div" align="center" sx={{ lineHeight: 1.3 }}>
                       {item.label}
                     </Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-              */}
-            </Grid>
-          ))}
+                  </CardActionArea>
+                </Card>
+              </Grid>
+            );
+          })}
         </Grid>
       ) : (
         <Typography align="center" sx={{ mt: 5 }}>
