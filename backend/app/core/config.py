@@ -1,18 +1,21 @@
 # backend/app/core/config.py
 import logging
 from pydantic_settings import BaseSettings
-from typing import List, Optional # Import Optional
+from typing import List, Optional
 
 class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
-    BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
+    BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:5173", "[http://127.0.0.1:5173](http://127.0.0.1:5173)"]
     API_PREFIX: str = "/api"
     PROJECT_NAME: str = "Modular Dashboard API"
-    LOGGING_LEVEL: int = logging.INFO
+    LOGGING_LEVEL: int = logging.INFO # Default level
 
-    # Google API Key - Marked as Optional[str] so app can start if not set,
-    # but endpoints using it should check if it exists. Default is None.
+    # Google API Key
     GOOGLE_API_KEY: Optional[str] = None
+
+    # Gemini Model Name - ADDED
+    # Defaulting to a generally available model like 1.5 Flash
+    GEMINI_MODEL_NAME: str = "gemini-2.0-flash-exp"
 
     class Config:
         env_file = ".env"
@@ -20,14 +23,12 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-# Basic logging setup
+# Configure logging level based on settings
 logging.basicConfig(level=settings.LOGGING_LEVEL)
 logger = logging.getLogger(__name__)
-# logger.info(f"Logging configured via config.py. Level: {logging.getLevelName(settings.LOGGING_LEVEL)}")
-# logger.info(f"Running {settings.PROJECT_NAME} in environment: {settings.ENVIRONMENT}")
 
-# Check if the key was loaded (optional logging for debug)
-# if settings.GOOGLE_API_KEY:
-#     logger.debug("GOOGLE_API_KEY loaded.")
-# else:
-#     logger.warning("GOOGLE_API_KEY not found in environment/'.env' file.")
+# Optional: Log loaded settings for verification
+# logger.debug(f"Settings loaded: {settings.model_dump()}")
+if not settings.GOOGLE_API_KEY:
+    logger.warning("GOOGLE_API_KEY not found in environment/'.env' file.")
+# logger.info(f"Using Gemini Model: {settings.GEMINI_MODEL_NAME}")

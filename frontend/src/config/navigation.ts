@@ -10,37 +10,38 @@ export interface NavItem {
   children?: NavItem[];
 }
 
+// Define the navigation structure
 export const mainNavItems: NavItem[] = [
   // --- Items for Menus/Routing ---
-  {
+  { // Home: Only in Sidebar
     path: '/',
     label: 'Home',
     icon: 'Home',
     showOnHomepage: false,
-    showInSidebar: true, // Keep in Sidebar
-    showInAppBar: false, // Hide from AppBar
+    showInSidebar: true,
+    showInAppBar: false,
   },
-  {
+  { // System Info: Only in AppBar
     path: '/info',
     label: 'System Info',
     icon: 'Info',
     showOnHomepage: false,
-    showInSidebar: false, // Hide from Sidebar
-    showInAppBar: true,   // Show ONLY in AppBar
+    showInSidebar: false,
+    showInAppBar: true,
   },
-  {
-    path: '#', // Modules Group Header (for Sidebar)
+  { // Modules Group Header (for Sidebar)
+    path: '#',
     label: 'Modules',
     icon: 'Category',
     showOnHomepage: false,
-    showInSidebar: true, // Show group header in sidebar
+    showInSidebar: true,
     children: [
-      {
+      { // Gerador Quesitos: Only under Modules in Sidebar menu
         path: '/gerador-quesitos',
         label: 'Gerador Quesitos',
-        icon: 'Quiz',
-        showOnHomepage: false, // Will be shown via separate entry below
-        showInSidebar: true,   // Show under Modules in sidebar
+        icon: 'Quiz', // Using Quiz icon
+        showOnHomepage: false, // Homepage button is defined separately below
+        showInSidebar: true,
         showInAppBar: false,
       },
       // Add future modules for sidebar menu here...
@@ -56,12 +57,12 @@ export const mainNavItems: NavItem[] = [
   },
 
   // --- Items EXPLICITLY for HOMEPAGE BUTTONS ---
-  {
-    path: '/gerador-quesitos', // Link to the actual module page
+  { // Gerador Quesitos: Button on Homepage
+    path: '/gerador-quesitos',
     label: 'Gerador de Quesitos', // Label for homepage button
-    icon: 'Quiz',
-    showOnHomepage: true, // YES, show on homepage grid
-    showInSidebar: false, // NO, don't show in menus (already in group above)
+    icon: 'Quiz', // Use same icon identifier
+    showOnHomepage: true,
+    showInSidebar: false, // Not duplicated in root of sidebar
     showInAppBar: false,
   },
   // --- Restored 8 Placeholders for Homepage ---

@@ -1,6 +1,6 @@
 # backend/tests/test_gerador_quesitos.py
 from fastapi.testclient import TestClient
-from unittest.mock import patch, MagicMock, AsyncMock # Import AsyncMock for async methods
+from unittest.mock import patch, MagicMock, AsyncMock
 import sys
 from pathlib import Path
 import pytest
@@ -14,21 +14,16 @@ if app_root_dir not in sys.path:
 # Import app and settings
 from main import app
 from core.config import settings
-# Import the response schema using Portuguese name
 from modules.gerador_quesitos.v1.esquemas import RespostaQuesitos
 
 # Create Test Client
 client = TestClient(app)
 
-# Define targets for mocking
-LLM_MOCK_TARGET = "modules.gerador_quesitos.v1.endpoints.llm"
-# Target the DoclingLoader class within the endpoints module where it's imported/used
-LOADER_MOCK_TARGET = "modules.gerador_quesitos.v1.endpoints.DoclingLoader"
-# Target tempfile.NamedTemporaryFile if needed, or mock os.remove
-TEMPFILE_MOCK_TARGET = "modules.gerador_quesitos.v1.endpoints.tempfile.NamedTemporaryFile"
-OS_REMOVE_MOCK_TARGET = "modules.gerador_quesitos.v1.endpoints.os.remove"
-OS_PATH_EXISTS_MOCK_TARGET = "modules.gerador_quesitos.v1.endpoints.os.path.exists"
-
+# Define mock targets
+DEFAULT_LLM_MOCK_TARGET = "modules.gerador_quesitos.v1.endpoints.default_llm"
+PROCESSOR_MOCK_TARGET = "modules.gerador_quesitos.v1.endpoints.processar_pdfs_upload"
+PROMPT_LOAD_TARGET = "modules.gerador_quesitos.v1.endpoints.prompt_template_string"
+DYNAMIC_LLM_INIT_TARGET = "modules.gerador_quesitos.v1.endpoints.ChatGoogleGenerativeAI"
 
 # Helper function to create mock AI message
 def create_mock_ai_message(content: str):
@@ -36,132 +31,115 @@ def create_mock_ai_message(content: str):
     mock_msg.content = content
     return mock_msg
 
-# Helper function to create mock Langchain Document
-def create_mock_langchain_doc(page_content: str):
-    mock_doc = MagicMock()
-    mock_doc.page_content = page_content
-    return mock_doc
-
 # --- Test Cases ---
 
-# Use patch decorators in the correct order (bottom up)
-@patch(OS_PATH_EXISTS_MOCK_TARGET, return_value=False) # Assume temp file doesn't exist after for cleanup check
-@patch(OS_REMOVE_MOCK_TARGET) # Mock os.remove to avoid errors on temp file cleanup
-@patch(TEMPFILE_MOCK_TARGET) # Mock NamedTemporaryFile
-@patch(LOADER_MOCK_TARGET) # Mock DoclingLoader class
-@patch(LLM_MOCK_TARGET) # Mock llm object
-def test_gerar_quesitos_success(mock_llm, mock_DoclingLoader, mock_NamedTemporaryFile, mock_os_remove, mock_os_path_exists):
-    """ Test successful quesitos generation with mocked AI and Loader. """
-
-    # --- Mock Setup ---
-    # Mock LLM
-    if mock_llm is None:
-        pytest.skip("Skipping test: LLM mock target None (check API key?)")
-        return
-    mock_response_content = "1. Quesito Mock A?\n2. Quesito Mock B?"
-    # Use AsyncMock for await llm.ainvoke
+@patch(PROMPT_LOAD_TARGET, "Prompt: {pdf_content}, Ben: {beneficio}, Prof: {profissao}")
+@patch(PROCESSOR_MOCK_TARGET)
+@patch(DEFAULT_LLM_MOCK_TARGET)
+def test_gerar_quesitos_success_default_model(mock_llm, mock_processar_pdfs):
+    """ Test successful generation using the default model setting. """
+    if mock_llm is None: pytest.skip("Skipping test: Default LLM mock target None"); return
+    mock_extracted_text = "Texto extraído mockado."
+    mock_processar_pdfs.return_value = mock_extracted_text
+    mock_response_content = "1. Quesito Gerado A?"
     mock_llm.ainvoke = AsyncMock(return_value=create_mock_ai_message(mock_response_content))
-
-    # Mock DoclingLoader instance and its load/aload method
-    mock_loader_instance = MagicMock()
-    # Assuming DoclingLoader has an async 'aload' method, mock it
-    mock_loader_instance.aload = AsyncMock(return_value=[
-        create_mock_langchain_doc("Texto extraído do PDF mockado.")
-    ])
-    # Configure the DoclingLoader class mock to return our instance mock
-    mock_DoclingLoader.return_value = mock_loader_instance
-
-    # Mock tempfile context manager
-    mock_temp_file = MagicMock()
-    mock_temp_file.__enter__.return_value.name = "/tmp/fake_pdf_path.pdf" # Provide a fake path
-    mock_temp_file.__enter__.return_value.write.return_value = None # Mock write method
-    mock_NamedTemporaryFile.return_value = mock_temp_file
-
-    # --- Request ---
     url = f"{settings.API_PREFIX}/gerador_quesitos/v1/gerar"
-    dummy_pdf_content = b"%PDF..."
-    files = {'file': ('test.pdf', BytesIO(dummy_pdf_content), 'application/pdf')}
-
-    response = client.post(url, files=files) # No 'data' needed as inputs are removed for V1
-
-    # --- Assertions ---
+    form_data = {"beneficio": "Auxílio-Doença", "profissao": "Pedreiro", "modelo_nome": "<Modelo Padrão>"}
+    files = {'files': ('test.pdf', BytesIO(b'pdf'), 'application/pdf')}
+    response = client.post(url, files=files, data=form_data)
     assert response.status_code == 200
     response_data = RespostaQuesitos(**response.json())
     assert response_data.quesitos_texto == mock_response_content
+    mock_processar_pdfs.assert_called_once()
+    mock_llm.ainvoke.assert_called_once()
 
-    # Verify mocks were called (optional but good)
-    mock_NamedTemporaryFile.assert_called_once() # Check temp file was used
-    mock_DoclingLoader.assert_called_once_with(file_path="/tmp/fake_pdf_path.pdf")
-    mock_loader_instance.aload.assert_called_once()
-    mock_llm.ainvoke.assert_called_once() # Check LLM was called
-    # mock_os_remove.assert_called_once_with("/tmp/fake_pdf_path.pdf") # Check cleanup
-
-
-@patch(LLM_MOCK_TARGET, None) # Simulate LLM not being initialized
-def test_gerar_quesitos_no_llm():
-    """ Test endpoint when LLM is not available. """
+@patch(PROMPT_LOAD_TARGET, "Prompt: {pdf_content}, Ben: {beneficio}, Prof: {profissao}")
+@patch(DYNAMIC_LLM_INIT_TARGET)
+@patch(PROCESSOR_MOCK_TARGET)
+@patch(DEFAULT_LLM_MOCK_TARGET)
+def test_gerar_quesitos_success_specific_model(mock_default_llm, mock_processar_pdfs, mock_dynamic_llm_init):
+    """ Test successful generation requesting a specific model. """
+    mock_extracted_text = "Texto extraído mockado."
+    mock_processar_pdfs.return_value = mock_extracted_text
+    mock_response_content = "1. Quesito Gerado B?"
+    mock_dynamic_instance = MagicMock()
+    mock_dynamic_instance.ainvoke = AsyncMock(return_value=create_mock_ai_message(mock_response_content))
+    mock_dynamic_llm_init.return_value = mock_dynamic_instance
     url = f"{settings.API_PREFIX}/gerador_quesitos/v1/gerar"
-    files = {'file': ('test.pdf', BytesIO(b'pdf'), 'application/pdf')}
-    response = client.post(url, files=files)
+    specific_model = "gemini-1.5-pro-latest"
+    form_data = {"beneficio": "BPC-LOAS", "profissao": "Do Lar", "modelo_nome": specific_model}
+    files = {'files': ('test2.pdf', BytesIO(b'pdf2'), 'application/pdf')}
+    response = client.post(url, files=files, data=form_data)
+    assert response.status_code == 200
+    response_data = RespostaQuesitos(**response.json())
+    assert response_data.quesitos_texto == mock_response_content
+    mock_processar_pdfs.assert_called_once()
+    mock_dynamic_llm_init.assert_called_once_with(model=specific_model, google_api_key=settings.GOOGLE_API_KEY)
+    mock_dynamic_instance.ainvoke.assert_called_once()
+    if mock_default_llm: mock_default_llm.ainvoke.assert_not_called()
+
+@patch(DEFAULT_LLM_MOCK_TARGET, None)
+# REMOVED mock_default_llm_is_none argument
+def test_gerar_quesitos_no_default_llm():
+    """ Test endpoint when default LLM is not available and default model is requested. """
+    url = f"{settings.API_PREFIX}/gerador_quesitos/v1/gerar"
+    form_data = {"beneficio": "BPC", "profissao": "Do Lar", "modelo_nome": "<Modelo Padrão>"}
+    files = {'files': ('test.pdf', BytesIO(b'pdf'), 'application/pdf')}
+    response = client.post(url, files=files, data=form_data)
     assert response.status_code == 503
 
-@patch(OS_PATH_EXISTS_MOCK_TARGET, return_value=False)
-@patch(OS_REMOVE_MOCK_TARGET)
-@patch(TEMPFILE_MOCK_TARGET)
-@patch(LOADER_MOCK_TARGET)
-@patch(LLM_MOCK_TARGET)
-def test_gerar_quesitos_llm_error(mock_llm, mock_DoclingLoader, mock_NamedTemporaryFile, mock_os_remove, mock_os_path_exists):
-    """ Test endpoint when the LLM call raises an exception. """
-    if mock_llm is None:
-        pytest.skip("Skipping test: LLM mock target None")
-        return
-
-    # Mock Loader to return some data
-    mock_loader_instance = MagicMock()
-    mock_loader_instance.aload = AsyncMock(return_value=[create_mock_langchain_doc("Text")])
-    mock_DoclingLoader.return_value = mock_loader_instance
-    # Mock temp file
-    mock_temp_file = MagicMock()
-    mock_temp_file.__enter__.return_value.name = "/tmp/fake_pdf_path.pdf"
-    mock_NamedTemporaryFile.return_value = mock_temp_file
-
-    # Configure mock LLM to raise error
+@patch(PROMPT_LOAD_TARGET, "Prompt: {pdf_content}, Ben: {beneficio}, Prof: {profissao}")
+@patch(PROCESSOR_MOCK_TARGET)
+@patch(DEFAULT_LLM_MOCK_TARGET)
+def test_gerar_quesitos_llm_error(mock_llm, mock_processar_pdfs):
+    """ Test endpoint when the default LLM call raises an exception. """
+    if mock_llm is None: pytest.skip("Skipping test: Default LLM mock target None"); return
+    mock_processar_pdfs.return_value = "Texto extraído."
     mock_llm.ainvoke = AsyncMock(side_effect=Exception("Simulated Google API Error"))
-
     url = f"{settings.API_PREFIX}/gerador_quesitos/v1/gerar"
-    files = {'file': ('test.pdf', BytesIO(b'pdf'), 'application/pdf')}
-    response = client.post(url, files=files)
+    form_data = {"beneficio": "BPC", "profissao": "Do Lar", "modelo_nome": "<Modelo Padrão>"}
+    files = {'files': ('test.pdf', BytesIO(b'pdf'), 'application/pdf')}
+    response = client.post(url, files=files, data=form_data)
     assert response.status_code == 500
-    assert "Erro ao processar documento" in response.json().get("detail", "")
+    assert "Erro inesperado" in response.json().get("detail", "")
 
-def test_gerar_quesitos_invalid_file_type():
-    """ Test sending a non-PDF file. """
+@patch(PROMPT_LOAD_TARGET, "Prompt: {pdf_content}, Ben: {beneficio}, Prof: {profissao}")
+@patch(PROCESSOR_MOCK_TARGET)
+@patch(DEFAULT_LLM_MOCK_TARGET)
+def test_gerar_quesitos_processor_error(mock_llm, mock_processar_pdfs):
+    """ Test endpoint when the PDF processor utility raises an exception. """
+    mock_processar_pdfs.side_effect = Exception("Simulated PDF Processing Error")
     url = f"{settings.API_PREFIX}/gerador_quesitos/v1/gerar"
-    files = {'file': ('test.txt', BytesIO(b'text content'), 'text/plain')}
-    response = client.post(url, files=files)
-    assert response.status_code == 400
-    assert "Tipo de arquivo inválido" in response.json().get("detail", "")
+    form_data = {"beneficio": "BPC", "profissao": "Do Lar", "modelo_nome": "<Modelo Padrão>"}
+    files = {'files': ('test.pdf', BytesIO(b'pdf'), 'application/pdf')}
+    response = client.post(url, files=files, data=form_data)
+    assert response.status_code == 500
+    assert "Erro inesperado" in response.json().get("detail", "")
 
-@patch(OS_PATH_EXISTS_MOCK_TARGET, return_value=False)
-@patch(OS_REMOVE_MOCK_TARGET)
-@patch(TEMPFILE_MOCK_TARGET)
-@patch(LOADER_MOCK_TARGET) # Mock DoclingLoader only
-@patch(LLM_MOCK_TARGET) # Mock LLM just to prevent None error if key exists
-def test_gerar_quesitos_loader_error(mock_llm, mock_DoclingLoader, mock_NamedTemporaryFile, mock_os_remove, mock_os_path_exists):
-    """ Test endpoint when the DoclingLoader call raises an exception. """
-
-    # Mock temp file
-    mock_temp_file = MagicMock()
-    mock_temp_file.__enter__.return_value.name = "/tmp/fake_pdf_path.pdf"
-    mock_NamedTemporaryFile.return_value = mock_temp_file
-
-    # Configure mock Loader to raise error
-    mock_loader_instance = MagicMock()
-    mock_loader_instance.aload = AsyncMock(side_effect=Exception("Simulated Loader Error"))
-    mock_DoclingLoader.return_value = mock_loader_instance
-
+@patch(PROMPT_LOAD_TARGET, "Prompt: {pdf_content}, Ben: {beneficio}, Prof: {profissao}")
+@patch(PROCESSOR_MOCK_TARGET)
+@patch(DEFAULT_LLM_MOCK_TARGET)
+def test_gerar_quesitos_processor_returns_empty(mock_llm, mock_processar_pdfs):
+    """ Test endpoint when the PDF processor returns empty text. """
+    mock_processar_pdfs.return_value = ""
     url = f"{settings.API_PREFIX}/gerador_quesitos/v1/gerar"
-    files = {'file': ('test.pdf', BytesIO(b'pdf'), 'application/pdf')}
-    response = client.post(url, files=files)
-    assert response.status_code == 500 # Should be caught by general exception handler
-    assert "Erro ao processar documento" in response.json().get("detail", "") # Check if detail includes loader error
+    form_data = {"beneficio": "BPC", "profissao": "Do Lar", "modelo_nome": "<Modelo Padrão>"}
+    files = {'files': ('test.pdf', BytesIO(b'pdf'), 'application/pdf')}
+    response = client.post(url, files=files, data=form_data)
+    assert response.status_code == 422
+    assert "Não foi possível extrair conteúdo" in response.json().get("detail", "")
+
+def test_gerar_quesitos_no_files():
+    """ Test sending request with no files attached. """
+    url = f"{settings.API_PREFIX}/gerador_quesitos/v1/gerar"
+    form_data = {"beneficio": "BPC", "profissao": "Do Lar", "modelo_nome": "<Modelo Padrão>"}
+    response = client.post(url, data=form_data)
+    assert response.status_code == 422
+
+def test_gerar_quesitos_missing_form_data():
+    """ Test sending request with missing form data. """
+    url = f"{settings.API_PREFIX}/gerador_quesitos/v1/gerar"
+    files = {'files': ('test.pdf', BytesIO(b'pdf'), 'application/pdf')}
+    # Missing beneficio, profissao, but including model_nome
+    response = client.post(url, files=files, data={"modelo_nome": "<Modelo Padrão>"})
+    assert response.status_code == 422

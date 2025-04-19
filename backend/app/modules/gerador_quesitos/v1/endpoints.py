@@ -1,163 +1,151 @@
 # backend/app/modules/gerador_quesitos/v1/endpoints.py
-import os
-import tempfile
 from pathlib import Path
+from typing import List, Optional # Import Optional
 from fastapi import (
     APIRouter,
     HTTPException,
     status,
     File,
     UploadFile,
+    Form,
 )
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage
-# Use DoclingLoader for PDF processing
-from langchain_docling import DoclingLoader # Corrected import if package name is langchain-docling
+from langchain_core.language_models.chat_models import BaseChatModel # For type hinting
 
 from core.config import settings, logger
 from .esquemas import RespostaQuesitos
+from utils.pdf_processor import processar_pdfs_upload
 
 router = APIRouter()
 
-# --- LLM Initialization ---
-llm = None
+# --- Default LLM Initialization (from settings) ---
+default_llm: Optional[BaseChatModel] = None
+default_model_name = settings.GEMINI_MODEL_NAME
 if not settings.GOOGLE_API_KEY:
-    logger.warning("GOOGLE_API_KEY not found. Gerador Quesitos module endpoints will not function.")
+    logger.warning("GOOGLE_API_KEY not found. Default LLM for Gerador Quesitos will not function.")
 else:
     try:
-        llm = ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash-exp", # Ensure this model supports the expected input/output
+        default_llm = ChatGoogleGenerativeAI(
+            model=default_model_name,
             google_api_key=settings.GOOGLE_API_KEY,
         )
-        logger.info(f"ChatGoogleGenerativeAI initialized successfully for gerador_quesitos with model: {llm.model}")
+        logger.info(f"Default LLM initialized successfully for gerador_quesitos with model: {default_model_name}")
     except Exception as e:
-        logger.error(f"Failed to initialize ChatGoogleGenerativeAI for gerador_quesitos: {e}", exc_info=True)
+        logger.error(f"Failed to initialize default LLM for gerador_quesitos with model {default_model_name}: {e}", exc_info=True)
+        # default_llm remains None
 
 # --- Load Prompt Template ---
 prompt_template_string = ""
+prompt_file_path = Path(__file__).parent / "prompts" / "gerar_quesitos_prompt.txt"
 try:
-    # Construct path relative to this file's location
-    prompt_file_path = Path(__file__).parent / "prompts" / "gerar_quesitos_prompt.txt"
-    if prompt_file_path.is_file():
-        with open(prompt_file_path, "r", encoding="utf-8") as f:
-            prompt_template_string = f.read()
-        logger.info(f"Successfully loaded prompt template from {prompt_file_path}")
-    else:
-        logger.error(f"Prompt template file not found at {prompt_file_path}")
-        # Decide how to handle missing prompt: raise error or use default? Raise for now.
-        raise FileNotFoundError("Prompt template file missing.")
+    # Ensure prompt file exists and load it
+    if not prompt_file_path.is_file():
+        raise FileNotFoundError(f"Prompt template file missing at {prompt_file_path}")
+    with open(prompt_file_path, "r", encoding="utf-8") as f:
+        prompt_template_string = f.read()
+    logger.info(f"Successfully loaded prompt template from {prompt_file_path}")
 except Exception as e:
-    logger.error(f"Failed to load prompt template: {e}", exc_info=True)
-    # If prompt loading fails, the endpoint relying on it should probably not function
-    # We could raise an error here or handle it within the endpoint. Let's handle in endpoint.
+    logger.error(f"CRITICAL: Failed to load prompt template on startup: {e}", exc_info=True)
+    # If prompt loading fails critically, set it to empty to cause endpoint failure
+    prompt_template_string = ""
 
 
 # --- API Endpoint ---
 @router.post(
     "/gerar",
     response_model=RespostaQuesitos,
-    summary="Gera quesitos periciais a partir de PDF.",
+    summary="Gera quesitos periciais a partir de múltiplos PDFs e informações do caso, com seleção de modelo.",
     tags=["Gerador Quesitos v1"],
 )
 async def gerar_quesitos(
-    file: UploadFile = File(..., description="Documento PDF para análise.")
+    files: List[UploadFile] = File(..., description="Um ou mais documentos PDF para análise."),
+    beneficio: str = Form(..., description="Benefício previdenciário pretendido."),
+    profissao: str = Form(..., description="Profissão do requerente."),
+    # Add model name from form data
+    modelo_nome: str = Form(..., description="Nome do modelo de IA a ser usado ou '<Modelo Padrão>."),
 ):
     """
-    Recebe um PDF, extrai texto/OCR usando DoclingLoader,
-    usa um prompt carregado de arquivo e exemplos para chamar Gemini via Langchain,
-    e retorna os quesitos gerados.
+    Recebe PDFs e info, chama utilitário para extrair texto, formata prompt,
+    chama o modelo Gemini selecionado (ou padrão) via Langchain, e retorna os quesitos gerados.
     """
-    if not llm:
-        logger.error("LLM not initialized.")
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Serviço de IA não configurado ou indisponível.",
-        )
-
     if not prompt_template_string:
-         logger.error("Prompt template not loaded.")
-         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Erro interno: Template de prompt não carregado.",
-        )
+         logger.error("Prompt template not loaded during startup.")
+         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno: Template de prompt não disponível.")
+    if not files:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Nenhum arquivo PDF enviado.")
 
-    if file.content_type != "application/pdf":
-        logger.warning(f"Invalid file type uploaded: {file.content_type}")
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Tipo de arquivo inválido. Por favor, envie um PDF.",
-        )
+    logger.info(f"Received request. Beneficio: {beneficio}, Profissao: {profissao}, Model: {modelo_nome}, Files: {[f.filename for f in files]}")
 
-    # Use tempfile for secure temporary file handling
+    # --- Select or Initialize LLM ---
+    llm_to_use: Optional[BaseChatModel] = None
+    selected_model_display_name = ""
+
+    if modelo_nome == "<Modelo Padrão>" or not modelo_nome:
+        logger.info(f"Using default LLM model: {default_model_name}")
+        llm_to_use = default_llm
+        selected_model_display_name = default_model_name
+    else:
+        logger.info(f"Attempting to use specifically requested LLM model: {modelo_nome}")
+        # Initialize dynamically - less efficient, consider caching later
+        if not settings.GOOGLE_API_KEY:
+             logger.error("Cannot initialize specific model: GOOGLE_API_KEY not found.")
+             raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Serviço de IA não configurado (chave API ausente).")
+        try:
+            llm_to_use = ChatGoogleGenerativeAI(
+                model=modelo_nome,
+                google_api_key=settings.GOOGLE_API_KEY,
+            )
+            selected_model_display_name = modelo_nome
+            logger.info(f"Dynamically initialized LLM with model: {modelo_nome}")
+        except Exception as e:
+            logger.error(f"Failed to initialize requested LLM model '{modelo_nome}': {e}", exc_info=True)
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=f"Não foi possível inicializar o modelo de IA solicitado: '{modelo_nome}'. Verifique se o nome está correto e disponível."
+            )
+
+    # Final check if we have a usable LLM instance
+    if not llm_to_use:
+        logger.error("LLM instance is unavailable (Default failed and no specific model requested/initialized).")
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Serviço de IA indisponível.")
+
+    # --- Process Files ---
     try:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
-            # Write uploaded file content to temp file
-            content = await file.read()
-            temp_pdf.write(content)
-            temp_pdf_path = temp_pdf.name # Get the path
-            logger.info(f"PDF saved temporarily to {temp_pdf_path}")
+        logger.info(f"Calling shared PDF processor for {len(files)} file(s)...")
+        texto_extraido_combinado = await processar_pdfs_upload(files)
 
-        # Use DoclingLoader on the temporary file path
-        logger.info(f"Processing PDF with DoclingLoader: {temp_pdf_path}")
-        # Check DoclingLoader options if needed (e.g., OCR settings)
-        loader = DoclingLoader(file_path=temp_pdf_path) # Instantiate loader
-        docs = await loader.aload() # Use async load if available, otherwise load()
-        logger.info(f"DoclingLoader finished processing. Found {len(docs)} document sections.")
-
-        # Combine extracted text (handle potential errors/empty docs)
-        if not docs:
-             logger.warning("DoclingLoader returned no document sections.")
-             # Decide how to handle empty extraction: error or proceed with empty content?
-             # Let's raise an error for now.
+        if not texto_extraido_combinado:
+             logger.warning("PDF processing utility returned no text.")
              raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Não foi possível extrair conteúdo do PDF fornecido.",
+                detail="Não foi possível extrair conteúdo válido dos PDFs fornecidos.",
              )
+        logger.info(f"PDF processing complete. Total text length: {len(texto_extraido_combinado)}")
 
-        pdf_content_full = "\n\n".join([doc.page_content for doc in docs if doc.page_content])
-        logger.info(f"Extracted text length: {len(pdf_content_full)}. Snippet: '{pdf_content_full[:100]}...'")
+        # --- Format Prompt ---
+        final_prompt_text = prompt_template_string.format(
+            pdf_content=texto_extraido_combinado,
+            beneficio=beneficio,
+            profissao=profissao
+        )
 
-        if not pdf_content_full.strip():
-             logger.warning("Extracted PDF content is empty or whitespace only.")
-             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="O conteúdo extraído do PDF está vazio.",
-             )
-
-        # Format the final prompt using the loaded template and extracted text
-        # Note: Assumes template uses {pdf_content} placeholder.
-        # Note: Few-shot examples are embedded in the template file itself per user request.
-        final_prompt_text = prompt_template_string.format(pdf_content=pdf_content_full)
-
-        # Create the message for Langchain
-        # For Gemini models, especially multimodal, often just one HumanMessage is needed
-        message = HumanMessage(content=final_prompt_text) # Sending combined text
-
-        logger.info("Sending request to Gemini model via Langchain...")
-        # Make the asynchronous call to the LLM
-        ai_message = await llm.ainvoke([message]) # Pass message in a list
+        # --- Call LLM ---
+        message = HumanMessage(content=final_prompt_text)
+        logger.info(f"Sending request to Gemini model '{selected_model_display_name}' via Langchain...")
+        ai_message = await llm_to_use.ainvoke([message]) # Use the selected LLM instance
         texto_resposta = ai_message.content
-
         logger.info(f"Received AI response snippet: '{texto_resposta[:100]}...'")
 
-        # Return the structured response
+        # --- Return Response ---
         return RespostaQuesitos(quesitos_texto=texto_resposta)
 
     except HTTPException:
-         raise # Re-raise HTTP exceptions directly
+         raise
     except Exception as e:
-        logger.error(f"Error during quesitos generation: {e}", exc_info=True)
+        logger.error(f"Unhandled error during quesitos generation: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Erro ao processar documento com o modelo de IA: {str(e)}",
+            detail=f"Erro inesperado ao gerar quesitos: {str(e)}",
         )
-    finally:
-        # Clean up the temporary file
-        if 'temp_pdf_path' in locals() and os.path.exists(temp_pdf_path):
-            try:
-                os.remove(temp_pdf_path)
-                logger.info(f"Deleted temporary file: {temp_pdf_path}")
-            except Exception as e_del:
-                logger.error(f"Error deleting temporary file {temp_pdf_path}: {e_del}")
-        # Ensure uploaded file resource is closed if not already by context manager
-        await file.close()
+    # File closing handled in utility
