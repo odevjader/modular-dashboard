@@ -1,74 +1,72 @@
 // frontend/src/config/navigation.ts
 
-// Define the type for a navigation item, supporting nesting
 export interface NavItem {
   path: string;
   label: string;
   icon: string;
-  showOnHomepage?: boolean; // Show button on '/' homepage?
-  showInSidebar: boolean;  // Show in sidebar menu?
-  showInAppBar?: boolean;   // Show in top AppBar?
-  children?: NavItem[];  // Optional array for nested items
+  showOnHomepage?: boolean;
+  showInSidebar: boolean;
+  showInAppBar?: boolean;
+  children?: NavItem[];
 }
 
-// Define the navigation structure
 export const mainNavItems: NavItem[] = [
-  // --- Items primarily for MENUS (Sidebar/AppBar) ---
+  // --- Items for Menus/Routing ---
   {
     path: '/',
     label: 'Home',
     icon: 'Home',
     showOnHomepage: false,
-    showInSidebar: true,
-    showInAppBar: true,
+    showInSidebar: true, // Keep in Sidebar
+    showInAppBar: false, // Hide from AppBar
   },
   {
-    path: '#', // Non-navigable parent group for menus
+    path: '/info',
+    label: 'System Info',
+    icon: 'Info',
+    showOnHomepage: false,
+    showInSidebar: false, // Hide from Sidebar
+    showInAppBar: true,   // Show ONLY in AppBar
+  },
+  {
+    path: '#', // Modules Group Header (for Sidebar)
     label: 'Modules',
     icon: 'Category',
     showOnHomepage: false,
-    showInSidebar: true, // Show group in sidebar
+    showInSidebar: true, // Show group header in sidebar
     children: [
-      // Actual modules for menus go here
       {
-        path: '/info',
-        label: 'System Info',
-        icon: 'Info',
-        showOnHomepage: false, // Not on homepage grid
-        showInSidebar: true,   // Appears under 'Modules' in sidebar
+        path: '/gerador-quesitos',
+        label: 'Gerador Quesitos',
+        icon: 'Quiz',
+        showOnHomepage: false, // Will be shown via separate entry below
+        showInSidebar: true,   // Show under Modules in sidebar
         showInAppBar: false,
       },
-      {
-        path: '/ai-test',
-        label: 'AI Test',
-        icon: 'Science',
-        showOnHomepage: false, // Let's make this NOT show on homepage explicitly for now
-                              // We'll use the separate entries below for homepage buttons
-        showInSidebar: true,   // Appears under 'Modules' in sidebar
-        showInAppBar: false,
-      },
-      // Add future module links for MENUS here...
+      // Add future modules for sidebar menu here...
     ]
   },
-  // Example future "Settings" Group for Menus
-  // {
-  //   path: '#', label: 'Settings', icon: 'Settings', showInSidebar: true,
-  //   children: [ /* ... settings links ... */ ]
-  // },
-
-
-  // --- Items EXPLICITLY for HOMEPAGE BUTTONS ---
-  // Set showOnHomepage: true and others false for these
-  {
-    path: '/ai-test', // Link the AI Test button correctly
+  { // AI Test - Hidden completely
+    path: '/ai-test',
     label: 'AI Test',
     icon: 'Science',
-    showOnHomepage: true, // YES, show on homepage grid
-    showInSidebar: false, // NO, don't show in menus
-    showInAppBar: false,  // NO, don't show in menus
+    showOnHomepage: false,
+    showInSidebar: false,
+    showInAppBar: false,
   },
+
+  // --- Items EXPLICITLY for HOMEPAGE BUTTONS ---
   {
-    path: '/', // Links home for now, update path when module exists
+    path: '/gerador-quesitos', // Link to the actual module page
+    label: 'Gerador de Quesitos', // Label for homepage button
+    icon: 'Quiz',
+    showOnHomepage: true, // YES, show on homepage grid
+    showInSidebar: false, // NO, don't show in menus (already in group above)
+    showInAppBar: false,
+  },
+  // --- Restored 8 Placeholders for Homepage ---
+  {
+    path: '/', // Link home for now
     label: 'Análise de Documentação para Redação de Quesitos',
     icon: 'Article',
     showOnHomepage: true, showInSidebar: false, showInAppBar: false,

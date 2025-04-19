@@ -10,10 +10,10 @@ export const funnyHomepageTitles: string[] = [
   "Navegue com moderação:",
   "Descomplica, meu filho!",
   "Só sei que nada sei... sobre esses documentos.",
-  "Seu hub de 'resolver pepinos'.",
+  "Seu hub de 'resolver pepinos.",
+  "Oi, bb. Tava com saudades. Me usa:",
+  "Já escovou os dentes depois de tomar aquele café todinho?:",
   "Não vai subir ninguém!", // Tropa de Elite
-  "Houston, temos um problema.", // Apollo 13
-  "Elementar, meu caro Watson.", // Sherlock Holmes
   "Mostre-me os dados!", // Jerry Maguire adapted
   "Para o infinito... e além!", // Toy Story
   "Que os jogos comecem!", // Hunger Games / Saw

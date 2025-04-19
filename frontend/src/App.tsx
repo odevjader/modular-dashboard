@@ -2,7 +2,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import SystemInfoPage from './pages/SystemInfoPage';
-import AITestPage from './pages/AITestPage'; // ADDED: Import the new AI Test page
+import AITestPage from './pages/AITestPage';
+import PaginaGeradorQuesitos from './pages/PaginaGeradorQuesitos';
 import MainLayout from './layouts/MainLayout';
 
 function App() {
@@ -13,8 +14,9 @@ function App() {
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/info" element={<SystemInfoPage />} />
-          {/* ADDED: Route for AI Test Page */}
           <Route path="/ai-test" element={<AITestPage />} />
+          {/* ADDED: Route for Gerador Quesitos Page */}
+          <Route path="/gerador-quesitos" element={<PaginaGeradorQuesitos />} />
         </Route>
 
         {/* Routes without MainLayout (e.g., Login page) can go here if needed */}
