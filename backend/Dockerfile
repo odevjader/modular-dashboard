@@ -10,13 +10,14 @@ ENV LC_ALL C.UTF-8
 
 WORKDIR /app
 
-# Install System Dependencies (Needed for OCR etc.)
+# Install System Dependencies (including libpq5)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     tesseract-ocr \
     tesseract-ocr-por \
     poppler-utils \
     libmagic1 \
+    libpq5 \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -27,16 +28,15 @@ ENV PATH="/opt/venv/bin:$PATH"
 # Upgrade pip
 RUN pip install --upgrade pip
 
-# Install Python dependencies from requirements file
+# Install Python dependencies ONLY from requirements file
 COPY requirements.txt .
-RUN pip install -r requirements.txt # Using pip cache now
+RUN pip install -r requirements.txt --no-cache-dir # Using pip cache now
 
-# --- ADDED: Explicitly install pytest-asyncio ---
-# Try installing it separately to see if a clearer error appears
-RUN pip install pytest-asyncio
-# --- END Added explicit install ---
+# REMOVED Explicit installs below - rely on requirements.txt
+# RUN pip install alembic
+# RUN pip install psycopg2-binary
 
-# Copy application code into /app/app in the builder stage
+# Copy application code
 COPY ./app /app/app
 
 # --- Stage 2: Runtime ---
@@ -49,17 +49,18 @@ ENV LC_ALL C.UTF-8
 
 WORKDIR /app/app
 
-# Install Runtime System Dependencies
+# Install Runtime System Dependencies (including libpq5)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     tesseract-ocr \
     tesseract-ocr-por \
     poppler-utils \
     libmagic1 \
+    libpq5 \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy venv from builder stage (should now include pytest-asyncio if successful)
+# Copy venv from builder stage
 COPY --from=builder /opt/venv /opt/venv
 # Copy app code from builder stage
 COPY --from=builder /app/app /app/app
@@ -70,5 +71,5 @@ ENV PATH="/opt/venv/bin:$PATH"
 # Expose port 8000
 EXPOSE 8000
 
-# Run Uvicorn relative to the WORKDIR (/app/app)
+# Run Uvicorn
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

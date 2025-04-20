@@ -4,7 +4,7 @@ uvicorn[standard]>=0.20.0
 pydantic>=2.0.0
 pydantic-settings>=2.0.0
 python-dotenv>=1.0.0
-python-multipart # For FastAPI File Uploads
+python-multipart
 
 # AI / Langchain / Processing
 langchain
@@ -12,44 +12,15 @@ langchain-google-genai
 docling
 langchain-docling
 
+# Database
+sqlalchemy>=2.0
+asyncpg # Async driver (for app)
+psycopg2-binary # Sync driver (for Alembic reflection) - REVERTED
+alembic
+pgvector
+tenacity
+
 # Testing Dependencies
 pytest>=7.0.0
 httpx>=0.24.0
-pytest-asyncio # For async tests
-
-# Likely Transitive Dependencies (Keep unless known otherwise)
-# annotated-types
-# anyio
-# certifi
-# click
-# dnspython
-# email_validator
-# h11
-# httpcore
-# httptools
-# idna
-# iniconfig
-# itsdangerous
-# Jinja2
-# markdown-it-py
-# MarkupSafe
-# mdurl
-# orjson
-# packaging
-# pluggy
-# pydantic-extra-types
-# pydantic_core
-# Pygments
-# PyYAML
-# rich
-# rich-toolkit
-# shellingham
-# sniffio
-# starlette
-# typer
-# typing-inspection
-# typing_extensions
-# ujson
-# uvloop
-# watchfiles
-# websockets
+pytest-asyncio

@@ -1,29 +1,46 @@
-# docker-compose.yml (Frontend service commented out for local development)
-# Removed obsolete top-level 'version' key
+# docker-compose.yml
 
 services:
-  # Backend API Service (FastAPI)
   api:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    container_name: modular_dashboard_api
+    env_file:
+      - ./backend/.env # API loads variables from here
     ports:
       - "8000:8000"
     volumes:
       - ./backend/app:/app/app
-      - ./backend/tests:/app/app/tests
-    env_file:
-      - ./backend/.env
-    container_name: modular_dashboard_api
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
 
-  # Frontend Service (React + Nginx) - COMMENTED OUT FOR LOCAL DEV
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     # This would map host 5173 (or other) to container port 80 (Nginx) for production build serving
-  #     - "5173:80"
-  #   depends_on:
-  #     - api
-  #   container_name: modular_dashboard_frontend
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: modular_dashboard_db
+    # REMOVED explicit environment block with interpolation
+    # Environment variables will be loaded from the env_file below
+    env_file:
+      - ./backend/.env # DB service now relies solely on this file for POSTGRES_* vars
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      # Use $$ to escape $ for shell inside CMD-SHELL, reading from container's env populated by env_file
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-appuser} -d $${POSTGRES_DB:-appdb}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
