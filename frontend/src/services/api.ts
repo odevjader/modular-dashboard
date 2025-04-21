@@ -1,7 +1,7 @@
 // frontend/src/services/api.ts
 
 // Read the API base URL from environment variables populated by Vite
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'; // Includes /api prefix now
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 // --- Type Definitions ---
 
@@ -21,19 +21,30 @@ export interface AITestResponse {
     response: string;
 }
 
-// Gerador Quesitos Module - ADDED TYPES
+// Gerador Quesitos Module
 export interface RespostaQuesitos {
     quesitos_texto: string;
 }
 
+// Auth Module
+export interface LoginResponse {
+    access_token: string;
+    token_type: string;
+}
+export interface UserResponse {
+    id: number;
+    email: string;
+    role: string;
+}
 
 // --- Generic API Client (for JSON endpoints) ---
 async function apiClient<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
+    const token = localStorage.getItem('token');
 
     const defaultHeaders: HeadersInit = {
         'Content-Type': 'application/json',
-        // Add other default headers like Authorization if needed later
+        ...(token && { Authorization: `Bearer ${token}` }),
     };
 
     const config: RequestInit = {
@@ -76,31 +87,54 @@ export const postAITestPing = (payload: AITestInput): Promise<AITestResponse> =>
 
 /** Uploads PDF and inputs to generate quesitos. Uses FormData. */
 export const postGerarQuesitos = async (formData: FormData): Promise<RespostaQuesitos> => {
-    const url = `${API_BASE_URL}/gerador_quesitos/v1/gerar`; // Construct full URL
-
+    const url = `${API_BASE_URL}/gerador_quesitos/v1/gerar`;
     try {
-        // When using FormData, DO NOT set Content-Type header manually.
-        // The browser will set it correctly with the boundary.
         const response = await fetch(url, {
             method: 'POST',
             body: formData,
-            // No 'Content-Type': 'multipart/form-data' header here!
         });
-
         if (!response.ok) {
             let errorData;
             try { errorData = await response.json(); } catch (e) { /* Ignore */ }
             throw new Error(`API request failed: ${response.status} ${response.statusText}${errorData ? ` - ${JSON.stringify(errorData)}` : ''}`);
         }
-
-        // Assuming the response is JSON even though request was FormData
         return await response.json() as RespostaQuesitos;
-
     } catch (error) {
         console.error('Error in postGerarQuesitos:', error);
-        throw error; // Re-throw error for the component to handle
+        throw error;
     }
 };
 
+/** Logs in a user and returns a JWT token. */
+export const login = async (email: string, password: string): Promise<LoginResponse> => {
+    const url = `${API_BASE_URL}/auth/v1/login`;
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                username: email,
+                password,
+                grant_type: 'password',
+                client_id: 'string',
+                client_secret: 'string',
+            }),
+        });
+        if (!response.ok) {
+            let errorData;
+            try { errorData = await response.json(); } catch (e) { /* Ignore */ }
+            throw new Error(`Login failed: ${response.status} ${response.statusText}${errorData ? ` - ${JSON.stringify(errorData)}` : ''}`);
+        }
+        return await response.json() as LoginResponse;
+    } catch (error) {
+        console.error('Error in login:', error);
+        throw error;
+    }
+};
 
-// Add other specific API functions here later...
+/** Fetches the current user's information. */
+export const getCurrentUser = async (token: string): Promise<UserResponse> => {
+    return apiClient<UserResponse>('/auth/v1/users/me', {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+};
