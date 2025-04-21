@@ -25,21 +25,45 @@ O frontend interage com o seguinte endpoint no backend:
 * **Rota:** `/api/gerador_quesitos/v1/gerar`
 * **Descrição:** Recebe os arquivos PDF e os parâmetros do formulário, processa os documentos, interage com o modelo de IA selecionado e retorna os quesitos gerados.
 * **Autenticação:** (A ser definido/implementado - atualmente pode estar desprotegido ou dependerá do módulo Auth)
-* **Request Body (multipart/form-data):**
-    * `files`: Lista de `UploadFile` (Arquivos PDF enviados pelo usuário).
-    * `tipo_beneficio`: `str` (Valor selecionado no formulário).
-    * `profissao`: `str` (Valor selecionado no formulário).
-    * `(opcional) model_name`: `str` (Identificador do modelo IA a ser usado, ex: "gemini-pro").
-* **Response (Sucesso - HTTP 200):**
+* **Request Body (`multipart/form-data`):**
+    * `files`: Uma ou mais partes do formulário, cada uma contendo um arquivo PDF (`UploadFile`).
+    * `tipo_beneficio`: Uma parte do formulário contendo o valor string (ex: `"Auxílio-Doença"`).
+    * `profissao`: Uma parte do formulário contendo o valor string (ex: `"Motorista"`).
+    * `(opcional) model_name`: Uma parte do formulário contendo o valor string (ex: `"gemini-pro"`).
+
+* **Exemplo de Requisição (Conceitual):**
+    * Uma requisição `POST` para `/api/gerador_quesitos/v1/gerar` com o `Content-Type: multipart/form-data`. A requisição conteria:
+        * Uma ou mais partes chamadas `files`, cada uma com os dados binários de um arquivo PDF e seu nome/tipo.
+        * Uma parte chamada `tipo_beneficio` com o valor texto selecionado.
+        * Uma parte chamada `profissao` com o valor texto selecionado.
+        * Opcionalmente, uma parte `model_name` com o nome do modelo.
+    * Ferramentas como Postman ou código frontend (usando `FormData` com `Workspace`) podem construir essa requisição.
+
+* **Exemplo de Resposta (Sucesso - HTTP 200):**
     ```json
     {
-      "quesitos": "1. Quesito gerado pela IA...\n2. Outro quesito gerado..."
+      "quesitos": "1. Considerando a atividade habitual de Motorista, quais limitações funcionais apresentadas nos laudos médicos de fls. XX-YY impedem o exercício desta profissão?\n2. O quadro descrito no exame de imagem de fls. ZZ é compatível com o exercício da atividade de Motorista de forma contínua?\n3. ..."
     }
     ```
-* **Response (Erro):**
-    * `HTTP 400 Bad Request`: Erro na validação dos dados de entrada (ex: nenhum arquivo enviado, parâmetro faltando).
-    * `HTTP 422 Unprocessable Entity`: Erro na validação de tipos de dados (gerenciado pelo FastAPI/Pydantic).
-    * `HTTP 500 Internal Server Error`: Erro inesperado durante o processamento de PDF, chamada à API da IA, ou outra falha interna. O corpo da resposta pode conter detalhes do erro.
+
+* **Exemplo de Resposta (Erro de Validação - HTTP 422):** (Exemplo: `tipo_beneficio` não enviado)
+    ```json
+    {
+      "detail": [
+        {
+          "loc": [
+            "body",
+            "tipo_beneficio"
+          ],
+          "msg": "field required",
+          "type": "value_error.missing"
+        }
+      ]
+    }
+    ```
+* **Outras Respostas de Erro:**
+    * `HTTP 400 Bad Request`: Pode ocorrer se nenhum arquivo for enviado ou outra validação customizada falhar.
+    * `HTTP 500 Internal Server Error`: Para erros inesperados no processamento (PDF, OCR, IA).
 
 ## Fluxo Técnico (Backend)
 
@@ -49,7 +73,7 @@ Quando o endpoint `/api/gerador_quesitos/v1/gerar` é chamado, o backend executa
 2.  **Processamento de PDFs:**
     * O sistema itera sobre a lista de `UploadFile` recebida.
     * Para cada arquivo, utiliza a biblioteca `DoclingLoader` (integrada via `langchain-docling`) para carregar e extrair o conteúdo textual.
-    * `DoclingLoader` é configurado para usar OCR (via Tesseract, que precisa estar instalado no ambiente/container) para extrair texto de imagens dentro dos PDFs, se houver.
+    * `DoclingLoader` é configurado para usar OCR (via Tesseract, **cuja instalação/acesso precisa ser garantida e documentada - ver `docs/02_SETUP_DESENVOLVIMENTO.md`**) para extrair texto de imagens dentro dos PDFs, se houver.
     * O texto extraído de todos os PDFs válidos é concatenado em um único grande bloco de texto (contexto do caso).
     * *(**Nota:** Esta etapa é identificada como um potencial gargalo de performance).*
 3.  **Construção do Prompt para LLM:**
