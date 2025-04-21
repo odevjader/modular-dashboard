@@ -11,6 +11,15 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas em s
 * [Node.js](https://nodejs.org/): Versão 18 ou superior (inclui npm) para o desenvolvimento frontend.
 * (Recomendado) WSL 2 se estiver utilizando Windows, para melhor integração com Docker.
 
+### Dependências Externas Específicas
+
+* **Tesseract OCR:** Necessário para o funcionamento completo do módulo `gerador_quesitos` (processamento de PDFs com imagens via DoclingLoader).
+    * **Status:** *(Pendente de Clarificação)* É preciso documentar como o Tesseract está instalado e acessível para o container `api` do backend.
+    * **Verificar:**
+        * O Tesseract e seus pacotes de idioma (ex: `tesseract-ocr-por` para português) estão incluídos e configurados no `backend/Dockerfile`?
+        * Ou ele precisa ser instalado separadamente no sistema host (WSL) e o container `api` tem acesso a ele de alguma forma?
+        * Alguma variável de ambiente precisa ser configurada para indicar o caminho do Tesseract?
+
 ## Passos para Configuração
 
 1.  **Clonar o Repositório:**
@@ -21,32 +30,32 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas em s
     ```
 
 2.  **Configurar Variáveis de Ambiente (Backend):**
-    O backend FastAPI requer um arquivo `.env` para carregar configurações essenciais, como credenciais do banco de dados e chaves de API.
+    O backend FastAPI requer um arquivo `.env` para carregar configurações essenciais. Crie este arquivo em `backend/.env`.
 
-    * Navegue até a pasta `backend/`.
-    * Crie um arquivo chamado `.env` nesta pasta (`backend/.env`).
-    * Preencha o arquivo `backend/.env` com as variáveis necessárias. Consulte a classe `Settings` no arquivo `backend/app/core/config.py` para a lista completa de variáveis possíveis. As variáveis mínimas essenciais são:
+    * **Variáveis Obrigatórias Mínimas:** Para que a aplicação suba e os módulos principais (`gerador_quesitos`, `ai_test`, `auth`) funcionem, as seguintes variáveis **precisam** ser definidas no `backend/.env`:
+        * `DATABASE_URL`: String de conexão com o PostgreSQL.
+        * `SECRET_KEY`: Chave secreta para assinatura dos tokens JWT (use `openssl rand -hex 32` para gerar uma).
+        * `GOOGLE_API_KEY`: Chave para acesso à API do Google AI Studio (Gemini).
 
+    * *Exemplo `backend/.env`:*
         ```.env
-        # PostgreSQL Settings (Estes são os valores padrão definidos no docker-compose.yml)
-        # Certifique-se que correspondem ao serviço 'db' no compose.
+        # Obrigatório: Configuração do Banco de Dados (padrões do docker-compose.yml)
         DATABASE_URL=postgresql+asyncpg://appuser:password@db:5432/appdb
 
-        # JWT Settings
-        # Gere uma chave segura usando: openssl rand -hex 32
-        SECRET_KEY=coloque_aqui_sua_chave_secreta_muito_segura_gerada_com_openssl_rand_hex_32
+        # Obrigatório: Configuração JWT (gere com: openssl rand -hex 32)
+        SECRET_KEY=sua_chave_secreta_muito_segura_aqui
         ALGORITHM=HS256
-        ACCESS_TOKEN_EXPIRE_MINUTES=1440 # Expiração do token em minutos (1440 = 24 horas)
+        ACCESS_TOKEN_EXPIRE_MINUTES=1440 # 24 horas
 
-        # Google API Key
-        # Insira sua chave de API obtida do Google AI Studio (Makersuite) para usar o Gemini
+        # Obrigatório: Chave da API Google AI
         GOOGLE_API_KEY=sua_google_api_key_aqui
 
-        # Outras configurações podem ser adicionadas conforme necessário (veja config.py)
+        # Opcional: Outras configurações (ver backend/app/core/config.py para lista completa)
         # ENVIRONMENT=development
         # PROJECT_NAME="Modular Dashboard"
+        # ALLOWED_ORIGINS='["http://localhost:5173","http://127.0.0.1:5173"]' # Exemplo para CORS
         ```
-    * **Segurança:** Nunca comite o arquivo `.env` no Git. Ele já deve estar incluído no `.gitignore`.
+    * **Segurança:** Nunca comite o arquivo `.env` no Git. Ele já deve estar (ou ser adicionado) no `.gitignore`.
 
 3.  **Iniciar os Containers Docker:**
     A partir da raiz do projeto (`modular-dashboard/`), execute o Docker Compose para construir as imagens (se necessário) e iniciar os containers do backend (serviço `api`) e do banco de dados (serviço `db`).
@@ -58,7 +67,7 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas em s
     * Aguarde até que os containers estejam em execução e saudáveis. Você pode verificar com `docker-compose ps`.
 
 4.  **Aplicar Migrações do Banco de Dados (Alembic):**
-    Após o container `api` estar em execução, é recomendado aplicar as migrações do banco de dados para garantir que o schema esteja atualizado. Execute o comando `upgrade` do Alembic dentro do container `api`:
+    Após o container `api` estar em execução, aplique as migrações do banco de dados para garantir que o schema esteja atualizado. Execute o comando `upgrade` do Alembic dentro do container `api`:
     ```bash
     docker-compose exec api alembic upgrade head
     ```
@@ -87,4 +96,9 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas em s
     * **Backend API Docs (Swagger UI):** [http://localhost:8000/docs](http://localhost:8000/docs)
     * **Backend API Docs (ReDoc):** [http://localhost:8000/redoc](http://localhost:8000/redoc)
 
-Pronto! Agora você deve ter o ambiente de desenvolvimento do Modular Dashboard rodando localmente. Lembre-se que o backend está atualmente com um bug no login que precisa ser resolvido.
+## Parando o Ambiente
+
+Para parar os containers Docker (API e Banco de Dados) quando terminar de trabalhar, execute o seguinte comando na raiz do projeto:
+
+```bash
+docker-compose down
