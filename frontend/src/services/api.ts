@@ -35,6 +35,20 @@ export interface UserResponse {
     id: number;
     email: string;
     role: string;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}
+export interface UserCreateRequest {
+    email: string;
+    password: string;
+    role: string;
+}
+export interface UserUpdateRequest {
+    email?: string;
+    password?: string;
+    role?: string;
+    is_active?: boolean;
 }
 
 // --- Generic API Client (for JSON endpoints) ---
@@ -136,5 +150,33 @@ export const login = async (email: string, password: string): Promise<LoginRespo
 export const getCurrentUser = async (token: string): Promise<UserResponse> => {
     return apiClient<UserResponse>('/auth/v1/users/me', {
         headers: { Authorization: `Bearer ${token}` },
+    });
+};
+
+/** Fetches all users (admin only). */
+export const getUsers = async (): Promise<UserResponse[]> => {
+    return apiClient<UserResponse[]>('/auth/v1/admin/users');
+};
+
+/** Creates a new user (admin only). */
+export const createUser = async (user: UserCreateRequest): Promise<UserResponse> => {
+    return apiClient<UserResponse>('/auth/v1/admin/users', {
+        method: 'POST',
+        body: JSON.stringify(user),
+    });
+};
+
+/** Updates a user (admin only). */
+export const updateUser = async (userId: number, user: UserUpdateRequest): Promise<UserResponse> => {
+    return apiClient<UserResponse>(`/auth/v1/admin/users/${userId}`, {
+        method: 'PUT',
+        body: JSON.stringify(user),
+    });
+};
+
+/** Deletes a user (admin only). */
+export const deleteUser = async (userId: number): Promise<void> => {
+    return apiClient<void>(`/auth/v1/admin/users/${userId}`, {
+        method: 'DELETE',
     });
 };

@@ -7,6 +7,7 @@ import PaginaGeradorQuesitos from './pages/PaginaGeradorQuesitos';
 import MainLayout from './layouts/MainLayout';
 import { Login } from './components/Login';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import AdminUsers from './components/AdminUsers';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/info" element={<SystemInfoPage />} />
           <Route path="/ai-test" element={<AITestPage />} />
           <Route path="/gerador-quesitos" element={<PaginaGeradorQuesitos />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
         </Route>
 
         {/* Redirect root to login */}

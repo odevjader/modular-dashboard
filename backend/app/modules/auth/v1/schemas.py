@@ -23,13 +23,26 @@ class UserCreate(BaseModel):
             return v.lower()
         return v
 
+class UserUpdate(BaseModel):
+    email: Optional[EmailStr] = None
+    password: Optional[str] = None
+    role: Optional[UserRole] = None
+    is_active: Optional[bool] = None
+
+    @validator("role", pre=True)
+    def normalize_role(cls, v):
+        """Convert role to lowercase for case-insensitive input."""
+        if isinstance(v, str):
+            return v.lower()
+        return v
+
 class UserRead(BaseModel):
     id: int
     email: EmailStr
     role: UserRole
     is_active: bool
-    created_at: datetime  # Changed to datetime
-    updated_at: datetime  # Changed to datetime
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         from_attributes = True

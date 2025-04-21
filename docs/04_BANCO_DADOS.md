@@ -12,29 +12,27 @@ Este documento descreve a configuração do banco de dados, o schema das tabelas
 
 ## Schema Atual
 
-Atualmente, o banco de dados contém a seguinte tabela principal:
+Atualmente, o banco de dados contém a seguinte tabela principal, definida em `backend/app/models/user.py`:
 
 ### Tabela: `users`
 
 * **Propósito:** Armazena informações sobre os usuários registrados na plataforma, incluindo credenciais para login e seus níveis de permissão (roles).
-* **Definição do Modelo:** `backend/app/models/user.py`
-* **Colunas:**
+* **Definição do Modelo:** Classe `User` em `backend/app/models/user.py`
+* **Colunas (conforme `models/user.py`):**
 
-| Nome Coluna       | Tipo de Dados (PostgreSQL - aproximado) | Descrição                                                                 | Restrições/Notas                |
-| :---------------- | :-------------------------------------- | :------------------------------------------------------------------------ | :------------------------------ |
-| `id`              | `INTEGER` ou `UUID`                     | Identificador único para cada usuário.                                    | Chave Primária                  |
-| `email`           | `VARCHAR`                               | Endereço de e-mail do usuário, usado para login.                          | Único (UNIQUE), Indexado        |
-| `hashed_password` | `VARCHAR`                               | Senha do usuário armazenada de forma segura (hash usando Passlib/bcrypt). | Não Nulo                        |
-| `role`            | `VARCHAR` ou `ENUM`                     | Nível de permissão do usuário. Mapeado para o Enum `UserRole`.            | Não Nulo, Enum `UserRole`       |
-| `is_active`       | `BOOLEAN`                               | Indica se a conta do usuário está ativa (pode fazer login).               | Não Nulo, Padrão: `True`        |
-| `created_at`      | `TIMESTAMP WITH TIME ZONE`              | Data e hora de quando o usuário foi criado.                               | Não Nulo, Padrão: `now()`       |
-| `updated_at`      | `TIMESTAMP WITH TIME ZONE`              | Data e hora da última atualização do registro do usuário.                 | Não Nulo, Padrão: `now()`       |
+| Nome Coluna       | Tipo de Dados (SQLAlchemy / PostgreSQL) | Descrição                                                                 | Restrições/Notas Importantes                                                     |
+| :---------------- | :-------------------------------------- | :------------------------------------------------------------------------ | :------------------------------------------------------------------------------- |
+| `id`              | `Integer`                               | Identificador único numérico para cada usuário.                           | Chave Primária (primary_key=True)                                                |
+| `email`           | `String`                                | Endereço de e-mail do usuário, usado para login.                          | Único (unique=True), Indexado (index=True), Não Nulo (nullable=False)            |
+| `hashed_password` | `String`                                | Senha do usuário armazenada de forma segura (hash usando Passlib/bcrypt). | Não Nulo (nullable=False)                                                        |
+| `role`            | `Enum(UserRole)`                        | Nível de permissão do usuário, referenciando o Enum `UserRole`.           | Não Nulo (nullable=False), Padrão: `USER` (default=UserRole.USER)                |
+| `is_active`       | `Boolean`                               | Indica se a conta do usuário está ativa (pode fazer login).               | Não Nulo (nullable=False), Padrão no Servidor: `True` (server_default='true')    |
+| `created_at`      | `DateTime(timezone=True)`               | Data e hora de quando o usuário foi criado (com fuso horário).            | Não Nulo (nullable=False), Padrão no Servidor: `now()` (server_default=func.now()) |
+| `updated_at`      | `DateTime(timezone=True)`               | Data e hora da última atualização do registro (com fuso horário).         | Não Nulo (nullable=False), Padrão no Servidor: `now()`, Atualiza em UPDATE (onupdate=func.now()) |
 
 * **Enum `UserRole`:**
-    * Definido em: `backend/app/models/enums.py` (ou similar)
-    * Valores Possíveis:
-        * `ADMIN`: Administrador do sistema, com permissões elevadas.
-        * `USER`: Usuário padrão da plataforma.
+    * Definido em: `backend/app/models/enums.py`
+    * Valores Possíveis: `ADMIN`, `USER` (Confirmado no código).
 
 ### Outras Tabelas
 
