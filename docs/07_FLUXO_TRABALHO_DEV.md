@@ -28,6 +28,7 @@ O desenvolvimento se baseia na colaboração entre as seguintes entidades:
     * Lembra o usuário sobre boas práticas Git (pull/rebase, commits frequentes).
     * Auxilia na depuração de erros em nível de orquestração ou integração.
     * **NÃO executa comandos Git.**
+    * *Nota: Novas instâncias do Maestro IA são inicializadas usando o prompt definido em `../.prompts/01_ONBOARDING_MAESTRO.md`.*
 
 3.  **Agente IA Codificador (Instância separada):**
     * Recebe um prompt de tarefa detalhado do Maestro IA (via Usuário), incluindo o contexto do branch atual.
@@ -39,6 +40,7 @@ O desenvolvimento se baseia na colaboração entre as seguintes entidades:
     * Ao finalizar a tarefa (validada pelo Usuário), gera o **"Sumário Final para Orquestrador"** detalhado (conforme template definido) e entrega ao Usuário.
     * Pode sugerir mensagens de commit para suas próprias alterações de código (a serem usadas pelo Usuário no feature branch).
     * **NÃO executa comandos Git.**
+    * *Nota: Novas instâncias deste agente são contextualizadas usando o prompt definido em `../.prompts/02_ONBOARDING_CODER.md`.*
 
 4.  **Roo (Agente/Ferramenta Auxiliar):**
     * Ponte segura entre os prompts gerados pelas IAs e o filesystem local do Usuário.
@@ -52,7 +54,7 @@ Trabalhar com múltiplos humanos (e seus times de IA) no mesmo projeto exige uma
 **Princípios:**
 
 * **Isolamento:** O trabalho em cada nova funcionalidade, correção ou tarefa significativa é feito em um branch separado.
-* **Atualização Contínua:** Mantenha seu branch atualizado com a base principal (`main`) para detectar e resolver conflitos cedo.
+* **Atualização Contínua:** Mantenha seu branch atualizado com a base principal (`main`) para detectar e resolve conflitos cedo.
 * **Revisão:** Integre o trabalho de volta à branch principal apenas após revisão (via Pull Request).
 * **`main` Estável:** A branch `main` deve sempre refletir um estado estável e funcional do projeto.
 
@@ -76,37 +78,27 @@ Trabalhar com múltiplos humanos (e seus times de IA) no mesmo projeto exige uma
 2.  **Desenvolver no Feature Branch:**
     * Siga o "Fluxo de Interação Típico" para executar a tarefa com seus AIs.
     * **Faça Commits Frequentes e Atômicos:** Após cada passo lógico ou funcionalidade mínima concluída (conforme sugerido pelo Maestro IA ou AI Coder):
-        * Adicione os arquivos relevantes ao stage: `git add <arquivo_modificado_1> <arquivo_novo_2>` ou `git add .` (use com cuidado para adicionar apenas o relacionado ao commit).
+        * Adicione os arquivos relevantes ao stage: `git add <arquivos_relevantes>`
         * Faça o commit com uma mensagem clara seguindo o padrão Conventional Commits: `git commit -m "tipo(escopo): Mensagem clara"` (Coder/Maestro podem sugerir a mensagem).
-    * **Mantenha seu Branch Atualizado (Pull com Rebase):** Periodicamente (ex: diariamente, ou antes de fazer um push significativo), atualize seu branch com as últimas mudanças da `main` para evitar grandes conflitos depois:
+    * **Mantenha seu Branch Atualizado (Pull com Rebase):** Periodicamente:
         ```bash
-        # Garanta que sua main local está atualizada (opcional se já fez no início)
-        # git checkout main
-        # git pull origin main
-        # Volte para seu branch
-        git checkout <nome-do-seu-branch>
-
-        # Tente aplicar seus commits sobre os últimos da main
+        # Antes de fazer rebase, garanta que não há mudanças locais não commitadas no seu branch
         git pull origin main --rebase
         ```
         * **Resolva Conflitos:** Se o `rebase` encontrar conflitos, o Git pausará. Edite os arquivos conflitantes para resolver as diferenças, use `git add <arquivo_resolvido>` para marcar como resolvido, e continue o rebase com `git rebase --continue`. Se tiver problemas, `git rebase --abort` cancela. Peça ajuda se necessário.
-    * **Compartilhe seu Progresso (Push):** Envie seu branch local para o repositório remoto no GitHub regularmente para backup e para permitir que outros (ou o Maestro IA, conceitualmente) vejam seu progresso:
+    * **Compartilhe seu Progresso (Push):** Regularmente:
         ```bash
-        # Na primeira vez para um novo branch:
-        git push -u origin <nome-do-seu-branch>
-        # Nas vezes seguintes:
         git push origin <nome-do-seu-branch>
-        # ou apenas 'git push' se o upstream já estiver configurado
         ```
-        * Se precisar que o Maestro IA revise algo específico no código via GitHub, informe o nome do branch e o que deve ser revisado.
+        * Informe o Maestro IA se precisar de revisão do código no GitHub.
 
 3.  **Concluindo a Tarefa e Integrando:**
-    * **Finalize e Atualize:** Garanta que a tarefa está completa, testada (por você e pelo Coder), e que seu branch está atualizado com `main` (`git pull origin main --rebase`).
+    * **Finalize e Atualize:** Garanta que a tarefa está completa, testada, e o branch atualizado com `main` (`git pull origin main --rebase`).
     * **Push Final:** Envie a versão final do seu branch: `git push origin <nome-do-seu-branch>`.
     * **Abra um Pull Request (PR):** No GitHub (ou ferramenta similar), crie um novo Pull Request comparando seu `<nome-do-seu-branch>` com a branch `main`.
         * Escreva uma descrição clara no PR explicando o que foi feito, por que, e como testar. Pode incluir um link para a tarefa no quadro de coordenação.
     * **Revisão do PR:** Notifique o revisor designado (outro humano). O revisor irá analisar o código, a documentação e os testes. Comentários e solicitações de mudança podem ser feitos diretamente no PR. Faça os ajustes necessários no seu branch e envie-os (`git commit`, `git push`).
-    * **Merge:** Após o PR ser aprovado e passar por quaisquer verificações automáticas (CI), ele pode ser mergeado na branch `main` (geralmente através da própria interface do PR no GitHub, que pode oferecer opções como "Squash and merge" ou "Rebase and merge").
+    * **Merge:** Após o PR ser aprovado e passar por quaisquer verificações automáticas (CI), ele pode ser mergeado na branch `main` (geralmente através da própria interface do PR no GitHub).
     * **Limpeza (Opcional):** Após o merge ser confirmado na `main`, você pode apagar seu branch local (`git checkout main && git branch -d <nome-do-seu-branch>`) e o branch remoto (`git push origin --delete <nome-do-seu-branch>`).
 
 ## Iniciando uma Sessão de Trabalho
@@ -115,7 +107,7 @@ Para garantir que o **Maestro IA** tenha o contexto necessário:
 
 1.  **Sinalização:** Usuário informa ao Maestro IA o início da sessão.
 2.  **Atualização e Branch:** Usuário garante repositório atualizado (`git checkout main && git pull origin main`) e entra no **feature branch** correto para a tarefa da sessão (`git checkout <meu-feature-branch>`). Se necessário, cria o branch (`git checkout -b ...`). Informa ao Maestro IA qual branch está ativo.
-3.  **Contextualização:** Usuário direciona o Maestro IA para revisar docs chave (`README` Status, `ROADMAP`, Arquitetura, este Fluxo, Sumário anterior, etc.) conforme necessário para a tarefa.
+3.  **Contextualização:** Usuário direciona o Maestro IA para revisar docs chave (`README` Status, `ROADMAP`, Arquitetura, este Fluxo, Sumário anterior, etc.) conforme necessário para a tarefa. O Maestro sabe onde encontrar os prompts de onboarding (`../.prompts/...`) através da descrição dos papéis acima, se precisar relembrar um Humano ou instruir sobre um Coder.
 4.  **Definição de Objetivo:** Usuário define a(s) meta(s) da sessão.
 5.  **Confirmação AI:** Maestro IA confirma entendimento.
 
@@ -137,7 +129,7 @@ Ao concluir uma sessão (pausando ou finalizando a tarefa no branch):
 3.  **Sumário Geral da Sessão (Maestro IA):** Eu forneço um resumo do que foi feito.
 4.  **Atualização de Status (Maestro IA Gera, User Aplica/Verifica):** Eu gero texto para `README`/`ROADMAP`. Você aplica/verifica (e commita no branch).
 5.  **Sugestão de Commit (Maestro IA Gera):** Eu sugiro a mensagem para o(s) último(s) commit(s) da sessão no feature branch.
-6.  **Versionamento (User Executa):** Usuário executa `git add .`, `git commit -m "..."` (usando sugestão ou própria) e `git push origin <nome-do-seu-branch>` para salvar o trabalho da sessão no remoto. O merge para `main` via PR acontece separadamente quando a feature estiver pronta.
+6.  **Versionamento (User Executa):** Usuário executa `git add .` (ou arquivos específicos), `git commit -m "..."` (usando sugestão ou própria) e `git push origin <nome-do-seu-branch>` para salvar o trabalho da sessão no remoto. O merge para `main` via PR acontece separadamente.
 
 ## Detalhes da Ferramenta Roo
 
