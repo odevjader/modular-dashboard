@@ -8,10 +8,12 @@ A pasta raiz do projeto (`modular-dashboard/`) contém os seguintes diretórios 
 
 * **`backend/`**: Contém todo o código-fonte da API Backend (FastAPI).
 * **`frontend/`**: Contém todo o código-fonte da aplicação Frontend (React SPA).
-* **`docs/`**: Contém a documentação do projeto (como este arquivo).
+* **`docs/`**: Contém a documentação geral do projeto (como este arquivo) e a subpasta `modules/`.
+* **`.prompts/`**: Contém templates de prompts reutilizáveis para interações específicas com IAs (ex: onboarding). **Importante:** O conteúdo desta pasta tem uso restrito e não deve ser usado como contexto geral do projeto (ver `.prompts/README.md`).
 * **`docker-compose.yml`**: Arquivo de configuração do Docker Compose para orquestrar os serviços `api` (backend) e `db` (banco de dados) no ambiente de desenvolvimento.
 * **`.gitignore`**: Especifica arquivos e pastas a serem ignorados pelo Git.
 * **`README.md`**: Ponto de entrada da documentação, com visão geral do projeto.
+* **`ROADMAP.md`**: Descreve as fases e objetivos de desenvolvimento planejados.
 * *(Outros arquivos de configuração podem existir na raiz, como `.editorconfig`, `.prettierrc`, etc.)*
 
 ## Estrutura do Backend (`backend/`)
@@ -65,4 +67,8 @@ A pasta `frontend/` contém a aplicação React e seus arquivos relacionados, ge
 
 ## Estrutura da Documentação (`docs/`)
 
-Esta pasta (`docs/`) é destinada a conter toda a documentação do projeto (incluindo este arquivo) em formato Markdown. A organização interna pode seguir a numeração dos arquivos (00, 01, 02...) ou ser dividida em subpastas temáticas conforme a documentação crescer.
+Esta pasta (`docs/`) contém todos os arquivos de documentação **geral** do projeto em formato Markdown (numerados `00` a `NN`, ex: `00_VISAO_GERAL.md`, `01_ARQUITETURA.md`) e a subpasta `modules/`.
+
+* **`modules/`**: Contém a documentação **específica de cada módulo funcional** da aplicação (ex: `01_GERADOR_QUESITOS.md`, `02_AUTH_USER.md`), com numeração própria iniciada em `01`.
+
+*(A pasta `.prompts/` na raiz contém templates de prompts e não é considerada documentação de leitura geral.)*
