@@ -1,63 +1,94 @@
-# backend/alembic/env.py (Standard Synchronous Version - Claude Suggestion)
-from logging.config import fileConfig
+# backend/app/alembic/env.py
 import os
 import sys
+from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config # Use sync engine_from_config
+from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
 
-# --- Add project root to sys.path ---
-sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '..')))
-# --- End Path Addition ---
+# --- Add application root to PYTHONPATH ---
+# This allows env.py to import 'app' modules
+# Assumes env.py is in /app/app/alembic
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+# -----------------------------------------
 
+# this is the Alembic Config object, which provides
+# access to the values within the .ini file in use.
 config = context.config
 
+# Interpret the config file for Python logging.
+# This line reads the loggers section of your alembic.ini file.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
-from core.config import logger # Use logger from core config
 
-# --- Import Base and models ---
+# Import Base and models for autogenerate support
 try:
-    from core.database import Base
-    from models.user import User # Ensure models are imported
+    from app.core.database import Base
+    from app.models.user import User
+    from app.models.enums import UserRole
+    
+    # Set target_metadata to Base.metadata for autogenerate
     target_metadata = Base.metadata
-    logger.info("--- Successfully imported Base and User model in env.py ---")
+    print("Successfully imported models and set target_metadata")
 except ImportError as e:
-    logger.error(f"ERROR: Could not import Base or models in env.py: {e}")
+    print(f"ERROR: Could not import models: {e}")
     target_metadata = None
 
-# Debug: Print the URL being read from alembic.ini
-db_url_read = config.get_main_option('sqlalchemy.url')
-logger.info(f"SQLAlchemy URL read from alembic.ini: {db_url_read[:db_url_read.find('@')] if db_url_read and '@' in db_url_read else db_url_read}") # Log safely
+# other values from the config, defined by the needs of env.py,
+# can be acquired:
+# my_important_option = config.get_main_option("my_important_option")
+# ... etc.
+
 
 def run_migrations_offline() -> None:
-    """Run migrations in 'offline' mode."""
+    """Run migrations in 'offline' mode.
+
+    This configures the context with just a URL
+    and not an Engine, though an Engine is acceptable
+    here as well.  By skipping the Engine creation
+    we don't even need a DBAPI to be available.
+
+    Calls to context.execute() here emit the given string to the
+    script output.
+
+    """
     url = config.get_main_option("sqlalchemy.url")
-    if not url: logger.error("sqlalchemy.url not configured"); return
-    context.configure(url=url, target_metadata=target_metadata, literal_binds=True)
-    with context.begin_transaction(): context.run_migrations()
+    context.configure(
+        url=url,
+        target_metadata=target_metadata,
+        literal_binds=True,
+        dialect_opts={"paramstyle": "named"},
+    )
+
+    with context.begin_transaction():
+        context.run_migrations()
+
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode (Standard Synchronous version)."""
-    try:
-        connectable = engine_from_config(
-            config.get_section(config.config_ini_section, {}),
-            prefix="sqlalchemy.",
-            poolclass=pool.NullPool,
-        )
-    except Exception as e:
-         logger.error(f"Error creating engine with engine_from_config: {e}", exc_info=True)
-         raise
+    """Run migrations in 'online' mode.
+
+    In this scenario we need to create an Engine
+    and associate a connection with the context.
+
+    """
+    connectable = engine_from_config(
+        config.get_section(config.config_ini_section),
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
+    )
 
     with connectable.connect() as connection:
-        logger.info("Successfully connected using engine_from_config.")
-        context.configure(connection=connection, target_metadata=target_metadata)
-        with context.begin_transaction():
-            logger.info("Beginning transaction and running migrations...")
-            context.run_migrations()
-        logger.info("Migrations run complete (within online context).")
+        context.configure(
+            connection=connection, target_metadata=target_metadata
+        )
 
-if context.is_offline_mode(): run_migrations_offline()
-else: run_migrations_online()
+        with context.begin_transaction():
+            context.run_migrations()
+
+
+if context.is_offline_mode():
+    run_migrations_offline()
+else:
+    run_migrations_online()

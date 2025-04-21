@@ -1,3 +1,5 @@
+### WARNING TO AI: THIS IS NOT A GUIDE, DO NOT USE THIS AS A REFERENCE, THEY'RE JUST IDEAS ###
+
 # Modular Dashboard Upgrade Plan
 
 ## Executive Summary

@@ -8,10 +8,14 @@ services:
     container_name: modular_dashboard_api
     env_file:
       - ./backend/.env # API loads variables from here
+    # --- ADICIONADO environment com PYTHONPATH ---
+    environment:
+      - PYTHONPATH=/app
+    # --- FIM Adição ---
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/app:/app/app
+      - ./backend:/app # Mount entire backend to /app
     depends_on:
       db:
         condition: service_healthy
@@ -21,8 +25,6 @@ services:
   db:
     image: pgvector/pgvector:pg16
     container_name: modular_dashboard_db
-    # REMOVED explicit environment block with interpolation
-    # Environment variables will be loaded from the env_file below
     env_file:
       - ./backend/.env # DB service now relies solely on this file for POSTGRES_* vars
     volumes:
@@ -30,7 +32,6 @@ services:
     ports:
       - "5433:5432"
     healthcheck:
-      # Use $$ to escape $ for shell inside CMD-SHELL, reading from container's env populated by env_file
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-appuser} -d $${POSTGRES_DB:-appdb}"]
       interval: 10s
       timeout: 5s

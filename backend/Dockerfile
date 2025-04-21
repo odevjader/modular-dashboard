@@ -10,7 +10,7 @@ ENV LC_ALL C.UTF-8
 
 WORKDIR /app
 
-# Install System Dependencies (including libpq5)
+# Install System Dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     tesseract-ocr \
@@ -28,15 +28,11 @@ ENV PATH="/opt/venv/bin:$PATH"
 # Upgrade pip
 RUN pip install --upgrade pip
 
-# Install Python dependencies ONLY from requirements file
+# Install Python dependencies
 COPY requirements.txt .
-RUN pip install -r requirements.txt --no-cache-dir # Using pip cache now
+RUN pip install -r requirements.txt --no-cache-dir # Considere remover --no-cache-dir se o build ainda estiver lento
 
-# REMOVED Explicit installs below - rely on requirements.txt
-# RUN pip install alembic
-# RUN pip install psycopg2-binary
-
-# Copy application code
+# Copy application code into /app/app relative to WORKDIR /app
 COPY ./app /app/app
 
 # --- Stage 2: Runtime ---
@@ -47,9 +43,10 @@ ENV PYTHONUNBUFFERED 1
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 
-WORKDIR /app/app
+# --- WORKDIR MODIFICADO ---
+WORKDIR /app # Define /app como diretório base
 
-# Install Runtime System Dependencies (including libpq5)
+# Install Runtime System Dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     tesseract-ocr \
@@ -62,14 +59,15 @@ RUN apt-get update && \
 
 # Copy venv from builder stage
 COPY --from=builder /opt/venv /opt/venv
-# Copy app code from builder stage
+# Copy app code from builder stage (source /app/app, dest /app/app)
+# O código da aplicação reside em /app/app
 COPY --from=builder /app/app /app/app
 
 # Set path to use venv python
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Expose port 8000
 EXPOSE 8000
 
-# Run Uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# --- CMD MODIFICADO ---
+# Uvicorn agora executa a partir de /app e procura 'main:app' dentro do diretório 'app'
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

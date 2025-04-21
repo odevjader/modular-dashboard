@@ -1,6 +1,6 @@
 # backend/app/modules/gerador_quesitos/v1/endpoints.py
 from pathlib import Path
-from typing import List, Optional # Import Optional
+from typing import List, Optional
 from fastapi import (
     APIRouter,
     HTTPException,
@@ -11,11 +11,13 @@ from fastapi import (
 )
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage
-from langchain_core.language_models.chat_models import BaseChatModel # For type hinting
+from langchain_core.language_models.chat_models import BaseChatModel
 
-from core.config import settings, logger
-from .esquemas import RespostaQuesitos
-from utils.pdf_processor import processar_pdfs_upload
+# --- IMPORTS CORRIGIDOS ---
+from app.core.config import settings, logger
+from app.utils.pdf_processor import processar_pdfs_upload # Caminho absoluto
+# --- FIM IMPORTS CORRIGIDOS ---
+from .esquemas import RespostaQuesitos # Relativo ok
 
 router = APIRouter()
 
@@ -39,7 +41,6 @@ else:
 prompt_template_string = ""
 prompt_file_path = Path(__file__).parent / "prompts" / "gerar_quesitos_prompt.txt"
 try:
-    # Ensure prompt file exists and load it
     if not prompt_file_path.is_file():
         raise FileNotFoundError(f"Prompt template file missing at {prompt_file_path}")
     with open(prompt_file_path, "r", encoding="utf-8") as f:
@@ -47,7 +48,6 @@ try:
     logger.info(f"Successfully loaded prompt template from {prompt_file_path}")
 except Exception as e:
     logger.error(f"CRITICAL: Failed to load prompt template on startup: {e}", exc_info=True)
-    # If prompt loading fails critically, set it to empty to cause endpoint failure
     prompt_template_string = ""
 
 
@@ -56,13 +56,12 @@ except Exception as e:
     "/gerar",
     response_model=RespostaQuesitos,
     summary="Gera quesitos periciais a partir de múltiplos PDFs e informações do caso, com seleção de modelo.",
-    tags=["Gerador Quesitos v1"],
+    tags=["Gerador Quesitos"], # Tag simplificada
 )
 async def gerar_quesitos(
     files: List[UploadFile] = File(..., description="Um ou mais documentos PDF para análise."),
     beneficio: str = Form(..., description="Benefício previdenciário pretendido."),
     profissao: str = Form(..., description="Profissão do requerente."),
-    # Add model name from form data
     modelo_nome: str = Form(..., description="Nome do modelo de IA a ser usado ou '<Modelo Padrão>."),
 ):
     """
@@ -70,8 +69,8 @@ async def gerar_quesitos(
     chama o modelo Gemini selecionado (ou padrão) via Langchain, e retorna os quesitos gerados.
     """
     if not prompt_template_string:
-         logger.error("Prompt template not loaded during startup.")
-         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno: Template de prompt não disponível.")
+          logger.error("Prompt template not loaded during startup.")
+          raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno: Template de prompt não disponível.")
     if not files:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Nenhum arquivo PDF enviado.")
 
@@ -87,7 +86,6 @@ async def gerar_quesitos(
         selected_model_display_name = default_model_name
     else:
         logger.info(f"Attempting to use specifically requested LLM model: {modelo_nome}")
-        # Initialize dynamically - less efficient, consider caching later
         if not settings.GOOGLE_API_KEY:
              logger.error("Cannot initialize specific model: GOOGLE_API_KEY not found.")
              raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Serviço de IA não configurado (chave API ausente).")
@@ -105,7 +103,6 @@ async def gerar_quesitos(
                 detail=f"Não foi possível inicializar o modelo de IA solicitado: '{modelo_nome}'. Verifique se o nome está correto e disponível."
             )
 
-    # Final check if we have a usable LLM instance
     if not llm_to_use:
         logger.error("LLM instance is unavailable (Default failed and no specific model requested/initialized).")
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Serviço de IA indisponível.")
@@ -118,8 +115,8 @@ async def gerar_quesitos(
         if not texto_extraido_combinado:
              logger.warning("PDF processing utility returned no text.")
              raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Não foi possível extrair conteúdo válido dos PDFs fornecidos.",
+                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                 detail="Não foi possível extrair conteúdo válido dos PDFs fornecidos.",
              )
         logger.info(f"PDF processing complete. Total text length: {len(texto_extraido_combinado)}")
 
@@ -133,7 +130,7 @@ async def gerar_quesitos(
         # --- Call LLM ---
         message = HumanMessage(content=final_prompt_text)
         logger.info(f"Sending request to Gemini model '{selected_model_display_name}' via Langchain...")
-        ai_message = await llm_to_use.ainvoke([message]) # Use the selected LLM instance
+        ai_message = await llm_to_use.ainvoke([message])
         texto_resposta = ai_message.content
         logger.info(f"Received AI response snippet: '{texto_resposta[:100]}...'")
 
@@ -141,11 +138,10 @@ async def gerar_quesitos(
         return RespostaQuesitos(quesitos_texto=texto_resposta)
 
     except HTTPException:
-         raise
+        raise
     except Exception as e:
         logger.error(f"Unhandled error during quesitos generation: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Erro inesperado ao gerar quesitos: {str(e)}",
         )
-    # File closing handled in utility

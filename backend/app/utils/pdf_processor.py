@@ -5,7 +5,9 @@ from typing import List
 from fastapi import UploadFile
 from langchain_docling import DoclingLoader
 
-from core.config import logger # Import logger from core config
+# --- IMPORT CORRIGIDO ---
+from app.core.config import logger # Import logger using absolute path from app package
+# --- FIM IMPORT CORRIGIDO ---
 
 async def processar_pdfs_upload(files: List[UploadFile]) -> str:
     """
@@ -17,24 +19,25 @@ async def processar_pdfs_upload(files: List[UploadFile]) -> str:
 
     logger.info(f"Starting processing for {len(files)} uploaded file(s).")
 
-    # Use a main try block to ensure final cleanup happens
     try:
         for file in files:
-            # Ensure file handle is closed even if skipped or error occurs during its processing
             try:
                 if file.content_type != "application/pdf":
                     logger.warning(f"Skipping non-PDF file: {file.filename} ({file.content_type})")
-                    continue # Go to next file in the loop
+                    continue
 
                 temp_pdf_path = None
-                # Inner try for processing steps for this specific file
                 try:
                     # Create a temporary file
+                    # Ensure tempfile uses await if needed, check library specific reqs
+                    # Using standard tempfile which is sync I/O, might block event loop slightly
+                    # but often acceptable for temp file creation/writing compared to network I/O.
+                    # Consider threads or async file libraries if this becomes a bottleneck.
                     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
                         content = await file.read()
                         if not content:
                             logger.warning(f"Skipping empty file: {file.filename}")
-                            continue # Skip to the finally block for this file
+                            continue
 
                         temp_pdf.write(content)
                         temp_pdf_path = temp_pdf.name
@@ -43,8 +46,11 @@ async def processar_pdfs_upload(files: List[UploadFile]) -> str:
 
                     # Use DoclingLoader on the temporary file path
                     logger.debug(f"Processing PDF with DoclingLoader: {temp_pdf_path}")
+                    # Assuming DoclingLoader.load() is synchronous I/O bound
+                    # Run potentially blocking I/O in a thread pool if it causes issues
+                    # For now, calling directly. Consider asyncio.to_thread if needed.
                     loader = DoclingLoader(file_path=temp_pdf_path)
-                    docs = loader.load()
+                    docs = loader.load() # This might block!
                     logger.debug(f"DoclingLoader finished. Found {len(docs)} sections for {file.filename}.")
 
                     if docs:
@@ -62,22 +68,21 @@ async def processar_pdfs_upload(files: List[UploadFile]) -> str:
                     # Continue to next file after logging error
 
             finally:
-                # --- MOVED file.close() here ---
                 # Ensure UploadFile is closed after processing attempt or skip
                 if file:
                     await file.close()
                     logger.debug(f"Closed UploadFile handle for: {file.filename}")
 
-        # Log the full combined text at INFO level for debugging
         if combined_pdf_text.strip():
-             logger.info(f"Texto completo extraído de {len(files)} arquivo(s) processados:\n{combined_pdf_text}")
+              logger.info(f"Texto completo extraído de {len(files)} arquivo(s) processados.")
+              # logger.debug(f"Full text extracted:\n{combined_pdf_text}") # Optional full log
         else:
-             logger.warning("Nenhum texto foi extraído dos arquivos PDF fornecidos.")
+              logger.warning("Nenhum texto foi extraído dos arquivos PDF fornecidos.")
 
         return combined_pdf_text.strip()
 
     finally:
-        # Clean up all temporary files created during this function call
+        # Clean up all temporary files created
         logger.debug(f"Cleaning up {len(temp_file_paths)} temporary file(s)...")
         for path in temp_file_paths:
             if path and os.path.exists(path):

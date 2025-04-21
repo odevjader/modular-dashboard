@@ -1,7 +1,9 @@
 # backend/app/core/database.py
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import declarative_base, DeclarativeBase
-from core.config import settings, logger # Import settings and logger
+# --- IMPORT CORRIGIDO ---
+from .config import settings, logger # Import settings and logger usando ponto (.)
+# --- FIM IMPORT CORRIGIDO ---
 from typing import AsyncGenerator
 
 # Use the ASYNC Database URL from settings for the application engine
@@ -47,9 +49,7 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """
     if async_session_local is None:
         logger.error("Database session factory (async_session_local) is not configured. Cannot get DB session.")
-        # Raising error might be better than yielding None if DB is critical
         raise RuntimeError("Database session factory is not available.")
-        # yield None # Yielding None will likely cause AttributeError in endpoint
 
     # Create a session for the request
     async with async_session_local() as session:
@@ -57,7 +57,6 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
         try:
             yield session
         except Exception:
-            # Rollback in case of exception during request handling
             logger.exception("Exception during database session scope, rolling back.")
             await session.rollback()
             raise
