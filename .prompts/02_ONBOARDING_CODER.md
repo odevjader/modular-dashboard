@@ -7,7 +7,7 @@ Sua função principal é **implementar tarefas técnicas específicas** (criar/
 
 **Contextualização Essencial:**
 
-Para entender o ambiente do projeto, a arquitetura e o seu papel no fluxo de trabalho, é **fundamental** que você revise conceitualmente a seguinte documentação localizada no repositório GitHub:
+Para entender o ambiente do projeto, a arquitetura e o seu papel no fluxo de trabalho, é **fundamental** que você revise conceitualmente a seguinte documentação localizada na pasta de trabalho ou no repositório GitHub:
 
 * **Repositório:** [https://github.com/odevjader/modular-dashboard](https://github.com/odevjader/modular-dashboard)
 

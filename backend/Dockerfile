@@ -1,73 +1,57 @@
-# backend/Dockerfile
+# Use an official Python runtime as a parent image
+FROM python:3.11-slim AS base
 
-# --- Stage 1: Builder ---
-FROM python:3.12-slim as builder
-
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-ENV LANG C.UTF-8
-ENV LC_ALL C.UTF-8
-
+# --- Configurações Iniciais ---
 WORKDIR /app
-
-# Install System Dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    tesseract-ocr \
-    tesseract-ocr-por \
-    poppler-utils \
-    libmagic1 \
-    libpq5 \
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# Create and activate venv
-RUN python -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-
-# Upgrade pip
-RUN pip install --upgrade pip
-
-# Install Python dependencies
-COPY requirements.txt .
-RUN pip install -r requirements.txt --no-cache-dir # Considere remover --no-cache-dir se o build ainda estiver lento
-
-# Copy application code into /app/app relative to WORKDIR /app
-COPY ./app /app/app
-
-# --- Stage 2: Runtime ---
-FROM python:3.12-slim as runtime
-
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 
-# --- WORKDIR MODIFICADO ---
-WORKDIR /app # Define /app como diretório base
+# --- Instalação de Dependências de Sistema ---
+# Instalar dependências de sistema em uma camada separada para melhor cache
+# Atualizar listas de pacotes, instalar dependências de build/runtime e limpar
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    # Dependências de build/runtime (ex: psycopg2, outras libs C)
+    build-essential \
+    libpq-dev \
+    # ---- DEPENDÊNCIAS REMOVIDAS (Fase 1 Refactor) ----
+    # OCR (Tesseract) - Não mais necessário pelo Core API
+    # tesseract-ocr tesseract-ocr-por \
+    # -------------------------------------------------
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Runtime System Dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    tesseract-ocr \
-    tesseract-ocr-por \
-    poppler-utils \
-    libmagic1 \
-    libpq5 \
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# --- Instalação de Dependências Python ---
+# Copiar apenas o requirements.txt primeiro para aproveitar o cache do Docker
+COPY ./requirements.txt /app/requirements.txt
+# Instalar dependências Python
+# Usar --no-cache-dir para reduzir tamanho; --upgrade pip é boa prática
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Copy venv from builder stage
-COPY --from=builder /opt/venv /opt/venv
-# Copy app code from builder stage (source /app/app, dest /app/app)
-# O código da aplicação reside em /app/app
-COPY --from=builder /app/app /app/app
+# --- Copiar Código da Aplicação ---
+# Copiar o restante do código da aplicação
+# Como estamos rodando como root, não precisamos de chown aqui.
+COPY . /app/
 
-# Set path to use venv python
-ENV PATH="/opt/venv/bin:$PATH"
+# --- Configurações Finais ---
+# (Não é necessário USER, pois continuaremos como root)
 
+# Expor a porta configurada
 EXPOSE 8000
 
-# --- CMD MODIFICADO ---
-# Uvicorn agora executa a partir de /app e procura 'main:app' dentro do diretório 'app'
+# Comando para rodar a aplicação
+# Usar variáveis de ambiente definidas anteriormente
+# Remover --reload para ambientes de staging/produção
+
+#CMD uvicorn ${MODULE_NAME}:${VARIABLE_NAME} --host ${APP_HOST} --port ${APP_PORT} --reload
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+# --- NOTA SOBRE MULTI-STAGE BUILD ---
+# Para uma imagem ainda menor, considere um multi-stage build:
+# 1. Um estágio 'builder' (baseado em python:3.11) que instala build-essential, etc.,
+#    cria um virtualenv, instala requirements.txt nele.
+# 2. Um estágio final (baseado em python:3.11-slim) que copia apenas o virtualenv
+#    do estágio 'builder' e o código da aplicação (COPY --from=builder /path/to/venv /path/to/venv).
+#    Este estágio final não precisaria ter build-essential, etc., tornando a imagem menor.
+

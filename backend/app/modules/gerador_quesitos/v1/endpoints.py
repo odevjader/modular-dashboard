@@ -9,33 +9,42 @@ from fastapi import (
     UploadFile,
     Form,
 )
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.messages import HumanMessage
-from langchain_core.language_models.chat_models import BaseChatModel
+# TODO: Funcionalidade desativada temporariamente (Fase 1 Roadmap - Refatoração Core).
+# Dependências removidas do container API. Será movida para um serviço dedicado na Fase 2.
+# Código original comentando abaixo:
+# from langchain_google_genai import ChatGoogleGenerativeAI
+# from langchain_core.messages import HumanMessage
+# from langchain_core.language_models.chat_models import BaseChatModel
 
 # --- IMPORTS CORRIGIDOS ---
 from app.core.config import settings, logger
-from app.utils.pdf_processor import processar_pdfs_upload # Caminho absoluto
+# TODO: Funcionalidade desativada temporariamente (Fase 1 Roadmap - Refatoração Core).
+# Dependências removidas do container API (Docling/Tesseract). Será reimplementado via serviço dedicado na Fase 2.
+# Código original comentando abaixo:
+# from app.utils.pdf_processor import processar_pdfs_upload # Caminho absoluto
 # --- FIM IMPORTS CORRIGIDOS ---
 from .esquemas import RespostaQuesitos # Relativo ok
 
 router = APIRouter()
 
 # --- Default LLM Initialization (from settings) ---
-default_llm: Optional[BaseChatModel] = None
-default_model_name = settings.GEMINI_MODEL_NAME
-if not settings.GOOGLE_API_KEY:
-    logger.warning("GOOGLE_API_KEY not found. Default LLM for Gerador Quesitos will not function.")
-else:
-    try:
-        default_llm = ChatGoogleGenerativeAI(
-            model=default_model_name,
-            google_api_key=settings.GOOGLE_API_KEY,
-        )
-        logger.info(f"Default LLM initialized successfully for gerador_quesitos with model: {default_model_name}")
-    except Exception as e:
-        logger.error(f"Failed to initialize default LLM for gerador_quesitos with model {default_model_name}: {e}", exc_info=True)
-        # default_llm remains None
+# TODO: Funcionalidade desativada temporariamente (Fase 1 Roadmap - Refatoração Core).
+# Dependências removidas do container API. Será movida para um serviço dedicado na Fase 2.
+# Código original comentando abaixo:
+# default_llm: Optional[BaseChatModel] = None
+# default_model_name = settings.GEMINI_MODEL_NAME
+# if not settings.GOOGLE_API_KEY:
+#     logger.warning("GOOGLE_API_KEY not found. Default LLM for Gerador Quesitos will not function.")
+# else:
+#     try:
+#         default_llm = ChatGoogleGenerativeAI(
+#             model=default_model_name,
+#             google_api_key=settings.GOOGLE_API_KEY,
+#         )
+#         logger.info(f"Default LLM initialized successfully for gerador_quesitos with model: {default_model_name}")
+#     except Exception as e:
+#         logger.error(f"Failed to initialize default LLM for gerador_quesitos with model {default_model_name}: {e}", exc_info=True)
+#         # default_llm remains None
 
 # --- Load Prompt Template ---
 prompt_template_string = ""
@@ -89,59 +98,80 @@ async def gerar_quesitos(
         if not settings.GOOGLE_API_KEY:
              logger.error("Cannot initialize specific model: GOOGLE_API_KEY not found.")
              raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Serviço de IA não configurado (chave API ausente).")
-        try:
-            llm_to_use = ChatGoogleGenerativeAI(
-                model=modelo_nome,
-                google_api_key=settings.GOOGLE_API_KEY,
-            )
-            selected_model_display_name = modelo_nome
-            logger.info(f"Dynamically initialized LLM with model: {modelo_nome}")
-        except Exception as e:
-            logger.error(f"Failed to initialize requested LLM model '{modelo_nome}': {e}", exc_info=True)
-            raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail=f"Não foi possível inicializar o modelo de IA solicitado: '{modelo_nome}'. Verifique se o nome está correto e disponível."
-            )
+        # TODO: Funcionalidade desativada temporariamente (Fase 1 Roadmap - Refatoração Core).
+        # Dependências removidas do container API. Será movida para um serviço dedicado na Fase 2.
+        # Código original comentando abaixo:
+        # try:
+        #     # TODO: Funcionalidade desativada temporariamente (Fase 1 Roadmap - Refatoração Core).
+        #     # Dependências removidas do container API. Será movida para um serviço dedicado na Fase 2.
+        #     # Código original comentando abaixo:
+        #     # llm_to_use = ChatGoogleGenerativeAI(
+        #     #     model=modelo_nome,
+        #     #     google_api_key=settings.GOOGLE_API_KEY,
+        #     # )
+        #     # selected_model_display_name = modelo_nome
+        #     # logger.info(f"Dynamically initialized LLM with model: {modelo_nome}")
+        # # TODO: Funcionalidade desativada temporariamente (Fase 1 Roadmap - Refatoração Core).
+        # # Dependências removidas do container API. Será movida para um serviço dedicado na Fase 2.
+        # # Código original comentando abaixo:
+        # # except Exception as e:
+        # #     logger.error(f"Failed to initialize requested LLM model '{modelo_nome}': {e}", exc_info=True)
+        # #     raise HTTPException(
+        # #         status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        # #         detail=f"Não foi possível inicializar o modelo de IA solicitado: '{modelo_nome}'. Verifique se o nome está correto e disponível."
+        # #     )
 
-    if not llm_to_use:
-        logger.error("LLM instance is unavailable (Default failed and no specific model requested/initialized).")
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Serviço de IA indisponível.")
+    # TODO: Funcionalidade desativada temporariamente (Fase 1 Roadmap - Refatoração Core).
+    # Dependências removidas do container API. Será movida para um serviço dedicado na Fase 2.
+    # Código original comentando abaixo:
+    # if not llm_to_use:
+    #     logger.error("LLM instance is unavailable (Default failed and no specific model requested/initialized).")
+    #     raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Serviço de IA indisponível.")
 
     # --- Process Files ---
-    try:
-        logger.info(f"Calling shared PDF processor for {len(files)} file(s)...")
-        texto_extraido_combinado = await processar_pdfs_upload(files)
-
-        if not texto_extraido_combinado:
-             logger.warning("PDF processing utility returned no text.")
-             raise HTTPException(
-                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                 detail="Não foi possível extrair conteúdo válido dos PDFs fornecidos.",
-             )
-        logger.info(f"PDF processing complete. Total text length: {len(texto_extraido_combinado)}")
-
-        # --- Format Prompt ---
-        final_prompt_text = prompt_template_string.format(
-            pdf_content=texto_extraido_combinado,
-            beneficio=beneficio,
-            profissao=profissao
-        )
-
-        # --- Call LLM ---
-        message = HumanMessage(content=final_prompt_text)
-        logger.info(f"Sending request to Gemini model '{selected_model_display_name}' via Langchain...")
-        ai_message = await llm_to_use.ainvoke([message])
-        texto_resposta = ai_message.content
-        logger.info(f"Received AI response snippet: '{texto_resposta[:100]}...'")
-
-        # --- Return Response ---
-        return RespostaQuesitos(quesitos_texto=texto_resposta)
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Unhandled error during quesitos generation: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Erro inesperado ao gerar quesitos: {str(e)}",
-        )
+    # TODO: Funcionalidade desativada temporariamente (Fase 1 Roadmap - Refatoração Core).
+    # Dependências removidas do container API (Docling/Tesseract). Será reimplementado via serviço dedicado na Fase 2.
+    # Código original comentando abaixo:
+    # try:
+    #     logger.info(f"Calling shared PDF processor for {len(files)} file(s)...")
+    #     texto_extraido_combinado = await processar_pdfs_upload(files)
+    #
+    #     if not texto_extraido_combinado:
+    #          logger.warning("PDF processing utility returned no text.")
+    #          raise HTTPException(
+    #              status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+    #              detail="Não foi possível extrair conteúdo válido dos PDFs fornecidos.",
+    #          )
+    #     logger.info(f"PDF processing complete. Total text length: {len(texto_extraido_combinado)}")
+    #
+    #     # --- Format Prompt ---
+    #     final_prompt_text = prompt_template_string.format(
+    #         pdf_content=texto_extraido_combinado,
+    #         beneficio=beneficio,
+    #         profissao=profissao
+    #     )
+    #
+    #     # --- Call LLM ---
+    #     message = HumanMessage(content=final_prompt_text)
+    #     logger.info(f"Sending request to Gemini model '{selected_model_display_name}' via Langchain...")
+    #     # TODO: Funcionalidade desativada temporariamente (Fase 1 Roadmap - Refatoração Core).
+    #     # Dependências removidas do container API. Será movida para um serviço dedicado na Fase 2.
+    #     # Código original comentando abaixo:
+    #     # ai_message = await llm_to_use.ainvoke([message])
+    #     # texto_resposta = ai_message.content
+    #     # logger.info(f"Received AI response snippet: '{texto_resposta[:100]}...'")
+    #     texto_resposta = "Funcionalidade de geração de quesitos via IA desativada temporariamente." # Placeholder response
+    #
+    #     # --- Return Response ---
+    #     return RespostaQuesitos(quesitos_texto=texto_resposta)
+    #
+    # except HTTPException:
+    #     raise
+    # except Exception as e:
+    #     logger.error(f"Unhandled error during quesitos generation: {e}", exc_info=True)
+    #     raise HTTPException(
+    #         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+    #         detail=f"Erro inesperado ao gerar quesitos: {str(e)}",
+    #     )
+    texto_resposta = "Funcionalidade de geração de quesitos via IA desativada temporariamente." # Placeholder response
+    return RespostaQuesitos(quesitos_texto=texto_resposta)

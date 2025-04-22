@@ -1,6 +1,9 @@
 # backend/app/modules/ai_test/v1/endpoints.py
 from fastapi import APIRouter, HTTPException, status
-from langchain_google_genai import ChatGoogleGenerativeAI
+# TODO: Funcionalidade desativada temporariamente (Fase 1 Roadmap - Refatoração Core).
+# Dependências removidas do container API. Será movida para um serviço dedicado na Fase 2.
+# Código original comentando abaixo:
+# from langchain_google_genai import ChatGoogleGenerativeAI
 
 # --- IMPORT CORRIGIDO ---
 from app.core.config import settings, logger # Import settings using absolute path
@@ -11,24 +14,33 @@ from .schemas import TextInput, AIResponse # Import the schemas (relative is OK)
 router = APIRouter()
 
 # Initialize the LLM
-llm = None
-llm_error = None # Store potential initialization error
+# llm = None
+# llm_error = None # Store potential initialization error
 
-if settings.GOOGLE_API_KEY:
-    try:
-        llm = ChatGoogleGenerativeAI(
-            # Using model specified in settings or fallback
-            model=settings.GEMINI_MODEL_NAME or "gemini-2.0-flash-exp", # Use setting
-            google_api_key=settings.GOOGLE_API_KEY,
-            # convert_system_message_to_human=True # Example optional arg
-        )
-        logger.info(f"ChatGoogleGenerativeAI initialized successfully for ai_test with model: {settings.GEMINI_MODEL_NAME or 'gemini-2.0-flash-exp'}")
-    except Exception as e:
-        logger.error(f"Failed to initialize ChatGoogleGenerativeAI for ai_test: {e}", exc_info=True)
-        llm_error = str(e)
-else:
-    logger.warning("GOOGLE_API_KEY not found. AI Test module endpoints will not function.")
-    llm_error = "GOOGLE_API_KEY not configured."
+# TODO: Funcionalidade desativada temporariamente (Fase 1 Roadmap - Refatoração Core).
+# Dependências removidas do container API. Será movida para um serviço dedicado na Fase 2.
+# Código original comentando abaixo:
+# if settings.GOOGLE_API_KEY:
+#     # TODO: Funcionalidade desativada temporariamente (Fase 1 Roadmap - Refatoração Core).
+#     # Dependências removidas do container API. Será movida para um serviço dedicado na Fase 2.
+#     # Código original comentando abaixo:
+#     # try:
+#     #     llm = ChatGoogleGenerativeAI(
+#     #         # Using model specified in settings or fallback
+#     #         model=settings.GEMINI_MODEL_NAME or "gemini-2.0-flash-exp", # Use setting
+#     #         google_api_key=settings.GOOGLE_API_KEY,
+#     #         # convert_system_message_to_human=True # Example optional arg
+#     #     )
+#     #     logger.info(f"ChatGoogleGenerativeAI initialized successfully for ai_test with model: {settings.GEMINI_MODEL_NAME or 'gemini-2.0-flash-exp'}")
+#     # except Exception as e:
+#     #     logger.error(f"Failed to initialize ChatGoogleGenerativeAI for ai_test: {e}", exc_info=True)
+#     #     llm_error = str(e)
+# # TODO: Funcionalidade desativada temporariamente (Fase 1 Roadmap - Refatoração Core).
+# # Dependências removidas do container API. Será movida para um serviço dedicado na Fase 2.
+# # Código original comentando abaixo:
+# # else:
+# #     logger.warning("GOOGLE_API_KEY not found. AI Test module endpoints will not function.")
+# #     llm_error = "GOOGLE_API_KEY not configured."
 
 
 @router.post("/ping",
@@ -51,9 +63,14 @@ async def ping_ai_model(input_data: TextInput):
 
     try:
         # Use Langchain's async invoke method
-        ai_message = await llm.ainvoke(input_data.text)
-        response_text = ai_message.content
-        logger.info(f"Received AI response: '{response_text[:50]}...'")
+        # TODO: Funcionalidade desativada temporariamente (Fase 1 Roadmap - Refatoração Core).
+        # Dependências removidas do container API. Será movida para um serviço dedicado na Fase 2.
+        # Código original comentando abaixo:
+        # ai_message = await llm.ainvoke(input_data.text)
+        # response_text = ai_message.content
+        # logger.info(f"Received AI response: '{response_text[:50]}...'")
+        # return AIResponse(response=response_text)
+        response_text = "Funcionalidade de teste de IA desativada temporariamente." # Placeholder response
         return AIResponse(response=response_text)
 
     except Exception as e:

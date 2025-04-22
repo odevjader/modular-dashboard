@@ -64,3 +64,6 @@ web_modules/
 # Ignore override files commonly used for local development
 docker-compose.override.yml
 docker-compose.override.yaml
+
+#-- php github browser
+browse_github.php
