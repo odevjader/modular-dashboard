@@ -1,46 +1,45 @@
 # Visão Geral do Projeto - Modular Dashboard
 
-Este documento fornece uma visão detalhada sobre o propósito, os objetivos, o público-alvo e a visão de longo prazo para o projeto Modular Dashboard.
+Este documento fornece uma visão detalhada sobre o propósito, os objetivos, o público-alvo e a visão de longo prazo para o projeto **Modular Dashboard**, definido como uma **plataforma base genérica e extensível para construção rápida de aplicações web e dashboards**.
 
-## Problema a Resolver
+## Problema a Resolver / Oportunidade
 
-O Modular Dashboard nasceu da necessidade de **otimizar e automatizar tarefas complexas e repetitivas** encontradas frequentemente nos domínios jurídico e administrativo, particularmente no contexto previdenciário brasileiro. Profissionais dessas áreas (advogados, administradores, peritos) muitas vezes dedicam um tempo considerável a processos manuais, como:
+Muitas aplicações web modernas, especialmente dashboards interativos e ferramentas internas de nicho, compartilham uma série de funcionalidades base comuns (autenticação, gerenciamento de usuários, layout de interface, etc.), mas diferem enormemente nas funcionalidades específicas de domínio que oferecem. Construir cada aplicação ou dashboard do zero é frequentemente repetitivo e ineficiente, desperdiçando tempo em infraestrutura básica em vez de focar na lógica de negócio única.
 
-* Análise e extração de informações de grandes volumes de documentos (processos, laudos, exames).
-* Geração de peças textuais que seguem padrões, mas exigem adaptação ao caso concreto (ex: quesitos periciais, petições simples, impugnações).
-* Gerenciamento de usuários e permissões em sistemas internos.
-* Consolidação de informações para relatórios ou dashboards de acompanhamento.
+O Modular Dashboard visa resolver isso fornecendo uma **plataforma 'chassi' robusta e bem arquitetada (Backend API + Frontend SPA)** que lida com as funcionalidades base comuns e oferece um mecanismo claro para que desenvolvedores (humanos ou AIs) possam focar em criar e **"plugar" módulos com funcionalidades específicas** de forma rápida, organizada e desacoplada.
 
-O projeto visa **reduzir o esforço manual** nessas tarefas através da aplicação de Inteligência Artificial generativa (primariamente Google Gemini/Gemma) e da centralização das ferramentas em uma plataforma web única e coesa.
+O objetivo é **acelerar drasticamente o ciclo de desenvolvimento** de novas aplicações web interativas e dashboards customizados, promovendo o reuso de código e a consistência arquitetural.
 
 ## Público-Alvo
 
-Embora iniciado para atender às necessidades do desenvolvedor principal (com atuação na área jurídica), o Modular Dashboard tem como público-alvo:
+Com a visão de plataforma genérica, o público-alvo se expande:
 
-1.  **Usuário Principal/Desenvolvedor:** Idealizador e primeiro usuário, definindo os requisitos iniciais e validando as funcionalidades.
-2.  **Advogados e Profissionais Jurídicos:** Para auxiliar na gestão de casos, análise de documentos (usando módulos como o `gerador_quesitos`) e, futuramente, na elaboração de peças processuais.
-3.  **Administradores de Sistema/Escritório:** Para gerenciar usuários da plataforma, configurar módulos e potencialmente monitorar o uso e desempenho.
-4.  **(Potencial Futuro)** Equipes Internas ou Clientes: Que podem se beneficiar de dashboards customizados ou módulos específicos para monitoramento de dados ou execução de tarefas baseadas em IA.
+1.  **Desenvolvedores (Humanos e AIs):** O público primário da *plataforma base*. São eles que utilizarão o Core e o mecanismo de modularidade como fundação para construir e implantar novos módulos e aplicações específicas de forma eficiente.
+2.  **Usuário(s) Finais dos Módulos:** O público secundário, cujo perfil dependerá inteiramente do(s) módulo(s) específico(s) que forem desenvolvidos e "plugados" na plataforma (ex: para o módulo `01_GERADOR_QUESITOS`, seriam profissionais jurídicos; para um futuro módulo de análise de vendas, seria a equipe comercial; para um módulo de IoT, seriam operadores de planta, etc.).
+3.  **Administradores da Plataforma:** Indivíduos responsáveis por gerenciar instâncias específicas da plataforma Modular Dashboard, incluindo usuários, permissões gerais e configurações da plataforma base.
 
 ## Objetivo Principal
 
-O objetivo central é **desenvolver uma plataforma web modular, segura e eficiente que sirva como um hub centralizado para ferramentas baseadas em IA**, focadas em automatizar ou assistir em tarefas administrativas e jurídicas, começando pelo nicho previdenciário e com potencial de expansão.
+O objetivo central e atual do projeto é **desenvolver e manter uma plataforma web base (Core) genérica, modular, segura e eficiente, que facilite ao máximo a criação, integração, execução e gerenciamento de módulos de funcionalidades independentes**. Queremos criar um ecossistema onde adicionar novas capacidades à aplicação seja um processo bem definido, rápido e o mais desacoplado possível.
 
 ## Visão de Longo Prazo
 
-A aspiração é que o Modular Dashboard evolua para uma **"faca suíça" digital robusta e extensível** para profissionais das áreas alvo. A visão de longo prazo inclui:
+A aspiração é que o Modular Dashboard se torne uma **fundação confiável, flexível e amplamente utilizada (um "Application Framework Engine" ou "Dashboard Engine")** para construir rapidamente uma vasta gama de aplicações web interativas e dashboards orientados a dados ou IA. A visão inclui:
 
-* **Plataforma Altamente Modular:** Permitir que novos módulos de IA ou ferramentas administrativas sejam desenvolvidos e integrados facilmente ("plug-and-play").
-* **Funcionalidades Essenciais de Plataforma:** Implementar um sistema seguro de autenticação e autorização com diferentes níveis de permissão (roles), gerenciamento de usuários, histórico de utilização e logs.
-* **Expansão das Capacidades de IA:** Adicionar módulos mais sofisticados, como pesquisa inteligente de jurisprudência, análise semântica de documentação médica, geração assistida de petições ou contestações.
-* **Performance e Escalabilidade:** Otimizar o processamento de tarefas (ex: cache Redis para PDFs), otimizar builds (ex: Docker Bake), e potencialmente adotar login social (Google OAuth) e monitoramento (Sentry) para suportar mais usuários e garantir estabilidade.
-* **Segurança:** Implementar boas práticas de segurança, como rate limiting e tratamento adequado de segredos.
-* **Referência:** Tornar-se uma ferramenta valiosa e de referência para aumentar a eficiência em escritórios de advocacia e departamentos administrativos.
+* **Core Sólido e Genérico:** Uma base estável e bem testada com Autenticação/Autorização robusta (incluindo roles/permissões flexíveis), gerenciamento de usuários, um sistema de configurações, um shell de UI consistente (layout, navegação) e APIs internas bem definidas para serviços comuns.
+* **Mecanismo de Modularidade Claro e Poderoso:** Uma arquitetura bem documentada (backend e frontend) que permita "plugar" novos módulos com o mínimo de atrito, lidando com registro, carregamento, roteamento, comunicação inter-módulos (se necessário) e isolamento.
+* **Ecossistema de Módulos:** Facilitar e incentivar a criação de diversos módulos para diferentes domínios de negócio ou tipos de funcionalidade (jurídico, financeiro, vendas, IoT, visualização de dados, ferramentas de IA específicas, integrações, etc.). Potencialmente, ter um "marketplace" ou repositório de módulos compatíveis.
+* **Performance e Escalabilidade:** Garantir que a arquitetura base seja performática sob carga e possa escalar horizontalmente para suportar múltiplos módulos complexos e um número crescente de usuários.
+* **Experiência do Desenvolvedor (DX):** Tornar o processo de desenvolver um *novo módulo* para a plataforma o mais simples e agradável possível, com boa documentação, ferramentas e exemplos claros (como o `01_GERADOR_QUESITOS`).
+* **Desenvolvimento Acelerado:** Cumprir a promessa de reduzir drasticamente o tempo e o esforço necessários para colocar uma nova ideia de aplicação/dashboard no ar, permitindo foco na lógica de negócio e não na infraestrutura repetitiva.
 
-## Princípios Norteadores (Intenção)
+## Princípios Norteadores
 
-* **Modularidade:** Facilitar a manutenção e a adição de novas funcionalidades.
-* **Foco na IA:** Utilizar o potencial da IA Generativa para resolver problemas reais dos usuários.
-* **Experiência do Usuário:** Buscar uma interface intuitiva e eficiente (embora o foco inicial seja na funcionalidade backend).
-* **Segurança:** Implementar práticas seguras desde o início (autenticação, autorização, tratamento de dados).
-* **Código Limpo e Manutenível:** Adotar boas práticas de desenvolvimento (tipagem estática, testes - futuramente).
+O desenvolvimento da plataforma será guiado pelos seguintes princípios:
+
+* **Modularidade e Desacoplamento:** Máxima independência entre módulos e entre módulos e o Core.
+* **Genericidade do Core:** A plataforma base não deve ter conhecimento ou dependências de domínios de negócio específicos.
+* **Extensibilidade:** A arquitetura deve ser projetada pensando em facilitar a adição futura de novos módulos e funcionalidades ao Core.
+* **Segurança:** O Core deve prover mecanismos de segurança robustos e fáceis de usar pelos módulos.
+* **Boas Práticas e Qualidade:** Seguir padrões de código limpo, testes automatizados (essenciais para o Core), documentação clara e versionamento rigoroso.
+* **Simplicidade (quando possível):** Buscar soluções elegantes e evitar complexidade desnecessária, especialmente no Core.
