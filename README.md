@@ -74,10 +74,10 @@ Instruções detalhadas para clonar o repositório, configurar as variáveis de 
 
 ## Próximos Passos (Foco na Plataforma Core - Fase 1)
 
-Consulte o [ROADMAP.md](./ROADMAP.md) para detalhes completos das fases planejadas. As prioridades imediatas são:
+Consulte o [ROADMAP.md](./ROADMAP.md) para detalhes completos da Fase 1 e além. As prioridades imediatas são:
 
 1.  **Corrigir o bug no endpoint de login (`/api/auth/v1/login`)** do módulo core de Autenticação.
 2.  Finalizar e testar funcionalmente o módulo core de Autenticação e Gerenciamento de Usuários (backend e frontend).
 3.  **Definir e implementar o Mecanismo de Modularidade** (backend e frontend) - Esta é uma decisão arquitetural chave para habilitar a extensibilidade da plataforma.
 4.  Solidificar e documentar as APIs do Core da plataforma (Auth, User, etc.).
-5.  Estabelecer padrões claros para o desenvolvimento de novos módulos (estrutura, integração com o Core).
+5.  Estabelecer padrões claros para o desenvolvimento de novos módulos.
