@@ -14,10 +14,10 @@ O projeto está em desenvolvimento ativo, focado na construção do núcleo (Cor
 
 O projeto segue uma arquitetura com Frontend SPA (Single Page Application) e Backend API RESTful, orquestrados via Docker Compose, projetado para ser uma base modular versátil.
 
-*   **Frontend:** React (TypeScript) com Material UI, Vite e Zustand. Fornece o shell da aplicação e a interface para os módulos.
-*   **Backend:** API RESTful Assíncrona com FastAPI (Python), SQLAlchemy. Provê os serviços Core (Auth, User) e os endpoints para os módulos. Permite integração com IA (Langchain).
-*   **Banco de Dados:** PostgreSQL com extensão pgvector. Usado pelo Core e potencialmente pelos módulos.
-*   **Infraestrutura:** Docker e Docker Compose para containerização e ambiente de desenvolvimento.
+* **Frontend:** React (TypeScript) com Material UI, Vite e Zustand. Fornece o shell da aplicação e a interface para os módulos.
+* **Backend:** API RESTful Assíncrona com FastAPI (Python), SQLAlchemy. Provê os serviços Core (Auth, User) e os endpoints para os módulos. Permite integração com IA (Langchain).
+* **Banco de Dados:** PostgreSQL com extensão pgvector. Usado pelo Core e potencialmente pelos módulos.
+* **Infraestrutura:** Docker e Docker Compose para containerização e ambiente de desenvolvimento.
 
 *(Consulte [docs/01_ARQUITETURA.md](./docs/01_ARQUITETURA.md) para detalhes arquiteturais).*
 
@@ -25,36 +25,36 @@ O projeto segue uma arquitetura com Frontend SPA (Single Page Application) e Bac
 
 ### Frontend
 
-*   Linguagem: TypeScript
-*   Framework/Lib: React 18+
-*   Build: Vite
-*   UI Kit: Material UI (MUI) v5+
-*   Roteamento: react-router-dom v6+
-*   Estado: Zustand (para estado global/compartilhado), estado local React.
-*   HTTP Client: `Workspace` API nativa
+* Linguagem: TypeScript
+* Framework/Lib: React 18+
+* Build: Vite
+* UI Kit: Material UI (MUI) v5+
+* Roteamento: react-router-dom v6+
+* Estado: Zustand (para estado global/compartilhado), estado local React.
+* HTTP Client: `Workspace` API nativa
 
 ### Backend
 
-*   Linguagem: Python 3.12
-*   Framework: FastAPI
-*   ORM: SQLAlchemy 2+ (Asyncio)
-*   Banco de Dados Driver: `asyncpg`
-*   Migrações: Alembic
-*   IA Libs: Langchain, `langchain-google-genai`, `google-generativeai` *(Nota: Uso principal adiado para Fase 2+)*
-*   Processamento PDF: `docling` *(Nota: Removido do Core API na Fase 1)*
-*   Servidor ASGI: Uvicorn (com `uvloop`)
-*   Outros: Pydantic v2, Passlib (`bcrypt`), python-jose (`cryptography`), `pydantic-settings`
+* Linguagem: Python 3.12
+* Framework: FastAPI
+* ORM: SQLAlchemy 2+ (Asyncio)
+* Banco de Dados Driver: `asyncpg`
+* Migrações: Alembic
+* IA Libs: Langchain, `langchain-google-genai`, `google-generativeai` *(Nota: Uso principal adiado para Fase 2+)*
+* Processamento PDF: `docling` *(Nota: Removido do Core API na Fase 1)*
+* Servidor ASGI: Uvicorn (com `uvloop`)
+* Outros: Pydantic v2, Passlib (`bcrypt`), python-jose (`cryptography`), `pydantic-settings`
 
 ### Banco de Dados
 
-*   SGBD: PostgreSQL 16+
-*   Extensões: pgvector
+* SGBD: PostgreSQL 16+
+* Extensões: pgvector
 
 ### Infraestrutura & DevOps
 
-*   Containerização: Docker, Docker Compose
-*   Ambiente Dev Principal: WSL 2 (recomendado)
-*   Controle de Versão: Git, GitHub
+* Containerização: Docker, Docker Compose
+* Ambiente Dev Principal: WSL 2 (recomendado)
+* Controle de Versão: Git, GitHub
 
 ## Configuração do Ambiente de Desenvolvimento
 
@@ -62,14 +62,14 @@ Instruções detalhadas para clonar o repositório, configurar as variáveis de 
 
 ## Estrutura do Projeto (Resumo)
 
-*   `/frontend`: Contém o código da aplicação React (SPA - Shell da plataforma e UI de módulos).
-*   `/backend`: Contém o código da API FastAPI (Core da plataforma e APIs de módulos).
-*   `/docs`: Contém a documentação geral (`00_` a `NN_...`) e a subpasta `/modules`.
-*   `/docs/modules`: Contém a documentação específica de cada módulo (`01_...`, `02_...`).
-*   `/.prompts`: Contém templates de prompts para AIs (uso restrito).
-*   `docker-compose.yml`: Define os serviços Docker (`api`, `db`).
-*   `README.md`: Este arquivo.
-*   `ROADMAP.md`: Fases de desenvolvimento planejadas.
+* `/frontend`: Contém o código da aplicação React (SPA - Shell da plataforma e UI de módulos).
+* `/backend`: Contém o código da API FastAPI (Core da plataforma e APIs de módulos).
+* `/docs`: Contém a documentação geral (`00_` a `NN_...`) e a subpasta `/modules`.
+* `/docs/modules`: Contém a documentação específica de cada módulo (`01_...`, `02_...`).
+* `/.prompts`: Contém templates de prompts para AIs (uso restrito).
+* `docker-compose.yml`: Define os serviços Docker (`api`, `db`).
+* `README.md`: Este arquivo.
+* `ROADMAP.md`: Fases de desenvolvimento planejadas.
 *(Consulte [docs/03_ESTRUTURA_PASTAS.md](./docs/03_ESTRUTURA_PASTAS.md) para mais detalhes).*
 
 ## Próximos Passos (Foco na Plataforma Core - Fase 1)
