@@ -2,7 +2,7 @@
 
 Este documento descreve o modelo de desenvolvimento colaborativo utilizado no projeto Modular Dashboard, envolvendo a interação entre Usuários Humanos, o Maestro IA (Orquestrador & Coordenador), e Agentes IA Codificadores (principalmente Integrados como RooCode, ou alternativamente baseados em Chat), utilizando a ferramenta RooCode (no VS Code) para aplicar alterações de arquivo, em um ambiente potencialmente multi-usuário.
 
-*(Última atualização: 22 de Abril de 2025, aprox. 14:30 -03)*
+*(Última atualização: 23 de Abril de 2025, aprox. 10:05 -03)*
 
 ## Papéis e Responsabilidades
 
@@ -24,7 +24,7 @@ O desenvolvimento se baseia na colaboração entre as seguintes entidades:
     * Mantém contexto geral, planeja tarefas, sugere branches.
     * Gera **prompts detalhados de tarefa** para AIs Codificadores.
     * Analisa **"Sumários Finais para Orquestrador"** dos Coders e o código/config gerado (repassado pelo Usuário).
-    * **Gera prompts RooCode (`Action/Path/Content`)** para o Usuário aplicar via RooCode:
+    * **Gera prompts no Formato Padrão RooCode (`Action/Path/Content/---START/END---`)** para o Usuário aplicar via RooCode:
         * As mudanças de **código/configuração** propostas pelo AI Coder (após análise/aprovação conceitual).
         * As atualizações na **documentação oficial** com base nos sumários.
     * Gera sumários de sessão e sugere **mensagens de commit**.
@@ -35,23 +35,45 @@ O desenvolvimento se baseia na colaboração entre as seguintes entidades:
 3.  **Agente IA Coder (Dois Tipos):** Responsável pela implementação técnica de tarefas específicas.
     * **3.1. Tipo 1: Coder Integrado (Ex: RooCode no VS Code) - *Opção Primária***
         * **Capacidades:** Roda dentro do IDE; tem **acesso direto para ler arquivos** no workspace; pode **executar comandos no terminal integrado** (sob supervisão).
-        * **Interação:** Recebe prompt de tarefa. Lê arquivos necessários **diretamente**. Gera **texto** de código/configuração. Executa/sugere comandos de terminal. Interage com Usuário no IDE para teste/feedback. Gera Sumário Final. **Não gera prompts Roo nem modifica arquivos diretamente** (aguarda instrução do Maestro via prompt RooCode).
+        * **Interação:** Recebe prompt de tarefa. Lê arquivos necessários **diretamente**. Gera **texto** de código/configuração. Executa/sugere comandos de terminal. Interage com Usuário no IDE para teste/feedback. Gera Sumário Final. **Não gera prompts no formato RooCode nem modifica arquivos diretamente** (aguarda instrução do Maestro via prompt RooCode).
         * *Inicialização:* Via prompt `../.prompts/02_ONBOARDING_CODER.md`. *(Nota: Este prompt precisa ser atualizado para remover a instrução de gerar prompts Roo).*
     * **3.2. Tipo 2: Coder Baseado em Chat (Ex: Gemini/Grok via Web/API) - *Opção Alternativa***
         * **Capacidades:** Sem acesso direto a arquivos/terminal.
-        * **Interação:** Recebe prompt de tarefa. Pede contexto ao Usuário (`code <path>`). Gera **texto** de código/configuração. Gera **comandos de terminal** para o Usuário executar. Recebe feedback/resultados do Usuário. Gera Sumário Final. **Não gera prompts Roo** (Maestro IA gera para execução via Roo externo).
-        * *Inicialização:* Via prompt `../.prompts/02_ONBOARDING_CODER.md`. *(Nota: Este prompt precisa ser atualizado para remover a instrução de gerar prompts Roo).*
+        * **Interação:** Recebe prompt de tarefa. Pede contexto ao Usuário (`code <path>`). Gera **texto** de código/configuração. Gera **comandos de terminal** para o Usuário executar. Recebe feedback/resultados do Usuário. Gera Sumário Final. **Não gera prompts no formato RooCode** (Maestro IA gera para execução via Roo externo).
+        * *Inicialização:* Via prompt `../.prompts/02_ONBOARDING_CODER.md`. *(Nota: Este prompt precisa ser atualizado).*
 
-    *(Nota Importante: O prompt de onboarding do Coder (`../.prompts/02_ONBOARDING_CODER.md`) precisará ser atualizado em breve para refletir que NENHUM Coder gera mais prompts Roo - apenas o Maestro IA o faz).*
+    *(Nota Importante Geral: O prompt de onboarding do Coder (`../.prompts/02_ONBOARDING_CODER.md`) precisará ser atualizado em breve para refletir que NENHUM Coder gera mais prompts no formato RooCode - apenas o Maestro IA o faz).*
 
 4.  **RooCode (Ferramenta Integrada ao VS Code):**
     * **Uso:** Ferramenta **principal** para aplicar todas as alterações de arquivo (código, config, docs) no workspace do VS Code, quando instruída por um prompt `Action/Path/Content` fornecido pelo Usuário (gerado pelo Maestro IA).
-    * **Interface:** Recebe prompts no formato `Action/Path/Content`.
+    * **Interface:** Recebe prompts no formato `Action/Path/Content` (ver seção específica abaixo).
     * **Execução:** Modifica/Cria arquivos diretamente no workspace com base no prompt recebido.
 
 5.  **Roo (Ferramenta Externa Auxiliar):** *(Uso de Fallback)*
-    * **Uso:** Necessário **apenas** se um **AI Coder Tipo 2 (Baseado em Chat)** estiver sendo usado *e* o RooCode não estiver disponível/funcional por algum motivo. Usado para aplicar prompts `Action/Path/Content` gerados pelo Maestro ou Coder Tipo 2.
+    * **Uso:** Necessário **apenas** se um **AI Coder Tipo 2 (Baseado em Chat)** estiver sendo usado *e* o RooCode não estiver disponível/funcional por algum motivo. Usado para aplicar prompts `Action/Path/Content` gerados pelo Maestro IA.
     * Ponte segura entre prompts e o filesystem local do Usuário. Executa `Create File`, `Overwrite File`, `Append Lines` quando instruído por um prompt formatado.
+
+## Formato Padrão de Prompt para RooCode (Gerado pelo Maestro IA)
+
+Para garantir clareza, execução correta pelo RooCode e facilitar a cópia pelo Usuário Humano, todos os prompts de modificação de arquivo gerados pelo Maestro IA seguirão **exatamente** a estrutura abaixo.
+
+**Estrutura:**
+
+Linha 1: `Action: [Create File | Overwrite File | Append Lines]`
+Linha 2: `Relative Path: [Caminho/Relativo/Do/Arquivo.ext]`
+Linha 3: `Content:`
+Linha 4: `--- START CONTENT ---`
+Linha 5 em diante: Conteúdo completo e exato do arquivo, linha por linha.
+                  *(A formatação interna do conteúdo é preservada).*
+Última Linha + 1: `--- END CONTENT ---`
+
+**Observações Cruciais:**
+
+* O bloco de texto entre os marcadores `--- START CONTENT ---` e `--- END CONTENT ---` representa o **conteúdo literal e integral** a ser escrito no arquivo.
+* **NÃO DEVE HAVER** delimitadores de bloco de código Markdown (como aspas triplas ```) em volta ou dentro deste conteúdo quando o Maestro IA gera o prompt.
+* O Maestro IA apresentará o prompt completo (de `Action:` a `--- END CONTENT ---`) dentro de um bloco ```text no chat apenas para facilitar a cópia exata pelo Usuário Humano. O que deve ser passado ao RooCode é o texto *dentro* desse bloco ```text.
+
+*(Esta padronização visa evitar os problemas de formatação/renderização encontrados anteriormente na interface de chat ao copiar prompts).*
 
 ## Colaboração Multi-Usuário e Versionamento (Git)
 
@@ -59,28 +81,28 @@ Trabalhar com múltiplos humanos (e seus times de IA) no mesmo projeto exige uma
 
 **Princípios:**
 * **Isolamento:** O trabalho em cada nova funcionalidade, correção ou tarefa significativa é feito em um branch separado.
-* **Atualização Contínua:** Mantenha seu branch atualizado com a base principal (`main`) para detectar e resolver conflitos cedo.
+* **Atualização Contínua:** Mantenha seu branch atualizado com a base principal (`master`) para detectar e resolver conflitos cedo.
 * **Revisão:** Integre o trabalho de volta à branch principal apenas após revisão (via Pull Request).
-* **`main` Estável:** A branch `main` deve sempre refletir um estado estável e funcional do projeto.
+* **`master` Estável:** A branch `master` deve sempre refletir um estado estável e funcional do projeto.
 
 **Fluxo Detalhado:**
 
 1.  **Iniciar uma Nova Tarefa:**
     * **Coordenação Humana:** Verifique com outros usuários para alinhar tarefas.
-    * **Sincronize `main`:** `git checkout main && git pull origin main`.
+    * **Sincronize `master`:** `git checkout master && git pull origin master`.
     * **Crie seu Feature Branch:** `git checkout -b <tipo>/<nome-descritivo>`.
     * **Informe o Maestro IA:** Comunique o branch ativo.
 
 2.  **Desenvolver no Feature Branch:**
     * Siga o "Fluxo de Interação Típico" abaixo.
     * **Faça Commits Frequentes e Atômicos:** `git add <arquivos>` -> `git commit -m "tipo(escopo): Mensagem"`.
-    * **Mantenha Atualizado (Pull com Rebase):** Periodicamente: `git pull origin main --rebase` (resolva conflitos se houver).
+    * **Mantenha Atualizado (Pull com Rebase):** Periodicamente: `git pull origin master --rebase` (resolva conflitos se houver).
     * **Compartilhe Progresso (Push):** Regularmente: `git push origin <nome-do-seu-branch>`.
 
 3.  **Concluindo a Tarefa e Integrando:**
-    * **Finalize e Atualize:** Garanta tarefa completa, testada e branch atualizado com `main` via rebase.
+    * **Finalize e Atualize:** Garanta tarefa completa, testada e branch atualizado com `master` via rebase.
     * **Push Final:** `git push origin <nome-do-seu-branch>`.
-    * **Abra um Pull Request (PR):** No GitHub, do seu branch para `main`. Descreva claramente.
+    * **Abra um Pull Request (PR):** No GitHub, do seu branch para `master`. Descreva claramente.
     * **Revisão do PR:** Aguarde revisão humana. Faça ajustes no branch e push se necessário.
     * **Merge:** Após aprovação, faça o merge (via interface GitHub).
     * **Limpeza (Opcional):** Apague branches local e remoto após o merge.
@@ -113,9 +135,9 @@ Ao concluir uma sessão (pausando ou finalizando a tarefa no branch):
 1.  **Sinalização:** Usuário informa ao Maestro IA o fim da sessão.
 2.  **Sumário AI Coder (se aplicável):** Garantir que o sumário da última tarefa trabalhada foi recebido por mim.
 3.  **Sumário Geral da Sessão (Maestro IA):** Eu forneço um resumo do que foi feito.
-4.  **Atualização de Status (Maestro IA Gera, User Aplica/Verifica):** Eu gero texto para `README`/`ROADMAP`. Você aplica/verifica (via RooCode ou Roo externo) e commita no branch.
+4.  **Atualização de Status (Maestro IA Gera, User Aplica/Verifica):** Eu gero o conteúdo para atualizar `README`/`ROADMAP`. Você instrui o RooCode a aplicá-lo (ou usa Roo externo se Coder Tipo 2) e commita no branch.
 5.  **Sugestão de Commit (Maestro IA Gera):** Eu sugiro a mensagem para o(s) último(s) commit(s) da sessão no feature branch.
-6.  **Versionamento (User Executa):** Usuário executa `git add .` (ou arquivos específicos), `git commit -m "..."` (usando sugestão ou própria) e `git push origin <nome-do-seu-branch>` para salvar o trabalho da sessão no remoto. O merge para `main` via PR acontece separadamente.
+6.  **Versionamento (User Executa):** Usuário executa `git add .` (ou arquivos específicos), `git commit -m "..."` (usando sugestão ou própria) e `git push origin <nome-do-seu-branch>` para salvar o trabalho da sessão no remoto. O merge para `master` via PR acontece separadamente.
 
 ## Comunicação
 
