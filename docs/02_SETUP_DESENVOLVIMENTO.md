@@ -11,51 +11,55 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas em s
 * [Node.js](https://nodejs.org/): Versão 18 ou superior (inclui npm) para o desenvolvimento frontend.
 * (Recomendado) WSL 2 se estiver utilizando Windows, para melhor integração com Docker.
 
-### Dependências Externas Específicas
-
-* **Tesseract OCR:** Necessário para o funcionamento completo do módulo `gerador_quesitos` (processamento de PDFs com imagens via DoclingLoader).
-    * **Status:** *(Pendente de Clarificação)* É preciso documentar como o Tesseract está instalado e acessível para o container `api` do backend.
-    * **Verificar:**
-        * O Tesseract e seus pacotes de idioma (ex: `tesseract-ocr-por` para português) estão incluídos e configurados no `backend/Dockerfile`?
-        * Ou ele precisa ser instalado separadamente no sistema host (WSL) e o container `api` tem acesso a ele de alguma forma?
-        * Alguma variável de ambiente precisa ser configurada para indicar o caminho do Tesseract?
+*(Nota: Funcionalidades que dependem de OCR em PDFs (como no módulo `01_GERADOR_QUESITOS`) exigirão Tesseract OCR, mas este foi removido do container principal da API na Fase 1 do Roadmap e será gerenciado por um serviço dedicado futuro).*
 
 ## Passos para Configuração
 
 1.  **Clonar o Repositório:**
     Abra seu terminal ou prompt de comando e clone o repositório do GitHub:
     ```bash
-    git clone https://github.com/odevjader/modular-dashboard.git
+    git clone [https://github.com/odevjader/modular-dashboard.git](https://github.com/odevjader/modular-dashboard.git)
     cd modular-dashboard
     ```
 
 2.  **Configurar Variáveis de Ambiente (Backend):**
-    O backend FastAPI requer um arquivo `.env` para carregar configurações essenciais. Crie este arquivo em `backend/.env`.
+    O backend FastAPI requer um arquivo `.env` na pasta `backend/` para carregar configurações essenciais. O `docker-compose.yml` geralmente é configurado para carregar este arquivo usando `env_file:`.
 
-    * **Variáveis Obrigatórias Mínimas:** Para que a aplicação suba e os módulos principais (`gerador_quesitos`, `ai_test`, `auth`) funcionem, as seguintes variáveis **precisam** ser definidas no `backend/.env`:
-        * `DATABASE_URL`: String de conexão com o PostgreSQL.
-        * `SECRET_KEY`: Chave secreta para assinatura dos tokens JWT (use `openssl rand -hex 32` para gerar uma).
-        * `GOOGLE_API_KEY`: Chave para acesso à API do Google AI Studio (Gemini).
+    * **Variáveis Essenciais:** As seguintes variáveis são lidas pelo Pydantic Settings (`backend/app/core/config.py`) ou usadas pelo Docker Compose e **precisam estar definidas** no `backend/.env` para a API Core iniciar corretamente:
+        * `DATABASE_URL` **OU** (`POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`)
+        * `APP_PORT`
+        * `SECRET_KEY`
+        * `ALGORITHM`
+        * `ACCESS_TOKEN_EXPIRE_MINUTES`
+        * `GOOGLE_API_KEY`
 
-    * *Exemplo `backend/.env`:*
+    * *Exemplo `backend/.env` (Completo com essenciais):*
         ```.env
-        # Obrigatório: Configuração do Banco de Dados (padrões do docker-compose.yml)
+        # Configuração do Banco de Dados (escolha UMA das opções abaixo)
+        # Opção 1: Usando DATABASE_URL completa (preferível para a aplicação SQLAlchemy)
         DATABASE_URL=postgresql+asyncpg://appuser:password@db:5432/appdb
+        # Opção 2: Usando variáveis individuais (usadas pelo serviço 'db' do compose para inicialização)
+        POSTGRES_USER=appuser
+        POSTGRES_PASSWORD=password
+        POSTGRES_DB=appdb
 
-        # Obrigatório: Configuração JWT (gere com: openssl rand -hex 32)
-        SECRET_KEY=sua_chave_secreta_muito_segura_aqui
+        # Configuração da Aplicação/Uvicorn (Porta interna do container)
+        APP_PORT=8000
+
+        # Configuração JWT (gere SECRET_KEY com: openssl rand -hex 32)
+        SECRET_KEY=coloque_aqui_sua_chave_secreta_muito_segura_de_pelo_menos_32_chars_hex
         ALGORITHM=HS256
         ACCESS_TOKEN_EXPIRE_MINUTES=1440 # 24 horas
 
-        # Obrigatório: Chave da API Google AI
+        # Chaves de API Externas
         GOOGLE_API_KEY=sua_google_api_key_aqui
 
         # Opcional: Outras configurações (ver backend/app/core/config.py para lista completa)
         # ENVIRONMENT=development
         # PROJECT_NAME="Modular Dashboard"
-        # ALLOWED_ORIGINS='["http://localhost:5173","http://127.0.0.1:5173"]' # Exemplo para CORS
+        # ALLOWED_ORIGINS='["http://localhost:5173","[http://127.0.0.1:5173](http://127.0.0.1:5173)"]' # Exemplo para CORS
         ```
-    * **Segurança:** Nunca comite o arquivo `.env` no Git. Ele já deve estar (ou ser adicionado) no `.gitignore`.
+    * **Segurança:** Nunca comite o arquivo `.env` no Git. Garanta que ele esteja no `.gitignore`.
 
 3.  **Iniciar os Containers Docker:**
     A partir da raiz do projeto (`modular-dashboard/`), execute o Docker Compose para construir as imagens (se necessário) e iniciar os containers do backend (serviço `api`) e do banco de dados (serviço `db`).
@@ -63,29 +67,27 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas em s
     docker-compose up -d --build
     ```
     * A opção `-d` executa os containers em modo detached (background).
-    * A opção `--build` força a reconstrução das imagens se houver mudanças no `Dockerfile` ou arquivos relacionados. O primeiro build pode levar alguns minutos.
+    * A opção `--build` força a reconstrução das imagens se houver mudanças no `Dockerfile` ou arquivos relacionados.
     * Aguarde até que os containers estejam em execução e saudáveis. Você pode verificar com `docker-compose ps`.
 
 4.  **Aplicar Migrações do Banco de Dados (Alembic):**
-    Após o container `api` estar em execução, aplique as migrações do banco de dados para garantir que o schema esteja atualizado. Execute o comando `upgrade` do Alembic dentro do container `api`:
+    Após o container `api` estar em execução, aplique as migrações do banco de dados para garantir que o schema esteja atualizado (inicialmente, criará a tabela `users`).
     ```bash
     docker-compose exec api alembic upgrade head
     ```
-    *(Este comando aplica todas as migrações pendentes encontradas na pasta `backend/app/versions/`)*
 
 5.  **Instalar Dependências do Frontend:**
     Navegue até a pasta `frontend/` e use o `npm` para instalar todas as dependências listadas no `package.json`:
     ```bash
     cd frontend
     npm install
-    # Volte para a raiz do projeto se precisar executar outros comandos de lá
-    # cd ..
+    cd ..
     ```
 
 6.  **Iniciar o Servidor de Desenvolvimento do Frontend:**
     Ainda dentro da pasta `frontend/`, inicie o servidor de desenvolvimento do Vite:
     ```bash
-    # Certifique-se de estar na pasta frontend/
+    cd frontend
     npm run dev
     ```
     O terminal indicará em qual porta o servidor frontend está rodando (normalmente 5173).
@@ -93,7 +95,7 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas em s
 7.  **Acessar a Aplicação:**
     Abra seu navegador e acesse:
     * **Frontend:** [http://localhost:5173](http://localhost:5173) (ou a porta indicada pelo `npm run dev`)
-    * **Backend API Docs (Swagger UI):** [http://localhost:8000/docs](http://localhost:8000/docs)
+    * **Backend API Docs (Swagger UI):** [http://localhost:8000/docs](http://localhost:8000/docs) (Assumindo `APP_PORT=8000` e porta exposta `8000:8000` no compose)
     * **Backend API Docs (ReDoc):** [http://localhost:8000/redoc](http://localhost:8000/redoc)
 
 ## Parando o Ambiente
@@ -102,3 +104,6 @@ Para parar os containers Docker (API e Banco de Dados) quando terminar de trabal
 
 ```bash
 docker-compose down
+(Isso irá parar e remover os containers, mas os volumes de dados do banco (se configurados no docker-compose.yml) geralmente são preservados).
+
+Pronto! Com esses passos, o ambiente de desenvolvimento deve estar configurado. Atenção: Atualmente (Abril 2025), o projeto está bloqueado por um erro de build do Docker (failed to fetch oauth token). A resolução deste problema é a prioridade antes de prosseguir com o desenvolvimento ou teste de funcionalidades.
