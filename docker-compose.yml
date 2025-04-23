@@ -11,6 +11,7 @@ services:
     # --- ADICIONADO environment com PYTHONPATH ---
     environment:
       - PYTHONPATH=/app
+      - APP_PORT=${APP_PORT}
     # --- FIM Adição ---
     ports:
       - "8000:8000"

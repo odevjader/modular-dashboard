@@ -15,15 +15,30 @@ class Settings(BaseSettings):
     GOOGLE_API_KEY: Optional[str] = None
 
     # Gemini Model Name
-    GEMINI_MODEL_NAME: str = "gemini-1.5-flash-latest"
+    GEMINI_MODEL_NAME: str = "gemini-2.0-flash-exp"
 
     # Database URLs
     DATABASE_URL: Optional[str] = None # Sync URL (primarily for Alembic reflection)
     ASYNC_DATABASE_URL: Optional[str] = None # Async URL (for application) - ADDED
 
+    # Database Credentials (used by Alembic and potentially app)
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
+    POSTGRES_DB: str
+
+    # JWT Settings
+    SECRET_KEY: str
+    ALGORITHM: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
+
+    # Application Port
+    APP_PORT: int = 8000
+
     class Config:
         env_file = ".env"
         env_file_encoding = 'utf-8'
+        # Allow extra fields from environment variables
+        extra = "allow" # Or "ignore" if we don't want to define all env vars
 
 settings = Settings()
 

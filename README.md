@@ -4,11 +4,11 @@
 
 ## Status Atual
 
-**(Abril de 2025)**: 🚧 Desenvolvimento Ativo - **Foco no Core da Plataforma** 🚧
+**(Abril de 2025)**: 🚧 Desenvolvimento Ativo - **Foco no Core da Plataforma / Build Bloqueado** 🚧
 
-O projeto está em desenvolvimento ativo, focado na construção do núcleo (Core) da plataforma e no mecanismo de modularidade. Funcionalidades base como Autenticação e Gerenciamento de Usuários estão em desenvolvimento no backend. O **módulo exemplo** "Gerador de Quesitos" (`docs/modules/01_GERADOR_QUESITOS.md`) demonstra a capacidade de hospedar funcionalidades específicas.
+O projeto está em desenvolvimento ativo, focado na construção do núcleo (Core) da plataforma. A refatoração para remover dependências não-core (PDF/OCR/IA) do container `api` foi concluída no código, **mas a validação está bloqueada pelo erro de build descrito abaixo**. Como resultado, o **módulo exemplo** "Gerador de Quesitos" (`docs/modules/01_GERADOR_QUESITOS.md`) e o módulo `AI Test` (`docs/modules/03_AI_TEST.md`) estão **temporariamente desativados**. A estrutura base do **módulo core** de Autenticação e Gerenciamento de Usuários no backend está implementada, aguardando testes após resolução dos bloqueios.
 
-**⚠️ Bloqueio Atual:** Existe um bug conhecido no endpoint de login (`/api/auth/v1/login`) que retorna 401 (Usuário não encontrado). A correção deste bug no módulo core de Autenticação é a **prioridade máxima** atual.
+**⚠️ Bloqueio Atual:** Erro durante o build da imagem Docker da API (`failed to fetch oauth token` ao baixar `python:3.11-slim`), impedindo a inicialização e validação da API. A resolução deste problema de infraestrutura/rede é a **prioridade máxima** atual.
 
 ## Visão Geral da Arquitetura
 
@@ -40,8 +40,8 @@ O projeto segue uma arquitetura com Frontend SPA (Single Page Application) e Bac
 * ORM: SQLAlchemy 2+ (Asyncio)
 * Banco de Dados Driver: `asyncpg`
 * Migrações: Alembic
-* IA Libs: Langchain, `langchain-google-genai`, `google-generativeai`
-* Processamento PDF: `docling` (no módulo de exemplo `gerador_quesitos`)
+* IA Libs: Langchain, `langchain-google-genai`, `google-generativeai` *(Nota: Uso principal adiado para Fase 2+)*
+* Processamento PDF: `docling` *(Nota: Removido do Core API na Fase 1)*
 * Servidor ASGI: Uvicorn (com `uvloop`)
 * Outros: Pydantic v2, Passlib (`bcrypt`), python-jose (`cryptography`), `pydantic-settings`
 
@@ -76,8 +76,9 @@ Instruções detalhadas para clonar o repositório, configurar as variáveis de 
 
 Consulte o [ROADMAP.md](./ROADMAP.md) para detalhes completos da Fase 1 e além. As prioridades imediatas são:
 
-1.  **Corrigir o bug no endpoint de login (`/api/auth/v1/login`)** do módulo core de Autenticação.
-2.  Finalizar e testar funcionalmente o módulo core de Autenticação e Gerenciamento de Usuários (backend e frontend).
-3.  **Definir e implementar o Mecanismo de Modularidade** (backend e frontend) - Esta é uma decisão arquitetural chave para habilitar a extensibilidade da plataforma.
-4.  Solidificar e documentar as APIs do Core da plataforma (Auth, User, etc.).
-5.  Estabelecer padrões claros para o desenvolvimento de novos módulos.
+1.  **Resolver erro de build Docker (`failed to fetch oauth token`)** - **Bloqueador Atual.**
+2.  Corrigir o bug no endpoint de login (`/api/auth/v1/login`) do módulo core de Autenticação.
+3.  Finalizar e testar funcionalmente o módulo core de Autenticação e Gerenciamento de Usuários (backend e frontend).
+4.  **Definir e implementar o Mecanismo de Modularidade** (backend e frontend) - Decisão arquitetural chave.
+5.  Solidificar e documentar as APIs do Core da plataforma (Auth, User, etc.).
+6.  Estabelecer padrões claros para o desenvolvimento de novos módulos.
