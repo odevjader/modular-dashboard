@@ -1,15 +1,15 @@
 # Fluxo de Trabalho de Desenvolvimento
 
-Este documento descreve o modelo de desenvolvimento colaborativo utilizado no projeto Modular Dashboard, envolvendo a interação entre Desenvolvedores (Devs) Humanos, o Maestro IA (Orquestrador & Coordenador), e Agentes IA Coders (Integrado ou Chat), utilizando a ferramenta RooCode (no VS Code) para aplicar alterações de arquivo, em um ambiente potencialmente multi-usuário.
+Este documento descreve o modelo de desenvolvimento colaborativo utilizado no projeto Modular Dashboard, envolvendo a interação entre Desenvolvedores (Devs) Humanos, o Maestro IA (Orquestrador & Coordenador), e Agentes IA Codificadores (Integrado ou Chat), utilizando a ferramenta RooCode (no VS Code) para aplicar alterações de arquivo, em um ambiente potencialmente multi-usuário.
 
-*(Última atualização: 23 de Abril de 2025, aprox. 10:31 -03)*
+*(Última atualização: 23 de Abril de 2025, aprox. 11:14 -03)*
 
 ## Papéis e Responsabilidades
 
 O desenvolvimento se baseia na colaboração entre as seguintes entidades:
 
 1.  **Dev (Desenvolvedor Humano):**
-    * Define requisitos, coordena com outros Devs, toma decisões finais.
+    * Defines requisitos, coordena com outros Devs, toma decisões finais.
     * Gerencia o fluxo Git (Branches, Commits Frequentes, PRs, Merges).
     * **Executa comandos de terminal** (Docker, Git, etc.) conforme instruído pelas IAs ou necessário.
     * **Atua como interface principal com as IAs e Ferramentas:**
@@ -22,24 +22,22 @@ O desenvolvimento se baseia na colaboração entre as seguintes entidades:
 2.  **Maestro IA (Orquestrador & Coordenador):**
     * Mantém contexto geral, planeja tarefas, sugere branches.
     * Gera **prompts detalhados de tarefa** para AIs Codificadores.
-    * Analisa **"Sumários Finais para Orquestrador"** dos Coders e o código/config gerado (repassado pelo Dev).
+    * Analisa **"Sumários Finais para Orquestrador"** dos Coders e o código/config gerado (repassado pelo Dev). Revisa conceitualmente os prompts RooCode gerados pelo Coder Tipo 2.
     * **Gera prompts no Formato Padrão RooCode (`Action/Path/Content/---START/END---`)** para o **Dev** aplicar via RooCode, especificamente para atualizações na **documentação oficial**.
     * Gera sumários de sessão e sugere **mensagens de commit**.
-    * Auxilia na depuração de nível superior e na manutenção da documentação.
+    * Auxilia na depuração de nível superior.
     * NÃO gera código de aplicação diretamente, nem executa comandos Git/RooCode/Terminal.
     * *Inicialização:* Via prompt `../.prompts/01_ONBOARDING_MAESTRO.md`.
 
 3.  **Agente IA Coder (Dois Tipos):** Responsável pela implementação técnica de tarefas específicas.
     * **3.1. Tipo 1: Coder Integrado (Ex: RooCode no VS Code) - *Opção Primária***
         * **Capacidades:** Roda dentro do IDE; tem **acesso direto para ler e modificar arquivos** no workspace (código, config, documentação); pode **executar comandos no terminal integrado** (sob supervisão).
-        * **Interação:** Recebe prompt de tarefa. Lê/Modifica arquivos **diretamente**. Executa/sugere comandos de terminal. Interage com Dev no IDE para teste/feedback. Gera Sumário Final. **Aplica atualizações de documentação** diretamente, com base em instruções/conteúdo do Maestro (via Dev). **Não gera prompts RooCode.**
-        * *Inicialização:* Via prompt `../.prompts/03_ONBOARDING_ROOCODE.md`. *(Atualizado para refletir suas capacidades)*.
+        * **Interação:** Recebe prompt de tarefa. Lê/Modifica arquivos **diretamente**. Executa/sugere comandos de terminal. Interage com Dev no IDE. Gera Sumário Final. **Aplica atualizações de documentação** diretamente, com base em instruções/conteúdo do Maestro (via Dev). **Não gera prompts no formato RooCode.**
+        * *Inicialização:* Via prompt `../.prompts/02_ONBOARDING_ROOCODE.md`.
     * **3.2. Tipo 2: Coder Baseado em Chat (Ex: Gemini/Grok via Web/API) - *Opção Alternativa***
         * **Capacidades:** Sem acesso direto a arquivos/terminal.
-        * **Interação:** Recebe prompt de tarefa. Pede contexto ao Dev (`code <path>`). Gera **texto** de código/configuração. Gera **prompts RooCode (`Action/Path/Content`)** para o Dev executar e aplicar suas mudanças de código/config. Gera **comandos de terminal** para o Dev executar. Recebe feedback/resultados do Dev. Gera Sumário Final.
-        * *Inicialização:* Via prompt `../.prompts/02_ONBOARDING_CODER.md`. *(Nota: Este prompt precisa ser atualizado para refletir a GERAÇÃO de prompts RooCode)*.
-
-    *(Nota Importante Geral: O prompt de onboarding do Coder Tipo 2 (`../.prompts/02_ONBOARDING_CODER.md`) precisará ser atualizado para instruí-lo a gerar prompts RooCode em vez de esperar que o Maestro o faça).*
+        * **Interação:** Recebe prompt de tarefa. Pede contexto ao Dev (`code <path>`). Gera **texto** de código/configuração. **Gera prompts RooCode (`Action/Path/Content`)** para o Dev executar e aplicar suas mudanças de código/config. Gera **comandos de terminal** para o Dev executar. Recebe feedback/resultados do Dev. Gera Sumário Final.
+        * *Inicialização:* Via prompt `../.prompts/03_ONBOARDING_CODER.md`.
 
 4.  **RooCode (Ferramenta Integrada ao VS Code):**
     * **Uso:** Ferramenta **principal** para aplicar todas as alterações de arquivo (código, config, docs) no workspace do VS Code, quando instruída por um prompt `Action/Path/Content` fornecido pelo **Dev** (prompt gerado pelo **Maestro IA** para docs, ou pelo **AI Coder Tipo 2** para código/config). Também atua como **Agente IA Coder Tipo 1**.
@@ -63,7 +61,7 @@ Linha 5 em diante: Conteúdo completo e exato do arquivo, linha por linha.
 **Observações Cruciais:**
 
 * O bloco de texto entre os marcadores `--- START CONTENT ---` e `--- END CONTENT ---` representa o **conteúdo literal e integral** a ser escrito no arquivo.
-* **NÃO DEVE HAVER** delimitadores de bloco de código Markdown (como ```) em volta ou dentro deste conteúdo quando o prompt é gerado.
+* **NÃO DEVE HAVER** delimitadores de bloco de código Markdown (como aspas triplas ```) em volta ou dentro deste conteúdo quando o prompt é gerado pelo Maestro ou Coder Tipo 2.
 * O Maestro IA (ou Coder Tipo 2) apresentará o prompt completo dentro de um bloco ```text no chat apenas para facilitar a cópia pelo Dev. O que deve ser passado ao RooCode é o texto *dentro* desse bloco ```text.
 
 *(Esta padronização visa evitar os problemas de formatação/renderização encontrados anteriormente).*
@@ -87,7 +85,7 @@ Trabalhar com múltiplos Devs (e seus times de IA) no mesmo projeto exige uma es
     * **Informe o Maestro IA:** Comunique o branch ativo.
 
 2.  **Desenvolver no Feature Branch:**
-    * Siga o "Fluxo de Interação Típico".
+    * Siga o "Fluxo de Interação Típico" abaixo:
     * **Commits Frequentes e Atômicos:** `git add <arquivos>` -> `git commit -m "tipo(escopo): Mensagem"`.
     * **Mantenha Atualizado (Rebase):** Periodicamente: `git pull origin master --rebase`.
     * **Compartilhe Progresso (Push):** Regularmente: `git push origin <nome-do-seu-branch>`.
@@ -110,17 +108,18 @@ Para garantir que o **Maestro IA** tenha o contexto necessário:
 4.  **Definição de Objetivo:** Dev define a(s) meta(s) da sessão.
 5.  **Confirmação AI:** Maestro IA confirma entendimento.
 
-## Fluxo de Interação Típico (Dentro de um Feature Branch - Revisado Final)
+## Fluxo de Interação Típico (Dentro de um Feature Branch)
 
 1.  **Definição da Tarefa (Maestro IA & Você):** Definimos a meta, eu gero o prompt para o Coder.
-2.  **Geração de Código/Solução (Você & AI Coder):** Você entrega o prompt ao Coder (RooCode ou Chat). Vocês iteram até a solução estar pronta.
-    * *Se Coder Tipo 1 (RooCode):* Ele lê/modifica arquivos e roda comandos diretamente no VS Code sob sua supervisão.
-    * *Se Coder Tipo 2 (Chat):* Ele gera **texto** de código/config, **prompts RooCode** para aplicar o código/config, e **comandos de terminal**.
-3.  **Sumarização e Handoff (AI Coder -> Você -> Maestro IA):** Coder (qualquer tipo) gera o "Sumário Final" + opcionalmente o bloco final de código/config se for Coder Tipo 2. Você cola o Sumário (e o código/config se aplicável) para mim.
-4.  **Aplicação das Mudanças (Você -> RooCode):**
-    * **Se Coder foi Tipo 1 (RooCode):** As mudanças de código/config já foram aplicadas por ele durante a iteração (Passo 2).
-    * **Se Coder foi Tipo 2 (Chat):** Você executa os **prompts RooCode** gerados pelo Coder (no Passo 2) usando a ferramenta RooCode no VS Code para aplicar as mudanças de código/config. Confirma a execução para mim (ou para o Coder, se a iteração continuar).
-5.  **Atualização Docs (Maestro IA -> Você -> RooCode):** Eu analiso o sumário, gero o(s) **Prompt(s) RooCode** para atualizar a documentação. Você executa o(s) prompt(s) no **RooCode**. Confirma para mim.
+2.  **Geração de Código/Solução (Você & AI Coder):** Você entrega o prompt ao Coder. Vocês iteram até a solução estar pronta.
+    * *Se Coder Tipo 1 (RooCode):* Ele lê/modifica arquivos e roda comandos diretamente no VS Code sob sua supervisão. Gera **texto** final do código/config.
+    * *Se Coder Tipo 2 (Chat):* Ele gera **texto** de código/config, **prompts RooCode** para aplicar esse código/config, e **comandos de terminal**.
+3.  **Sumarização e Handoff (AI Coder -> Você -> Maestro IA):** Coder (qualquer tipo) gera o "Sumário Final". Se for Tipo 2, ele também fornece o(s) prompt(s) RooCode gerado(s) no passo anterior. Você cola TUDO para mim.
+4.  **Análise do Maestro e Preparação Docs (Maestro IA -> Você):** Eu analiso o Sumário (e o prompt RooCode do Coder Tipo 2, se aplicável). Aprovo conceitualmente. Gero o(s) **Prompt(s) RooCode** para atualizar a **documentação**.
+5.  **Aplicação das Mudanças (Você -> RooCode):**
+    * Se Coder foi Tipo 1: Mudanças de código/config já foram aplicadas por ele no Passo 2. *(Maestro IA não gera prompt para aplicar código/config neste caso)*.
+    * Se Coder foi Tipo 2: Você executa o(s) **prompt(s) RooCode gerados pelo Coder (no passo 3)** usando a ferramenta RooCode no VS Code para aplicar o código/config. Confirma para mim.
+    * Em ambos os casos: Você executa o(s) **prompt(s) RooCode gerados pelo Maestro (no passo 4)** no RooCode para aplicar a documentação. Confirma para mim.
 6.  **Teste Final/Validação (Você):** Você faz um teste final da funcionalidade completa.
 7.  **(Repetir Passos 1-6 se houver mais tarefas na sessão/branch)**
 
@@ -131,7 +130,7 @@ Ao concluir uma sessão (pausando ou finalizando a tarefa no branch):
 1.  **Sinalização:** Dev informa ao Maestro IA o fim da sessão.
 2.  **Sumário AI Coder (se aplicável):** Garantir que o sumário da última tarefa trabalhada foi recebido por mim.
 3.  **Sumário Geral da Sessão (Maestro IA):** Eu forneço um resumo do que foi feito.
-4.  **Atualização de Status (Maestro IA Gera, Dev Aplica/Verifica):** Eu gero o conteúdo para atualizar `README`/`ROADMAP`. Você instrui o RooCode a aplicá-lo e commita no branch.
+4.  **Atualização de Status (Maestro IA Gera, Dev Aplica/Verifica):** Eu gero o **conteúdo** para atualizar `README`/`ROADMAP`. Você instrui o RooCode a aplicá-lo e commita no branch.
 5.  **Sugestão de Commit (Maestro IA Gera):** Eu sugiro a mensagem para o(s) último(s) commit(s) da sessão no feature branch.
 6.  **Versionamento (Dev Executa):** Dev executa `git add .` (ou arquivos específicos), `git commit -m "..."` (usando sugestão ou própria) e `git push origin <nome-do-seu-branch>`. O merge para `master` via PR acontece separadamente.
 
