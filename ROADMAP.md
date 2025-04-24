@@ -3,40 +3,36 @@
 
 Este documento descreve o roadmap de alto nível planejado para o desenvolvimento do Modular Dashboard como uma plataforma base versátil e extensível. É um guia direcional e está sujeito a alterações.
 
-*(Última atualização: 23 de Abril de 2025, aprox. 13:53 PM -03)*
+*(Última atualização: 24 de Abril de 2025)*
 
 ## Status Atual
 
-O projeto está em **Desenvolvimento Ativo**. O foco imediato é na configuração do processo de gestão e na simplificação temporária do frontend. A resolução de bloqueios técnicos anteriores (build Docker, login API) está temporariamente em espera.
+O projeto está em **Desenvolvimento Ativo**. O processo inicial de gestão de projetos foi configurado (Issues, Board). O foco técnico imediato está na resolução de um bug no login da API. A simplificação do frontend (login removido temporariamente) continua.
 
 ## Fases Planejadas
 
 O desenvolvimento está organizado nas seguintes fases principais:
 
-### Fase 1: Setup do Processo e Simplificação Inicial (Em Andamento)
+### Fase 1: Setup do Processo e Core Inicial (Em Andamento)
 
-* **Objetivo:** Estabelecer as ferramentas e processos para gerenciamento de tarefas e contexto e organizar o estado inicial do frontend para facilitar o desenvolvimento do Core.
+* **Objetivo:** Estabelecer as ferramentas e processos para gerenciamento de tarefas, simplificar o frontend inicial e resolver bloqueios técnicos chave para habilitar o desenvolvimento do Core (Auth/User).
 * **Tarefas Principais:**
     * ✅ Estrutura básica do projeto (Frontend/Backend/Docker) definida.
     * ✅ Módulo exemplo `01_GERADOR_QUESITOS` V1 funcional implementado *(Nota: Funcionalidade principal desativada)*.
     * ✅ Configuração do Banco de Dados e Migrações (Alembic) funcionando para `users`.
     * ✅ Estrutura base do Backend para `Auth` e `User Management` implementada.
-    * ✅ Documentação essencial inicial criada/atualizada (Visão, Arquitetura, Setup, Estrutura, BD, Módulos, Fluxo, Roadmap, Onboarding, Prompts).
+    * ✅ Documentação essencial inicial criada/atualizada (Visão, Arquitetura, Setup, Estrutura, BD, Módulos, Fluxo, Roadmap, Onboarding, Prompts, Gestão).
     * ✅ Refatoração inicial do Container `api` (dependências não-core comentadas).
-    * 🚧 **Remover temporariamente a tela/fluxo de login do Frontend:** Simplificar a UI inicial para permitir foco no desenvolvimento de outros componentes Core sem depender da autenticação funcional. *(Prioridade Imediata)*.
-    * 🚧 **Implementar Modelo Híbrido de Gestão:** *(Prioridade Imediata)*.
-        * Configurar GitHub Project Board (Kanban: Backlog, Planejado, Em Andamento, Revisão, Concluído).
-        * Adotar GitHub Issues para rastreamento de todas as tarefas.
-        * Criar pasta `.logs/task_summaries/` no repositório.
-        * Integrar o passo de salvar o "Sumário Final para Orquestrador" como arquivo `.md` em `.logs/task_summaries/` ao fluxo de trabalho (requer atualização do `docs/07_...`).
-        * Definir processo para vincular Issues, PRs e Sumários.
-    * ⬜ Resolver erro de build Docker (`failed to fetch oauth token`). *(Após setup do processo)*.
-    * ⬜ Corrigir bug crítico no endpoint `/api/auth/v1/login`. *(Após resolução do build)*.
+    * ✅ **Implementar Modelo Híbrido de Gestão:** (Issues #2 concluída - Board, Issues, Linking, Logs definidos e documentados).
+    * ✅ Resolver erro de build Docker (`failed to fetch oauth token`). *(Nota: Resolvido conforme handoff, pendente de verificação final no próximo build)*.
+    * 🚧 **Corrigir bug crítico no endpoint `/api/auth/v1/login`.** *(Prioridade Técnica Atual)*.
+    * ⬜ **Remover temporariamente a tela/fluxo de login do Frontend:** *(Em Andamento/Mantido)*.
+    * ⬜ Testar e finalizar endpoints Core de Autenticação (`/users/me`) e CRUD Admin (`/admin/users/*`). *(Depende da correção do login)*.
+    * ⬜ Re-integrar fluxo de autenticação e telas de Gerenciamento de Usuários no Frontend Core. *(Depende do Auth funcional)*.
     * ⬜ Definir e Implementar Mecanismo de Modularidade Inicial (Backend/Frontend).
-    * ⬜ Testar e finalizar endpoints Core de Autenticação (`/users/me`) e CRUD Admin (`/admin/users/*`). *(Após correção do login)*.
-    * ⬜ Re-integrar fluxo de autenticação e telas de Gerenciamento de Usuários no Frontend Core. *(Após Auth funcional)*.
     * ⬜ Solidificar e documentar as APIs do Core (Auth, User).
     * ⬜ Estabelecer padrões claros para desenvolvimento de novos módulos.
+    * *(Nota: Implementação de Templates de Issue/PR e Milestones adiada - ver backlog de Issues)*.
 
 ### Fase 2: Performance do Core e Reintegração de Processamento Pesado
 
@@ -72,4 +68,4 @@ O desenvolvimento está organizado nas seguintes fases principais:
 * ⬜ Planejado / A Fazer
 ---
 
-**Nota:** Este roadmap é um guia flexível. A ordem e o escopo das tarefas podem ser ajustados conforme o projeto avança e novas prioridades emergem.
+**Nota:** Este roadmap é um guia flexível. A ordem e o escopo das tarefas podem ser ajustados conforme o projeto avança e novas prioridades emergem, gerenciadas via GitHub Issues e Project Board.
