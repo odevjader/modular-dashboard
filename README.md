@@ -1,3 +1,4 @@
+#README.md
 # Modular Dashboard
 
 > Uma **plataforma base versátil e extensível** projetada para acelerar o desenvolvimento de aplicações web modulares e dashboards interativos, com capacidade de integração com Inteligência Artificial.

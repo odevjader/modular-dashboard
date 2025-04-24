@@ -1,3 +1,4 @@
+# docs/01_ARQUITETURA.md
 # Arquitetura do Modular Dashboard
 
 Este documento descreve a arquitetura de alto nível do projeto Modular Dashboard, seus principais componentes, o fluxo de dados, as decisões de design fundamentais, o mecanismo de modularidade e a estratégia de configuração.

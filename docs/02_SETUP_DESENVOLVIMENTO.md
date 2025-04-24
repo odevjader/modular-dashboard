@@ -1,3 +1,4 @@
+#docs/02_SETUP_DESENVOLVIMENTO.md
 # Guia de Setup de Desenvolvimento - Modular Dashboard
 
 Este guia descreve os passos necessários para configurar e executar o projeto Modular Dashboard em um ambiente de desenvolvimento local utilizando Docker e Node.js.

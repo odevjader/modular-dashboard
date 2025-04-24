@@ -1,3 +1,4 @@
+#ROADMAP.md
 # Roadmap - Modular Dashboard
 
 Este documento descreve o roadmap de alto nível planejado para o desenvolvimento do Modular Dashboard como uma plataforma base versátil e extensível. É um guia direcional e está sujeito a alterações.

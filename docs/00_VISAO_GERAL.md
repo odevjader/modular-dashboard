@@ -1,3 +1,4 @@
+# docs/00_VISAO_GERAL.md
 # Visão Geral do Projeto - Modular Dashboard
 
 Este documento fornece uma visão detalhada sobre o propósito, os objetivos, o público-alvo e a visão de longo prazo para o projeto **Modular Dashboard**, definido como uma **plataforma base versátil e extensível** para construção rápida de aplicações web e dashboards.

@@ -1,3 +1,4 @@
+# docs/03_ESTRUTURA_PASTAS.md
 # Estrutura de Pastas - Modular Dashboard
 
 Este documento descreve a organização das pastas e arquivos principais do projeto Modular Dashboard, ajudando a navegar pela base de código.
