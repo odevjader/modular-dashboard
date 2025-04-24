@@ -7,7 +7,7 @@ Este documento descreve o roadmap de alto nível planejado para o desenvolviment
 
 ## Status Atual
 
-O projeto está em **Desenvolvimento Ativo**. O processo inicial de gestão de projetos foi configurado (Issues, Board). O foco técnico imediato está na resolução de um bug no login da API. A simplificação do frontend (login removido temporariamente) continua.
+O projeto está em **Desenvolvimento Ativo**. O processo inicial de gestão de projetos foi configurado (Issues, Board). O foco técnico imediato está na refatoração da estrutura de pastas da API Core, seguido pela implementação do mecanismo de modularidade V1.
 
 ## Fases Planejadas
 
@@ -25,11 +25,12 @@ O desenvolvimento está organizado nas seguintes fases principais:
     * ✅ Refatoração inicial do Container `api` (dependências não-core comentadas).
     * ✅ **Implementar Modelo Híbrido de Gestão:** (Issues #2 concluída - Board, Issues, Linking, Logs definidos e documentados).
     * ✅ Resolver erro de build Docker (`failed to fetch oauth token`). *(Nota: Resolvido conforme handoff, pendente de verificação final no próximo build)*.
-    * 🚧 **Corrigir bug crítico no endpoint `/api/auth/v1/login`.** *(Prioridade Técnica Atual)*.
+    * 🚧 **Refatorar Estrutura: Mover APIs Core para core_modules/ (Issue #9).** *(Prioridade Atual)*.
+    * ⬜ Implementar Mecanismo de Modularidade v1 (Backend/Frontend - Revisado) (Issue #8). *(Depende de #9)*.
+    * ⬜ Corrigir bug crítico no endpoint `/api/auth/v1/login`. *(Após Modularidade V1)*.
     * ⬜ **Remover temporariamente a tela/fluxo de login do Frontend:** *(Em Andamento/Mantido)*.
     * ⬜ Testar e finalizar endpoints Core de Autenticação (`/users/me`) e CRUD Admin (`/admin/users/*`). *(Depende da correção do login)*.
     * ⬜ Re-integrar fluxo de autenticação e telas de Gerenciamento de Usuários no Frontend Core. *(Depende do Auth funcional)*.
-    * ⬜ Definir e Implementar Mecanismo de Modularidade Inicial (Backend/Frontend).
     * ⬜ Solidificar e documentar as APIs do Core (Auth, User).
     * ⬜ Estabelecer padrões claros para desenvolvimento de novos módulos.
     * *(Nota: Implementação de Templates de Issue/PR e Milestones adiada - ver backlog de Issues)*.

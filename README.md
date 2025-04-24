@@ -5,17 +5,19 @@
 
 ## Status Atual
 
-**(Abril de 2025)**: 🚧 Desenvolvimento Ativo - **Foco na Resolução de Bloqueios Técnicos e Processos** 🚧
+**(Abril de 2025)**: 🚧 Desenvolvimento Ativo - **Foco na Arquitetura Core e Processos** 🚧
 
-O projeto está em desenvolvimento ativo, focado na construção do núcleo (Core) da plataforma e na solidificação dos processos de desenvolvimento.
+O projeto está em desenvolvimento ativo, com foco na refatoração da estrutura da API Core, na implementação do mecanismo de modularidade e na solidificação dos processos de desenvolvimento.
 
 * **Processo de Gestão:** O modelo inicial de gestão de projetos usando GitHub Issues e Project Board foi definido e documentado (ver `docs/08_PROJECT_MANAGEMENT.md`).
 * **Status Técnico:**
     * O bloqueio anterior relacionado ao build da imagem Docker da API (`failed to fetch oauth token`) foi reportado como resolvido (pendente de verificação final no próximo build/execução).
-    * O **foco técnico atual** é a correção de um bug conhecido no endpoint de login (`/api/auth/v1/login`).
+    * O **foco técnico atual** é a **Refatoração da Estrutura da API Core** para separar módulos Core dos opcionais (Issue #9).
+    * A implementação do **Mecanismo de Modularidade V1** (Issue #8) é a próxima tarefa técnica principal.
+    * A correção do bug no endpoint de login (`/api/auth/v1/login`) está planejada para após a implementação da modularidade V1.
     * A estrutura base do módulo core de Autenticação e Gerenciamento de Usuários no backend está implementada, aguardando testes após a correção do login.
-* **Melhorias de Processo Adiadas:** A implementação de templates de Issue/PR e Milestones foi adiada para focar nas prioridades atuais.
-* **Módulos Exemplo:** Continuam temporariamente desativados até a estabilização do Core e do fluxo de login.
+* **Melhorias de Processo Adiadas:** A implementação de templates de Issue/PR e Milestones foi adiada (ver backlog).
+* **Módulos Exemplo:** Continuam temporariamente desativados.
 
 ## Visão Geral da Arquitetura
 
@@ -26,7 +28,7 @@ O projeto segue uma arquitetura com Frontend SPA (Single Page Application) e Bac
 * **Banco de Dados:** PostgreSQL com extensão pgvector. Usado pelo Core e potencialmente pelos módulos.
 * **Infraestrutura:** Docker e Docker Compose para containerização e ambiente de desenvolvimento.
 
-*(Consulte [docs/01_ARQUITETURA.md](./docs/01_ARQUITETURA.md) para detalhes arquiteturais).*
+*(Consulte [docs/01_ARQUITETURA.md](./docs/01_ARQUITETURA.md) para detalhes arquiteturais e `docs/08_PROJECT_MANAGEMENT.md` para o fluxo de gestão).*
 
 ## Principais Tecnologias
 
@@ -70,7 +72,7 @@ Instruções detalhadas para clonar o repositório, configurar as variáveis de 
 ## Estrutura do Projeto (Resumo)
 
 * `/frontend`: Contém o código da aplicação React (SPA - Shell da plataforma e UI de módulos).
-* `/backend`: Contém o código da API FastAPI (Core da plataforma e APIs de módulos).
+* `/backend`: Contém o código da API FastAPI (Core da plataforma e APIs de módulos). Espera-se refatoração para `/backend/app/core_modules/` e `/backend/app/modules/`.
 * `/docs`: Contém a documentação geral (`00_` a `NN_...`) e a subpasta `/modules`.
 * `/docs/modules`: Contém a documentação específica de cada módulo (`01_...`, `02_...`).
 * `/.github`: Contém configurações do GitHub (ex: templates, workflows - futuramente).
@@ -83,12 +85,14 @@ Instruções detalhadas para clonar o repositório, configurar as variáveis de 
 
 ## Próximos Passos (Foco Atual)
 
-Consulte o [ROADMAP.md](./ROADMAP.md) para detalhes completos. As prioridades imediatas são:
+Consulte o [ROADMAP.md](./ROADMAP.md) para detalhes completos. As prioridades imediatas são (referências de Issue do GitHub):
 
-1.  **Corrigir o bug no endpoint de login (`/api/auth/v1/login`)** do módulo core de Autenticação - **Principal Bloqueio Funcional.**
-2.  Verificar estabilidade do build Docker e inicialização da API.
-3.  Finalizar e testar funcionalmente o módulo core de Autenticação e Gerenciamento de Usuários (backend e frontend) - *Depende do passo 1*.
-4.  **Definir e implementar o Mecanismo de Modularidade** (backend e frontend) - Decisão arquitetural chave.
-5.  Solidificar e documentar as APIs do Core da plataforma (Auth, User, etc.).
-6.  Estabelecer padrões claros para o desenvolvimento de novos módulos.
-7.  Revisitar implementação de Templates de Issue/PR e Milestones (adiados).
+1.  **Refatorar Estrutura: Mover APIs Core para `core_modules/` (#9)** - *(Prioridade Atual)*.
+2.  **Implementar Mecanismo de Modularidade v1 (Backend/Frontend - Revisado) (#8)** - *(Depende de #9)*.
+3.  **Corrigir bug crítico no endpoint de login (`/api/auth/v1/login`)** - *(Após Modularidade V1)*.
+4.  Verificar estabilidade do build Docker e inicialização da API.
+5.  Testar e finalizar endpoints Core de Autenticação (`/users/me`) e CRUD Admin (`/admin/users/*`) - *(Depende de #3)*.
+6.  Re-integrar fluxo de autenticação e telas de Gerenciamento de Usuários no Frontend Core - *(Depende de #5)*.
+7.  Solidificar e documentar as APIs do Core (Auth, User).
+8.  Estabelecer padrões claros para desenvolvimento de novos módulos.
+9.  Revisitar implementação de Templates de Issue/PR e Milestones (adiados).
