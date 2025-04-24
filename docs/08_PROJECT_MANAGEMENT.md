@@ -7,7 +7,7 @@ Este documento descreve como utilizamos as GitHub Issues e o GitHub Project Boar
 
 ## Visão Geral
 
-Utilizamos uma abordagem baseada em Kanban para visualizar o fluxo de trabalho e Issues detalhadas para rastrear cada unidade de trabalho (bugs, features, chores, docs). O objetivo é manter um processo eficiente, simples e com boa rastreabilidade.
+Utilizamos uma abordagem baseada em Kanban para visualizar o fluxo de trabalho e Issues detalhadas para rastrear cada unidade de trabalho (bugs, features, tarefas internas, docs). O objetivo é manter um processo eficiente, simples e com boa rastreabilidade.
 
 ## GitHub Project Board
 
@@ -24,7 +24,7 @@ Utilizamos uma abordagem baseada em Kanban para visualizar o fluxo de trabalho e
 
 ## GitHub Issues
 
-* **Propósito:** Rastrear todas as unidades de trabalho: bugs, novas funcionalidades, melhorias, tarefas de documentação, configuração ou manutenção (`chore`). Cada Issue tem um número único (ex: `#1`, `#2`).
+* **Propósito:** Rastrear todas as unidades de trabalho: bugs, novas funcionalidades, melhorias, tarefas de documentação, configuração ou manutenção (`internal`). Cada Issue tem um número único (ex: `#1`, `#2`).
 * **Criação de Issues:** Ao criar uma nova Issue:
     * **Título:** Deve ser claro, conciso e indicar o objetivo principal da tarefa (ex: "Setup Hybrid Project Management").
     * **Descrição (Corpo):** Explicar o objetivo, o contexto (por que é necessário?) e, idealmente, incluir uma seção `## Critérios de Aceite` com uma lista (markdown checklist ` - [ ] `) do que define a tarefa como concluída.
@@ -32,7 +32,7 @@ Utilizamos uma abordagem baseada em Kanban para visualizar o fluxo de trabalho e
         * `bug`: Erros ou comportamentos inesperados.
         * `feature`: Novas funcionalidades para o usuário final ou sistema.
         * `docs`: Tarefas relacionadas à escrita ou atualização da documentação.
-        * `chore`: Manutenção, configuração, refatoração, ou outras tarefas que não são `bug` ou `feature`.
+        * `internal`: Manutenção, configuração, refatoração, ou outras tarefas internas que não são `bug` ou `feature`.
         * `backend`: Tarefa relacionada primariamente ao código do FastAPI.
         * `frontend`: Tarefa relacionada primariamente ao código React.
     * **Assignees:** Atribuir o Dev responsável pela execução da tarefa (opcional, mas recomendado).
@@ -44,7 +44,7 @@ Para manter a rastreabilidade entre a tarefa, o código e os sumários, utilizam
 
 1.  **Mensagens de Commit:** Incluir a referência da Issue no final da mensagem do commit.
     * Formato: `git commit -m "tipo(escopo): Mensagem descritiva (#<numero_issue>)"`
-    * Exemplo: `git commit -m "docs(workflow): Update docs (#2)"`
+    * Exemplo: `git commit -m "docs: Add project management guide (#2)"`
 
 2.  **Pull Requests (PRs):** Mencionar a Issue que o PR resolve na descrição do PR, preferencialmente usando palavras-chave que o GitHub reconhece para fechamento automático.
     * Formato (na descrição): `Este PR implementa a funcionalidade X. Resolves #<numero_issue>.`
