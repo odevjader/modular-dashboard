@@ -42,13 +42,14 @@ Utilizamos uma abordagem baseada em Kanban para visualizar o fluxo de trabalho e
 
 Para manter a rastreabilidade entre a tarefa, o código e os sumários, utilizamos o número da Issue (#<número>) da seguinte forma:
 
-1.  **Mensagens de Commit:** Incluir a referência da Issue no final da mensagem do commit.
+1.  **Mensagens de Commit:** Incluir a referência da Issue no final da mensagem do commit. O Maestro IA sugerirá mensagens neste formato.
     * Formato: `git commit -m "tipo(escopo): Mensagem descritiva (#<numero_issue>)"`
     * Exemplo: `git commit -m "docs: Add project management guide (#2)"`
 
-2.  **Pull Requests (PRs):** Mencionar a Issue que o PR resolve na descrição do PR, preferencialmente usando palavras-chave que o GitHub reconhece para fechamento automático.
-    * Formato (na descrição): `Este PR implementa a funcionalidade X. Resolves #<numero_issue>.`
-    * Exemplo: `Corrige o fluxo de login. Closes #42.`
+2.  **Pull Requests (PRs):** O título e a descrição inicial do PR serão **sugeridos pelo Maestro IA** ao final da tarefa correspondente. A descrição deve mencionar a Issue que o PR resolve, preferencialmente usando palavras-chave que o GitHub reconhece para fechamento automático (`Resolves`, `Closes`, `Fixes`).
+    * Formato Sugerido (pelo Maestro IA): Título claro; Descrição incluindo `Resolves #<numero_issue>`.
+    * Exemplo (na descrição gerada): `Este PR implementa a funcionalidade X. Resolves #<numero_issue>.`
+    * Exemplo Completo: `Corrige o fluxo de login. Closes #42.`
 
 3.  **Sumários de Tarefa (AI):** Incluir o número da Issue no nome do arquivo Markdown salvo pelo Dev no diretório `.logs/task_summaries/`.
     * Formato: `YYYY-MM-DD_HHMM_issue<numero_issue>_sumario_descritivo.md`
