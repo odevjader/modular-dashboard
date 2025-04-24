@@ -9,7 +9,7 @@
 
 O projeto está em desenvolvimento ativo, com foco na refatoração da estrutura da API Core, na implementação do mecanismo de modularidade e na solidificação dos processos de desenvolvimento.
 
-* **Processo de Gestão:** O modelo inicial de gestão de projetos usando GitHub Issues e Project Board foi definido e documentado (ver `docs/08_PROJECT_MANAGEMENT.md`).
+* **Processo de Gestão:** O modelo inicial de gestão de projetos usando GitHub Issues e Project Board foi definido, documentado (ver `docs/08_PROJECT_MANAGEMENT.md`) e o backlog inicial populado.
 * **Status Técnico:**
     * O bloqueio anterior relacionado ao build da imagem Docker da API (`failed to fetch oauth token`) foi reportado como resolvido (pendente de verificação final no próximo build/execução).
     * O **foco técnico atual** é a **Refatoração da Estrutura da API Core** para separar módulos Core dos opcionais (Issue #9).
@@ -89,10 +89,12 @@ Consulte o [ROADMAP.md](./ROADMAP.md) para detalhes completos. As prioridades im
 
 1.  **Refatorar Estrutura: Mover APIs Core para `core_modules/` (#9)** - *(Prioridade Atual)*.
 2.  **Implementar Mecanismo de Modularidade v1 (Backend/Frontend - Revisado) (#8)** - *(Depende de #9)*.
-3.  **Corrigir bug crítico no endpoint de login (`/api/auth/v1/login`)** - *(Após Modularidade V1)*.
+3.  **Corrigir bug crítico no endpoint de login (`/api/auth/v1/login`) (#11)** - *(Após Modularidade V1)*.
 4.  Verificar estabilidade do build Docker e inicialização da API.
-5.  Testar e finalizar endpoints Core de Autenticação (`/users/me`) e CRUD Admin (`/admin/users/*`) - *(Depende de #3)*.
-6.  Re-integrar fluxo de autenticação e telas de Gerenciamento de Usuários no Frontend Core - *(Depende de #5)*.
-7.  Solidificar e documentar as APIs do Core (Auth, User).
-8.  Estabelecer padrões claros para desenvolvimento de novos módulos.
+5.  Testar e finalizar endpoints Core de Autenticação (`/users/me`) e CRUD Admin (`/admin/users/*`) (#13) - *(Depende de #11)*.
+6.  Re-integrar fluxo de autenticação e telas de Gerenciamento de Usuários no Frontend Core (#14) - *(Depende de #13)*.
+7.  Solidificar e documentar as APIs do Core (Auth, User) (#15).
+8.  Estabelecer padrões claros para desenvolvimento de novos módulos (#16) - *(Depende de #8)*.
 9.  Revisitar implementação de Templates de Issue/PR e Milestones (adiados).
+
+--- END CONTENT ---

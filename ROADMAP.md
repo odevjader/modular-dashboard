@@ -7,7 +7,7 @@ Este documento descreve o roadmap de alto nível planejado para o desenvolviment
 
 ## Status Atual
 
-O projeto está em **Desenvolvimento Ativo**. O processo inicial de gestão de projetos foi configurado (Issues, Board). O foco técnico imediato está na refatoração da estrutura de pastas da API Core, seguido pela implementação do mecanismo de modularidade V1.
+O projeto está em **Desenvolvimento Ativo**. O processo inicial de gestão de projetos foi configurado (Issues, Board) e o backlog inicial foi populado com as tarefas do roadmap. O foco técnico imediato está na refatoração da estrutura de pastas da API Core (Issue #9), seguido pela implementação do mecanismo de modularidade V1 (Issue #8).
 
 ## Fases Planejadas
 
@@ -27,13 +27,13 @@ O desenvolvimento está organizado nas seguintes fases principais:
     * ✅ Resolver erro de build Docker (`failed to fetch oauth token`). *(Nota: Resolvido conforme handoff, pendente de verificação final no próximo build)*.
     * 🚧 **Refatorar Estrutura: Mover APIs Core para core_modules/ (Issue #9).** *(Prioridade Atual)*.
     * ⬜ Implementar Mecanismo de Modularidade v1 (Backend/Frontend - Revisado) (Issue #8). *(Depende de #9)*.
-    * ⬜ Corrigir bug crítico no endpoint `/api/auth/v1/login`. *(Após Modularidade V1)*.
-    * ⬜ **Remover temporariamente a tela/fluxo de login do Frontend:** *(Em Andamento/Mantido)*.
-    * ⬜ Testar e finalizar endpoints Core de Autenticação (`/users/me`) e CRUD Admin (`/admin/users/*`). *(Depende da correção do login)*.
-    * ⬜ Re-integrar fluxo de autenticação e telas de Gerenciamento de Usuários no Frontend Core. *(Depende do Auth funcional)*.
-    * ⬜ Solidificar e documentar as APIs do Core (Auth, User).
-    * ⬜ Estabelecer padrões claros para desenvolvimento de novos módulos.
-    * *(Nota: Implementação de Templates de Issue/PR e Milestones adiada - ver backlog de Issues)*.
+    * ⬜ Corrigir bug crítico no endpoint `/api/auth/v1/login` (#11). *(Após Modularidade V1)*.
+    * ⬜ **Remover temporariamente a tela/fluxo de login do Frontend (#12):** *(Em Andamento/Mantido)*.
+    * ⬜ Testar e finalizar endpoints Core de Autenticação (`/users/me`) e CRUD Admin (`/admin/users/*`) (#13). *(Depende de #11)*.
+    * ⬜ Re-integrar fluxo de autenticação e telas de Gerenciamento de Usuários no Frontend Core (#14). *(Depende de #13)*.
+    * ⬜ Solidificar e documentar as APIs do Core (Auth, User) (#15).
+    * ⬜ Estabelecer padrões claros para desenvolvimento de novos módulos (#16). *(Depende de #8)*.
+    * *(Nota: Implementação de Templates de Issue/PR (#3, #4) e Milestones (#6) adiada - ver backlog de Issues)*.
 
 ### Fase 2: Performance do Core e Reintegração de Processamento Pesado
 
