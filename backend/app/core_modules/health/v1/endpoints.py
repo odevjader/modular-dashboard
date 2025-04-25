@@ -1,4 +1,4 @@
-# backend/app/api/health/v1/endpoints.py
+#backend/app/core_modules/health/v1/endpoints.py
 from fastapi import APIRouter
 from pydantic import BaseModel
 
@@ -10,7 +10,7 @@ class HealthResponse(BaseModel):
     message: str = "API health module v1 is active"
 
 # Define routes relative to the prefix this router will be included with
-@router.get("/health", response_model=HealthResponse, tags=["Health v1"])
+@router.get("/health", response_model=HealthResponse, tags=["Health"])
 async def health_check():
     """
     Checks if the health module v1 is running.
