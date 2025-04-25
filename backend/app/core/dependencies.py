@@ -9,7 +9,7 @@ from typing import Annotated
 from app.core import security
 from app.core.database import get_db
 from app.models import user as user_model
-from app.modules.auth.v1 import schemas as auth_schemas
+from app.core_modules.auth.v1 import schemas as auth_schemas
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/v1/login")
 
