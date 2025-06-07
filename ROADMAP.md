@@ -7,7 +7,7 @@ Este documento descreve o roadmap de alto nível planejado para o desenvolviment
 
 ## Status Atual
 
-O projeto está em **Desenvolvimento Ativo**. O bug crítico de login (Issue #11) foi resolvido, desbloqueando o progresso na autenticação e gerenciamento de usuários. O foco técnico imediato continua sendo a implementação do mecanismo de modularidade V1.
+O projeto está em **Desenvolvimento Ativo**. O bug crítico de login (Issue #11) foi resolvido, desbloqueando o progresso na autenticação e gerenciamento de usuários. O foco técnico imediato é a implementação do mecanismo de modularidade V1.
 
 ## Fases Planejadas
 
@@ -25,7 +25,16 @@ O projeto está em **Desenvolvimento Ativo**. O bug crítico de login (Issue #11
   * ✅ Resolver erro de build Docker (`failed to fetch oauth token`). *(Resolvido)*.
   * ✅ **Refatorar Estrutura: Mover APIs Core (`auth`, `health`) para core_modules/ (Issues #9, #17).** *(Concluído)*.
   * ✅ **Corrigir bug crítico no endpoint `/api/auth/v1/login` (#11).** *(Resolvido via configuração de ambiente)*.
-  * 🚧 **Implementar Mecanismo de Modularidade v1 (Backend/Frontend - Revisado) (Issue #8).** *(Prioridade Atual)*.
+  * 🚧 **Implementar Mecanismo de Modularidade v1 (Issue #8).** *(Prioridade Atual)*.
+    * **Backend:**
+      * ⬜ **Tarefa 1.1:** Criar o arquivo de configuração `modules.yaml` e os schemas de validação Pydantic.
+      * ⬜ **Tarefa 1.2:** Criar a função `load_modules` no novo arquivo `core/module_loader.py`.
+      * ⬜ **Tarefa 1.3:** Integrar o `load_modules` na inicialização da aplicação (`main.py`).
+      * ⬜ **Tarefa 1.4:** Limpar as importações estáticas do `api_router.py`.
+    * **Frontend:**
+      * ⬜ **Tarefa 2.1:** Criar o registro de módulos do frontend (`moduleRegistry.ts`).
+      * ⬜ **Tarefa 2.2:** Implementar o roteamento dinâmico no `App.tsx` usando o registro.
+      * ⬜ **Tarefa 2.3:** Implementar a navegação dinâmica (barra lateral, página inicial) a partir do registro.
   * 🚧 **Testar e finalizar endpoints Core de Autenticação (`/users/me`) e CRUD Admin (`/admin/users/*`) (#13).** *(Desbloqueado, Próxima Prioridade)*.
   * ⬜ Re-integrar fluxo de autenticação e telas de Gerenciamento de Usuários no Frontend Core (#14). *(Depende de #13)*.
   * ⬜ Solidificar e documentar as APIs do Core (Auth, User) (#15). *(Idealmente após #13)*.
