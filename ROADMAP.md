@@ -3,45 +3,65 @@
 
 Este documento descreve o roadmap de alto nível planejado para o desenvolvimento do Modular Dashboard como uma plataforma base versátil e extensível. É um guia direcional e está sujeito a alterações.
 
-*(Última atualização: 25 de Abril de 2025 - Refletindo conclusão das Issues #9 e #17)*
+*(Última atualização: 07 de Junho de 2025)*
 
 ## Status Atual
 
-O projeto está em **Desenvolvimento Ativo**. O processo inicial de gestão de projetos foi configurado (Issues, Board) e o backlog inicial foi populado com as tarefas do roadmap. As refatorações da estrutura da API Core (Issues #9 e #17) foram concluídas, movendo `auth` e `health` para `core_modules`. O foco técnico imediato passa a ser a implementação do mecanismo de modularidade V1 (Issue #8). O fluxo de trabalho Humano-IA foi refinado e formalizado.
+O projeto está em **Desenvolvimento Ativo**. O bug crítico de login (Issue #11) foi resolvido, desbloqueando o progresso na autenticação e gerenciamento de usuários. O foco técnico imediato continua sendo a implementação do mecanismo de modularidade V1.
 
 ## Fases Planejadas
-
-O desenvolvimento está organizado nas seguintes fases principais:
 
 ### Fase 1: Setup do Processo e Core Inicial (Em Andamento)
 
 * **Objetivo:** Estabelecer as ferramentas e processos para gerenciamento de tarefas, refatorar a estrutura Core e implementar a modularidade base.
 * **Tarefas Principais:**
-    * ✅ Estrutura básica do projeto (Frontend/Backend/Docker) definida.
-    * ✅ Módulo exemplo `01_GERADOR_QUESITOS` V1 funcional implementado *(Nota: Funcionalidade principal desativada)*.
-    * ✅ Configuração do Banco de Dados e Migrações (Alembic) funcionando para `users`.
-    * ✅ Estrutura base do Backend para `Auth` e `User Management` implementada.
-    * ✅ Documentação essencial inicial criada/atualizada.
-    * ✅ Refatoração inicial do Container `api` (dependências não-core comentadas).
-    * ✅ **Implementar Modelo Híbrido de Gestão:** (Issues #2 concluída - Board, Issues, Linking, Logs definidos e documentados).
-    * ✅ Resolver erro de build Docker (`failed to fetch oauth token`). *(Verificado como resolvido)*.
-    * ✅ **Refatorar Estrutura: Mover APIs Core (`auth`) para core_modules/ (Issue #9).** *(Concluído)*.
-    * ✅ **Refatorar Estrutura: Mover APIs Core (`health`) para core_modules/ (Issue #17).** *(Concluído)*.
-    * 🚧 **Implementar Mecanismo de Modularidade v1 (Backend/Frontend - Revisado) (Issue #8).** *(Prioridade Atual)*.
-    * ⬜ Corrigir bug crítico no endpoint `/api/auth/v1/login` (#11). *(Depende de #8)*.
-    * ⬜ **Remover temporariamente a tela/fluxo de login do Frontend (#12):** *(Status: "Em Andamento/Mantido")*.
-    * ⬜ Testar e finalizar endpoints Core de Autenticação (`/users/me`) e CRUD Admin (`/admin/users/*`) (#13). *(Depende de #11)*.
-    * ⬜ Re-integrar fluxo de autenticação e telas de Gerenciamento de Usuários no Frontend Core (#14). *(Depende de #13)*.
-    * ⬜ Solidificar e documentar as APIs do Core (Auth, User) (#15). *(Idealmente após #13)*.
-    * ⬜ Estabelecer padrões claros para desenvolvimento de novos módulos (#16). *(Depende de #8)*.
-    * *(Nota: Implementação de Templates de Issue/PR (#3, #4) e Milestones (#6) adiada - ver backlog de Issues)*.
+  * ✅ Estrutura básica do projeto (Frontend/Backend/Docker) definida.
+  * ✅ Módulo exemplo `01_GERADOR_QUESITOS` V1 funcional implementado *(Nota: Funcionalidade principal desativada)*.
+  * ✅ Configuração do Banco de Dados e Migrações (Alembic) funcionando para `users`.
+  * ✅ Estrutura base do Backend para `Auth` e `User Management` implementada.
+  * ✅ Documentação essencial inicial criada/atualizada.
+  * ✅ Refatoração inicial do Container `api` (dependências não-core comentadas).
+  * ✅ **Implementar Modelo Híbrido de Gestão:** (Issue #2 concluída).
+  * ✅ Resolver erro de build Docker (`failed to fetch oauth token`). *(Resolvido)*.
+  * ✅ **Refatorar Estrutura: Mover APIs Core (`auth`, `health`) para core_modules/ (Issues #9, #17).** *(Concluído)*.
+  * ✅ **Corrigir bug crítico no endpoint `/api/auth/v1/login` (#11).** *(Resolvido via configuração de ambiente)*.
+  * 🚧 **Implementar Mecanismo de Modularidade v1 (Backend/Frontend - Revisado) (Issue #8).** *(Prioridade Atual)*.
+  * 🚧 **Testar e finalizar endpoints Core de Autenticação (`/users/me`) e CRUD Admin (`/admin/users/*`) (#13).** *(Desbloqueado, Próxima Prioridade)*.
+  * ⬜ Re-integrar fluxo de autenticação e telas de Gerenciamento de Usuários no Frontend Core (#14). *(Depende de #13)*.
+  * ⬜ Solidificar e documentar as APIs do Core (Auth, User) (#15). *(Idealmente após #13)*.
+  * ⬜ Estabelecer padrões claros para desenvolvimento de novos módulos (#16). *(Depende de #8)*.
+  * *(Nota: Implementação de Templates de Issue/PR (#3, #4) e Milestones (#6) adiada - ver backlog de Issues)*.
 
 ### Fase 2: Performance do Core e Reintegração de Processamento Pesado
-*(... restante do roadmap como estava ...)*
+
+* **Objetivo:** Otimizar a performance do Core e reintegrar funcionalidades de processamento pesado de forma mais robusta e escalável.
+* **Tarefas Principais:**
+  * ⬜ **Criar Serviço Dedicado para PDF/OCR (Issue #7):** Mover a lógica de processamento de PDF/OCR do `01_GERADOR_QUESITOS` para um container/serviço worker separado (ex: Celery, ARQ) para evitar bloqueio da API principal.
+  * ⬜ Reativar e refatorar o módulo `01_GERADOR_QUESITOS` para usar o novo serviço de processamento.
+  * ⬜ Reativar e refatorar o módulo `03_AI_TEST` (se ainda for relevante) ou substituí-lo por uma suíte de health check de IA mais robusta.
+  * ⬜ Implementar caching (Redis) para sessões de usuário e/ou resultados de queries frequentes.
+  * ⬜ Otimizar queries de banco de dados e garantir uso correto de índices.
+
 ### Fase 3: Testes do Core, Segurança e Melhorias de UX Base
-*(... restante do roadmap como estava ...)*
+
+* **Objetivo:** Garantir a estabilidade e segurança da plataforma base e melhorar a experiência de uso geral.
+* **Tarefas Principais:**
+  * ⬜ Aumentar a cobertura de testes unitários e de integração para todo o Core (especialmente `core_modules`).
+  * ⬜ Implementar testes e2e (end-to-end) para os fluxos críticos (login, navegação, acesso a módulos).
+  * ⬜ Realizar uma revisão de segurança na autenticação, autorização e tratamento de inputs.
+  * ⬜ Desenvolver um sistema de notificações/feedback para o usuário na interface (ex: toasts para sucesso/erro).
+  * ⬜ Refinar o layout principal (`MainLayout.tsx`) e a responsividade para dispositivos móveis.
+  * ⬜ Implementar um tema Dark/Light.
+
 ### Fase 4: Expansão com Novos Módulos e Funcionalidades de Plataforma
-*(... restante do roadmap como estava ...)*
+
+* **Objetivo:** Validar o mecanismo de modularidade criando novos módulos e adicionar funcionalidades que enriqueçam a plataforma como um todo.
+* **Tarefas Principais:**
+  * ⬜ Desenvolver um segundo módulo de exemplo completo para validar e refinar o processo de criação de módulos.
+  * ⬜ Implementar um sistema de permissões mais granular (além de `USER`/`ADMIN`).
+  * ⬜ Criar uma interface de administração para configurações globais da plataforma.
+  * ⬜ Desenvolver um dashboard de métricas de uso da plataforma.
+  * ⬜ Explorar a comunicação inter-módulos (se necessário).
 
 ---
 *Legenda:*
