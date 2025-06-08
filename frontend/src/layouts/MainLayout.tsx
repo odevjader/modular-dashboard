@@ -1,8 +1,8 @@
 import React from 'react';
 import { Outlet, Link as RouterLink, useNavigate } from 'react-router-dom';
-import { styled, useTheme } from '@mui/material/styles'; // Added styled and ensure useTheme is here
+import { styled, useTheme, Theme } from '@mui/material/styles'; // Added Theme
 import {
-  AppBar as MuiAppBarCore, // Renamed to avoid conflict with styled component if AppBar is also name of styled one
+  AppBar as MuiAppBarCore,
   Toolbar, Typography, Box, Drawer as MuiDrawerCore, List, ListItem, ListItemButton,
   ListItemIcon, ListItemText, IconButton, CssBaseline, Tooltip
 } from '@mui/material';
@@ -19,10 +19,9 @@ import { SvgIconComponent } from '@mui/icons-material';
 
 const drawerWidth = 240;
 
-const MuiAppBar = styled(MuiAppBarCore, { // Use MuiAppBarCore
+const MuiAppBar = styled(MuiAppBarCore, {
   shouldForwardProp: (prop) => prop !== 'open',
-// @ts-ignore Theme might not be perfectly matched, but this is from example
-})(({ theme, open }: { theme: any, open: boolean }) => ({ // Added explicit types for theme and open
+})(({ theme, open }: { theme: Theme, open: boolean }) => ({
   zIndex: theme.zIndex.drawer + 1,
   transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,
@@ -39,8 +38,7 @@ const MuiAppBar = styled(MuiAppBarCore, { // Use MuiAppBarCore
 }));
 
 const MuiDrawer = styled(MuiDrawerCore, { shouldForwardProp: (prop) => prop !== 'open' })(
-// @ts-ignore Theme might not be perfectly matched
-  ({ theme, open }: { theme: any, open: boolean }) => ({ // Added explicit types
+  ({ theme, open }: { theme: Theme, open: boolean }) => ({
     '& .MuiDrawer-paper': {
       position: 'relative',
       whiteSpace: 'nowrap',
@@ -93,9 +91,7 @@ const MainLayout: React.FC = () => {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      {/*
-// @ts-ignore TODO: Fix theme and open props for MuiAppBar type checking */}
-      <MuiAppBar position="absolute" open={open} theme={theme}>
+      <MuiAppBar position="absolute" open={open}>
         <Toolbar
           sx={{
             pr: '24px',
@@ -129,9 +125,7 @@ const MainLayout: React.FC = () => {
           </Tooltip>
         </Toolbar>
       </MuiAppBar>
-      {/*
-// @ts-ignore TODO: Fix theme and open props for MuiDrawer type checking */}
-      <MuiDrawer variant="permanent" open={open} theme={theme}>
+      <MuiDrawer variant="permanent" open={open}>
         <Toolbar
           sx={{
             display: 'flex',
