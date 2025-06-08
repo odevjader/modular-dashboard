@@ -97,6 +97,68 @@ def discover_module_routers(modules_config: ModulesFile) -> List[Dict[str, Any]]
 
     return loaded_routers_info
 
+
+def load_and_register_modules(router: APIRouter):
+    """
+    Centralizes dynamic module loading and registration.
+    Loads module configurations, discovers routers, and registers them with the main FastAPI router.
+    """
+    logger.info("Starting dynamic module loading and registration process.")
+
+    try:
+        # Step 1: Load modules configuration
+        logger.info("Loading modules configuration...")
+        modules_config = load_modules_config()
+        if not modules_config.modules:
+            logger.info("No modules configured in modules.yaml or the file is empty.")
+            # No further action needed if no modules are configured.
+            return
+
+        # Step 2: Discover module routers
+        logger.info("Discovering module routers based on configuration...")
+        discovered_routers_info = discover_module_routers(modules_config)
+
+        # Step 3: Register discovered routers
+        if not discovered_routers_info:
+            logger.info("No module routers were discovered or loaded. Check module configurations and ensure routers are correctly defined.")
+            return
+
+        loaded_count = 0
+        skipped_count = 0
+        for router_info in discovered_routers_info:
+            instance = router_info.get("router") # Corrected key from 'instance' to 'router'
+            prefix = router_info.get("prefix")
+            tags = router_info.get("tags")
+            name = router_info.get("name")
+            version = router_info.get("version")
+
+            if instance and prefix and tags: # Basic validation
+                router.include_router(instance, prefix=prefix, tags=tags)
+                logger.info(f"Successfully included router for module: '{name} (v{version})' with prefix '{prefix}'.")
+                loaded_count += 1
+            else:
+                logger.warning(
+                    f"Skipping module '{name} (v{version})' due to missing router instance, prefix, or tags. "
+                    f"Instance: {'Found' if instance else 'Missing'}, "
+                    f"Prefix: '{prefix if prefix else 'Missing'}', "
+                    f"Tags: {'Found' if tags else 'Missing'}."
+                )
+                skipped_count += 1
+
+        logger.info(f"Module router registration complete. Loaded: {loaded_count}, Skipped: {skipped_count}.")
+
+    except FileNotFoundError:
+        # This specific exception for modules.yaml is handled by load_modules_config,
+        # which logs an error and returns an empty ModulesFile.
+        # load_and_register_modules will then proceed to log "No modules configured..."
+        logger.warning("Module configuration file (modules.yaml) not found. No modules will be loaded.")
+    except ValueError as ve:
+        # This can be raised by load_modules_config for YAML parsing errors or Pydantic validation errors.
+        logger.error(f"Failed to load or register modules due to a value or validation error: {ve}", exc_info=True)
+    except Exception as e:
+        logger.error(f"An unexpected error occurred during module loading and registration: {e}", exc_info=True)
+        # Depending on policy, you might want to re-raise or handle differently.
+
 if __name__ == '__main__':
     # This test assumes it's run from the 'app' directory or that PYTHONPATH is set up.
     # For direct execution: python -m app.core.module_loader

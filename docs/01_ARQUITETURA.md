@@ -3,7 +3,7 @@
 
 Este documento descreve a arquitetura de alto nível do projeto Modular Dashboard, seus principais componentes, o fluxo de dados, as decisões de design fundamentais, o mecanismo de modularidade e a estratégia de configuração.
 
-*(Última atualização: 25 de Abril de 2025 - Refletindo estrutura core_modules e fluxo de trabalho V5)*
+*(Última atualização: 10 de Julho de 2025 - Refletindo o carregador de módulos dinâmico centralizado)*
 
 ## Visão Geral
 
@@ -55,7 +55,7 @@ C4Container
     }
   })
 
-## Mecanismo de Modularidade (Abordagem Inicial Planejada)
+## Mecanismo de Modularidade
 
 A capacidade de "plugar" módulos independentes é central para a visão do projeto. A abordagem inicial planejada busca um equilíbrio entre flexibilidade e simplicidade:
 
@@ -78,7 +78,11 @@ active_pluggable_modules:
     tags: ["Módulo Exemplo", "IA", "Jurídico"]
   # Novos módulos plugáveis são adicionados/removidos aqui
 
-* **Processo de Inicialização:** O Core FastAPI itera sobre os módulos configurados, importa dinamicamente o `router_path` e chama `app.include_router()` com os metadados.
+* **Processo de Inicialização:** Na inicialização da aplicação, o arquivo `main.py` invoca a função `load_and_register_modules` (localizada em `app.core.module_loader.py`). Esta função é responsável por:
+    * Ler o arquivo de configuração `modules.yaml`.
+    * Descobrir os roteadores (`APIRouter`) dos módulos habilitados, importando dinamicamente o `router_path` especificado.
+    * Registrar cada roteador descoberto na instância principal do `api_router` (definida em `app.api_router.py`) usando os prefixos e tags configurados.
+  A instância `api_router`, agora populada com todas as rotas (core e dinâmicas), é então incluída na aplicação FastAPI principal em `main.py`.
 * **Vantagens:** Flexibilidade para ativar/desativar módulos plugáveis via configuração.
 * **Dependências Core:** Módulos plugáveis podem acessar serviços Core através da injeção de dependências padrão do FastAPI.
 

@@ -29,8 +29,8 @@ O projeto está em **Desenvolvimento Ativo**. O bug crítico de login (Issue #11
     * **Backend:**
       * ⬜ **Tarefa 1.1:** Criar o arquivo de configuração `modules.yaml` e os schemas de validação Pydantic.
       * ⬜ **Tarefa 1.2:** Criar a função `load_modules` no novo arquivo `core/module_loader.py`.
-      * ⬜ **Tarefa 1.3:** Integrar o `load_modules` na inicialização da aplicação (`main.py`).
-      * ⬜ **Tarefa 1.4:** Limpar as importações estáticas do `api_router.py`.
+      * ✅ **Tarefa 1.3:** Integrar o `load_modules` na inicialização da aplicação (`main.py`).
+      * ✅ **Tarefa 1.4:** Limpar as importações estáticas do `api_router.py`.
     * **Frontend:**
       * ⬜ **Tarefa 2.1:** Criar o registro de módulos do frontend (`moduleRegistry.ts`).
       * ⬜ **Tarefa 2.2:** Implementar o roteamento dinâmico no `App.tsx` usando o registro.

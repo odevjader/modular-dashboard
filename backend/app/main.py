@@ -3,8 +3,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings, logger
-from app.core.module_loader import load_modules_config, discover_module_routers # New import
-from app.api_router import api_router # api_router will be modified to use loaded routes
+# from app.core.module_loader import load_modules_config, discover_module_routers # Old imports removed
+from app.core.module_loader import load_and_register_modules # New import
+from app.api_router import api_router
 
 # --- FastAPI App Initialization ---
 openapi_url = f"{settings.API_PREFIX}/openapi.json" if settings.ENVIRONMENT == "development" else None
@@ -56,36 +57,20 @@ if allow_origins:
 else:
     logger.warning("No valid CORS origins found or specified (BACKEND_CORS_ORIGINS). CORS middleware not added.")
 
-# --- Load Modules and Configure Routers ---
-# This is the new section for dynamic module loading
+# --- Dynamically Load and Register Module Routers ---
 try:
-    logger.info("Initializing dynamic module loading sequence...")
-    modules_configurations = load_modules_config() # Load from default path app/configs/modules.yaml
-
-    # discovered_routers_info is a list of dicts:
-    # [{"router": APIRouter_instance, "prefix": "/prefix", "tags": ["Tag"], "name": "module_name"}, ...]
-    discovered_routers_info = discover_module_routers(modules_configurations)
-
-    # The api_router (from app.api_router) will now be responsible for including these.
-    # We need to make these discovered_routers_info available to api_router.py
-    # One way: Pass it to a function in api_router.py
-    # Another way: api_router.py imports and calls these functions itself (simpler for now)
-    # For now, api_router.py will be modified to call these loader functions directly.
-    # So, no explicit passing from main.py to api_router.py needed if api_router.py handles its own loading.
-    logger.info("Dynamic module loading sequence initiated. Routers will be included via api_router.py.")
-
-except FileNotFoundError:
-    logger.error("CRITICAL: modules.yaml not found. No dynamic modules will be loaded. The application might not function as expected.")
-except ValueError as ve:
-    logger.error(f"CRITICAL: Error parsing modules.yaml or validating module configurations: {ve}. No dynamic modules will be loaded.")
+    logger.info("main.py: Starting dynamic module loading and registration process...")
+    load_and_register_modules(api_router)
+    logger.info("main.py: Dynamic module loading and registration process completed.")
 except Exception as e:
-    logger.error(f"CRITICAL: An unexpected error occurred during module loading: {e}", exc_info=True)
-    # Depending on desired behavior, you might want to prevent app startup or run with core modules only.
-    # For now, it will continue, and api_router will try to load what it can.
-
+    logger.critical(f"main.py: CRITICAL - Failed to load and register modules: {e}", exc_info=True)
+    # Depending on the application's requirements, you might want to re-raise the exception
+    # or exit the application if module loading is absolutely critical for startup.
+    # For now, we log critically and allow the app to continue starting,
+    # which might mean it runs with no (or only some) module routes.
 
 # --- Include the Central API Router ---
-# api_router should now internally handle the inclusion of dynamically loaded routers
+# api_router should now have all dynamically loaded routes included by load_and_register_modules
 try:
     logger.info(f"Including main API router with prefix: {settings.API_PREFIX}")
     app.include_router(api_router, prefix=settings.API_PREFIX)
@@ -103,8 +88,9 @@ async def read_root():
         "message": f"Welcome to {settings.PROJECT_NAME} - Now with Dynamic Modules!",
         "environment": settings.ENVIRONMENT,
         "docs_url": app.docs_url,
-        "api_base_prefix": settings.API_PREFIX,
-        "loaded_module_count": len(discovered_routers_info) if 'discovered_routers_info' in locals() else 0
+        "api_base_prefix": settings.API_PREFIX
+        # "loaded_module_count" has been removed as discovered_routers_info is no longer in this scope.
+        # Module loading status can be checked via logs from load_and_register_modules.
     }
 
 logger.info(f"FastAPI application '{settings.PROJECT_NAME}' initialization complete.")

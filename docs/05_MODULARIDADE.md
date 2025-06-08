@@ -3,7 +3,7 @@
 
 Este documento detalha o funcionamento do sistema de modularidade V1 implementado no Modular Dashboard, cobrindo tanto o backend (FastAPI) quanto o frontend (React).
 
-*(Última atualização: $(date +"%d de %B de %Y") - Implementação da V1)*
+*(Última atualização: 10 de Julho de 2025 - Centralização do carregador de módulos)*
 
 ## Visão Geral
 
@@ -50,12 +50,13 @@ Este script Python é responsável por:
 *   **Ler e Validar \`modules.yaml\`**: Utiliza Pydantic models (\`ModuleConfig\`, \`ModulesConfig\`) para validar a estrutura e os valores de cada definição de módulo. Garante que os caminhos existam e que \`endpoints.py\` esteja presente.
 *   **Descobrir Roteadores**: Para cada módulo habilitado, ele importa dinamicamente o arquivo \`endpoints.py\` (ex: \`app.modules.nome_do_modulo.versao.endpoints\`).
 *   **Extrair Instâncias \`APIRouter\`**: Obtém a instância \`APIRouter\` (usando \`router_variable_name\`) do módulo importado.
-*   **Coletar Informações do Roteador**: Armazena o roteador, prefixo e tags para serem usados pelo \`api_router.py\` principal.
+*   **Coletar Informações do Roteador**: Armazena o roteador, prefixo e tags.
+         * **Registrar Roteadores**: Uma função de orquestração como `load_and_register_modules(router: APIRouter)` utiliza as funções acima para carregar as configurações, descobrir os roteadores e, em seguida, registrá-los diretamente na instância `APIRouter` fornecida.
 
 ### 3. Integração com a Aplicação
 
-*   **\`backend/app/main.py\`**: Na inicialização da aplicação FastAPI, ele agora chama \`load_modules_config()\` e \`discover_module_routers()\` de \`module_loader.py\`. Embora não passe diretamente os roteadores para \`api_router.py\` (para manter o acoplamento baixo), ele inicia o processo e registra quaisquer erros críticos de carregamento.
-*   **\`backend/app/api_router.py\`**: Este arquivo agora é responsável por chamar \`load_modules_config()\` e \`discover_module_routers()\` para obter a lista de informações de roteadores dinâmicos. Em seguida, ele itera sobre esta lista e usa \`api_router.include_router()\` para adicionar cada roteador de módulo à aplicação principal com seu prefixo e tags especificados. As importações estáticas anteriores foram removidas.
+*   **`backend/app/main.py`**: Na inicialização da aplicação FastAPI, após a criação da instância `app` e do `api_router` (de `app.api_router`), `main.py` chama a função `load_and_register_modules(api_router)` (de `app.core.module_loader.py`). Esta camada centraliza o carregamento e registro de todos os módulos (core e plugáveis) diretamente na instância `api_router`. A instância `api_router`, agora populada, é então incluída na aplicação FastAPI principal.
+*   **`backend/app/api_router.py`**: Este arquivo foi simplificado e agora é responsável apenas por definir a instância principal `api_router = APIRouter()`. Ele não contém mais lógica de carregamento de módulos; essa responsabilidade foi movida para `main.py` através da função `load_and_register_modules`.
 
 ### 4. Como Adicionar um Novo Módulo Backend
 
