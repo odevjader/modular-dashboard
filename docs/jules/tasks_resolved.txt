@@ -1,6 +1,6 @@
 This log documents tasks undertaken by Jules. New entries will be added for subsequent tasks.
 ---
-Date: 2025-07-12 10:30:00
+Date: 2025-06-08 10:30:00
 Task: Fix frontend blank page and console error related to ProtectedRoute.
 Issue: Frontend displayed a blank page. Browser console showed error: "The result of getSnapshot should be cached to avoid an infinite loop".
 Root Cause: Infinite loop in `frontend/src/components/ProtectedRoute.tsx`. The Zustand store selector `state => ({ token: state.token, user: state.user })` was returning a new object reference on each component render, causing unnecessary re-renders and leading to the loop.
