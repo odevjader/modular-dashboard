@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
-import Login from './components/Login';
+import { Login } from './components/Login';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminUsers from './components/AdminUsers';
 import HomePage from './pages/HomePage'; // Make sure HomePage is imported
