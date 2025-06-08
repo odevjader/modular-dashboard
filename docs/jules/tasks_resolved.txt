@@ -1,12 +1,104 @@
-This log documents tasks undertaken by Jules. New entries will be added for subsequent tasks.
----
-Date: 2025-06-08 10:30:00
-Task: Fix frontend blank page and console error related to ProtectedRoute.
-Issue: Frontend displayed a blank page. Browser console showed error: "The result of getSnapshot should be cached to avoid an infinite loop".
-Root Cause: Infinite loop in `frontend/src/components/ProtectedRoute.tsx`. The Zustand store selector `state => ({ token: state.token, user: state.user })` was returning a new object reference on each component render, causing unnecessary re-renders and leading to the loop.
-File(s) Modified: frontend/src/components/ProtectedRoute.tsx
-Summary of Fix: Replaced the problematic selector with two individual, stable selectors:
-  `const token = useAuthStore(state => state.token);`
-  `const user = useAuthStore(state => state.user);`
-Outcome: Fix implemented. Frontend development server (Vite) starts and remains stable, indicating the critical loop is resolved. Direct browser verification of console error disappearance was not possible in the test environment, but the fix is standard practice for this type of Zustand/React issue.
----
+--- Subtask Report 1 (Create moduleRegistry.ts) ---
+Created the file `frontend/src/config/moduleRegistry.ts` with the specified content.
+
+--- Subtask Report 2 (Implement dynamic routing in App.tsx) ---
+Modified `frontend/src/App.tsx` to implement dynamic routing using the `moduleRegistry`.
+- Imported necessary components and `getModuleRegistry`, `ModuleConfig` from `./config/moduleRegistry`.
+- Updated the `App` component to fetch the module registry and generate routes dynamically.
+- Ensured routes are wrapped with `MainLayout` and `ProtectedRoute` as needed.
+- Included existing routes for Login, AdminUsers, and HomePage.
+- Added a `Suspense` fallback for lazy-loaded components.
+- Handled the combination of `module.basePath` and `route.path` correctly.
+
+--- Subtask Report 3 (Implement dynamic navigation in MainLayout.tsx and HomePage.tsx) ---
+Successfully implemented dynamic navigation and module display in `frontend/src/layouts/MainLayout.tsx` and `frontend/src/pages/HomePage.tsx`.
+Key changes involved:
+1. `frontend/src/layouts/MainLayout.tsx`:
+    - Rewrote component to use `getModuleRegistry` and `ModuleConfig`.
+    - Implemented dynamic navigation links in the sidebar drawer, filtered by user role.
+    - Maintained static links and added a logout button.
+2. `frontend/src/pages/HomePage.tsx`:
+    - Fetches modules using `getModuleRegistry`.
+    - Filters modules by user role.
+    - Displays accessible modules as interactive cards.
+
+--- Subtask Report 4 (Search for mainNavItems usages) ---
+Searched for usages of `mainNavItems` and `NavItem` from `frontend/src/config/navigation.ts`.
+Results indicated no active usage in `frontend/src`, only a mention in a documentation file, suggesting `navigation.ts` was obsolete.
+
+--- Subtask Report 5 (Delete navigation.ts) ---
+Successfully deleted the file `frontend/src/config/navigation.ts` as it was confirmed to be obsolete.
+
+--- Subtask Report 6 (Add test module) ---
+Successfully added a new test module.
+1. Created Module Component: `frontend/src/modules/test_module/TestModulePage.tsx`.
+2. Registered New Module: Modified `frontend/src/config/moduleRegistry.ts` to include 'testModule' with lazy loading and an icon.
+
+--- Subtask Report 7 (Correct Login import in App.tsx) ---
+Corrected the import of the `Login` component in `frontend/src/App.tsx`.
+Changed: `import Login from './components/Login';`
+To: `import { Login } from './components/Login';`
+
+--- Subtask Report 8 (Correct ProtectedRoute import in App.tsx) ---
+Corrected the import of the `ProtectedRoute` component in `frontend/src/App.tsx`.
+Changed: `import ProtectedRoute from './components/ProtectedRoute';`
+To: `import { ProtectedRoute } from './components/ProtectedRoute';`
+
+--- Subtask Report 9 (Remove theme prop from styled components in MainLayout.tsx) ---
+Successfully modified `frontend/src/layouts/MainLayout.tsx` to remove the `theme={theme}` prop from `MuiAppBar` and `MuiDrawer` instances.
+
+--- Subtask Report 10 (Update styled component definitions in MainLayout.tsx - Theme typing) ---
+Successfully applied type safety improvements in `frontend/src/layouts/MainLayout.tsx`.
+- Imported `Theme` type from `@mui/material/styles`.
+- Changed `theme: any` to `theme: Theme` in `MuiAppBar` and `MuiDrawer` styled definitions.
+- Removed related `@ts-ignore` comments.
+
+--- Subtask Report 11 (Update auth schemas in backend) ---
+Successfully updated Pydantic user schemas in `backend/app/core_modules/auth/v1/schemas.py`.
+- Added `UserBase`.
+- Modified `UserCreate` (inherited `UserBase`, added `is_active`).
+- Renamed `UserRead` to `UserResponse`.
+- Added `UserListResponse` (with `items`, `total`, `page`, `size`, `pages`).
+
+--- Subtask Report 12 (Refine User CRUD endpoints in backend) ---
+Successfully refined User CRUD operations in `backend/app/core_modules/auth/v1/endpoints.py`.
+- `read_users_me`: `response_model` changed to `UserResponse`.
+- `create_user`: `response_model` to `UserResponse`, uses `is_active` from input.
+- `list_users`: `response_model` to `UserListResponse`, added pagination (`skip`, `limit`), returns paginated structure.
+- Added `get_user_by_id` endpoint.
+- `update_user`: `response_model` to `UserResponse`.
+
+--- Subtask Report 13 (Create test_auth_endpoints.py) ---
+Successfully created `backend/tests/test_auth_endpoints.py` with initial test structures.
+- Added `async_client` fixture (basic).
+- Added `create_test_user_in_db` helper.
+- Implemented `test_create_user_by_admin` and `test_list_users_by_admin_pagination` with unique email generation for tests.
+- Included TODOs for further test cases.
+
+--- Subtask Report 14 (Update frontend/src/services/api.ts) ---
+Successfully updated API service functions and interfaces in `frontend/src/services/api.ts`.
+- Interfaces: Added `UserBase`, `UserListResponse`. Renamed `UserCreateRequest` to `UserCreate` and added `is_active`.
+- Functions: Modified `getUsers` for pagination. Added `getUser(userId)`. Updated `createUser` parameter.
+
+--- Subtask Report 15 (Create backend/app/create_admin_user.py) ---
+Successfully created `backend/app/create_admin_user.py`.
+The script creates an admin user ("admin@gmail.com") or updates an existing one to ensure admin role and active status, using a direct database session.
+
+--- Subtask Report 16 (Update docs/02_SETUP_DESENVOLVIMENTO.md) ---
+Successfully updated `docs/02_SETUP_DESENVOLVIMENTO.md`.
+- Added a new section "5. Criar Usuário Administrador Inicial (Opcional)" with instructions to run `create_admin_user.py`.
+- Renumbered subsequent sections.
+- Removed an outdated note about a Docker build error.
+
+--- Subtask Report 17 (Update ROADMAP.md) ---
+Successfully updated `ROADMAP.md`.
+- Updated "Última atualização" date.
+- Updated "Status Atual" section.
+- Marked tasks #13 and #14 (User Management CRUD) as complete.
+- Set task #15 (API Documentation) as the new current priority.
+
+--- Subtask Report 18 (Update README.md) ---
+Successfully updated `README.md`.
+- Updated overall status date.
+- Updated "Status Técnico" to reflect completion of User Management and new priority.
+- Updated "Próximos Passos (Foco Atual)" to list new priorities (#15, #16).
