@@ -48,7 +48,7 @@ modules:
     path: "modules.ai_test.v1" # Standard module path
     version: "v1"
     description: "Simple AI ping/pong test module."
-    enabled: true
+    enabled: false
     router_variable_name: "router"
     prefix: "/ai_test/v1" # Keep consistent
     tags: ["AI Test"]
