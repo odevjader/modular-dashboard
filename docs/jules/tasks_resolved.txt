@@ -139,3 +139,14 @@ Successfully added the `get_db_contextmanager` function to `backend/app/core/dat
 - Imported `asynccontextmanager` from `contextlib`.
 - Defined `get_db_contextmanager` decorated with `@asynccontextmanager`, yielding an `AsyncSession` from `async_session_local`.
 - Includes checks for `async_session_local` initialization and robust session handling with `try...except...finally` for rollback and close.
+
+--- Subtask Report 25 (Apply API Documentation Refinements) ---
+Successfully applied documentation refinements to Auth & User API endpoints and Pydantic schemas.
+- In `backend/app/core_modules/auth/v1/endpoints.py`:
+    - Added `summary` parameter to the `@router` decorator for all relevant User and Admin User CRUD endpoints.
+    - Enhanced docstrings for several endpoints (`POST /login`, `GET /users/me`, `POST /admin/users`, `PUT /admin/users/{user_id}`) to provide more context on request/response structures.
+- In `backend/app/core_modules/auth/v1/schemas.py`:
+    - Imported `Field` from `pydantic`.
+    - Added `Field(description="...", example="...")` (and `min_length` where appropriate) to attributes within `UserBase`, `Token`, `TokenPayload`, `UserCreate`, `UserUpdate`, `UserResponse`, and `UserListResponse` schemas.
+
+These changes aim to improve the clarity and detail of the auto-generated OpenAPI documentation.

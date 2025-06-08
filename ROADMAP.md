@@ -3,11 +3,11 @@
 
 Este documento descreve o roadmap de alto nível planejado para o desenvolvimento do Modular Dashboard como uma plataforma base versátil e extensível. É um guia direcional e está sujeito a alterações.
 
-*(Última atualização: Outubro de 2025)*
+*(Última atualização: Novembro de 2025)*
 
 ## Status Atual
 
-A funcionalidade de Gerenciamento de Usuários (Admin CRUD) foi implementada (Backend #13, Frontend #14). O foco técnico imediato passa a ser **Solidificar e documentar as APIs do Core (Auth, User) (#15)**.
+As APIs do Core (Auth, User) foram solidificadas e documentadas (OpenAPI) (#15). O foco técnico imediato passa a ser **Estabelecer padrões claros para desenvolvimento de novos módulos (#16)**.
 
 ## Fases Planejadas
 
@@ -37,8 +37,8 @@ A funcionalidade de Gerenciamento de Usuários (Admin CRUD) foi implementada (Ba
       * ✅ **Tarefa 2.3:** Implementar a navegação dinâmica (barra lateral, página inicial) a partir do registro.
   * ✅ **Testar e finalizar endpoints Core de Autenticação (`/users/me`) e CRUD Admin (`/admin/users/*`) (#13).** *(Concluído)*.
   * ✅ Re-integrar fluxo de autenticação e telas de Gerenciamento de Usuários no Frontend Core (#14). *(Concluído)*.
-  * 🚧 **Solidificar e documentar as APIs do Core (Auth, User) (#15).** *(Prioridade Atual)*.
-  * 🚧 Estabelecer padrões claros para desenvolvimento de novos módulos (#16). *(Desbloqueado, Próxima Prioridade)*.
+  * ✅ **Solidificar e documentar as APIs do Core (Auth, User) (#15).** *(Concluído)*.
+  * 🚧 **Estabelecer padrões claros para desenvolvimento de novos módulos (#16).** *(Prioridade Atual)*.
   * *(Nota: Implementação de Templates de Issue/PR (#3, #4) e Milestones (#6) adiada - ver backlog de Issues)*.
 
 ### Fase 2: Performance do Core e Reintegração de Processamento Pesado

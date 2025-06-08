@@ -15,12 +15,19 @@ from app.core.dependencies import get_current_active_user, require_admin_user
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-@router.post("/login", response_model=auth_schemas.Token)
+@router.post("/login", response_model=auth_schemas.Token, summary="User Login")
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: AsyncSession = Depends(get_db)
 ):
-    """OAuth2 compatible token login."""
+    """
+    OAuth2 compatible token login.
+
+    Authenticates a user based on email (username) and password.
+    - **username**: User's email address.
+    - **password**: User's plain text password.
+    Returns a JWT access token upon successful authentication.
+    """
     username = form_data.username.strip()
     logger.info(f"Login attempt for email: '{username}', password: {form_data.password[:3]}..., raw username: {repr(form_data.username)}")
     stmt = select(user_model.User).where(func.lower(user_model.User.email) == func.lower(username))
@@ -70,22 +77,30 @@ async def login_for_access_token(
 
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.get("/users/me", response_model=auth_schemas.UserResponse) # Changed UserRead to UserResponse
+@router.get("/users/me", response_model=auth_schemas.UserResponse, summary="Get Current User") # Changed UserRead to UserResponse
 def read_users_me(
     current_user: Annotated[user_model.User, Depends(get_current_active_user)]
 ):
-    """Get current logged-in user's information."""
+    """Get current logged-in user's information. Requires authentication."""
     return current_user
 
 # Removed: from app.core.security import hash_password (use security.hash_password directly)
 
-@router.post("/admin/users", response_model=auth_schemas.UserResponse) # Changed UserRead to UserResponse
+@router.post("/admin/users", response_model=auth_schemas.UserResponse, summary="Create New User (Admin)") # Changed UserRead to UserResponse
 async def create_user(
     user_in: auth_schemas.UserCreate,
     db: AsyncSession = Depends(get_db),
     admin_user: user_model.User = Depends(require_admin_user)
 ):
-    """Create a new user (admin only)."""
+    """
+    Create a new user. This endpoint is restricted to admin users.
+
+    Request body should include:
+    - **email**: User's email address (must be unique).
+    - **password**: User's plain text password.
+    - **role**: User's role (e.g., 'user', 'admin'). Defaults to 'user'.
+    - **is_active**: Whether the account is active. Defaults to true.
+    """
     stmt = select(user_model.User).where(user_model.User.email == user_in.email)
     result = await db.execute(stmt)
     if result.scalar_one_or_none():
@@ -103,12 +118,12 @@ async def create_user(
     await db.refresh(db_user)
     return db_user
 
-@router.get("/admin/users", response_model=auth_schemas.UserListResponse) # Changed to UserListResponse
+@router.get("/admin/users", response_model=auth_schemas.UserListResponse, summary="List Users (Admin)") # Changed to UserListResponse
 async def list_users(
     db: AsyncSession = Depends(get_db),
     admin_user: user_model.User = Depends(require_admin_user),
-    skip: int = Query(0, ge=0, description="Number of items to skip"), # Added skip
-    limit: int = Query(10, ge=1, le=100, description="Number of items to return per page") # Added limit
+    skip: int = Query(0, ge=0, description="Number of items to skip"),
+    limit: int = Query(10, ge=1, le=100, description="Number of items to return per page")
 ):
     """List all users (admin only) with pagination."""
     total_count_stmt = select(func.count(user_model.User.id))
@@ -130,7 +145,7 @@ async def list_users(
         pages=total_pages
     )
 
-@router.get("/admin/users/{user_id}", response_model=auth_schemas.UserResponse)
+@router.get("/admin/users/{user_id}", response_model=auth_schemas.UserResponse, summary="Get User by ID (Admin)")
 async def get_user_by_id(
     user_id: int,
     db: AsyncSession = Depends(get_db),
@@ -144,14 +159,22 @@ async def get_user_by_id(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return db_user
 
-@router.put("/admin/users/{user_id}", response_model=auth_schemas.UserResponse) # Changed UserRead to UserResponse
+@router.put("/admin/users/{user_id}", response_model=auth_schemas.UserResponse, summary="Update User (Admin)") # Changed UserRead to UserResponse
 async def update_user(
     user_id: int,
     user_in: auth_schemas.UserUpdate,
     db: AsyncSession = Depends(get_db),
     admin_user: user_model.User = Depends(require_admin_user)
 ):
-    """Update a user (admin only)."""
+    """
+    Update an existing user's details. This endpoint is restricted to admin users.
+
+    Provide only the fields you want to update in the request body:
+    - **email**: New email address (must be unique if changed).
+    - **password**: New password (optional, leave blank to keep current).
+    - **role**: New user role.
+    - **is_active**: New account active status.
+    """
     stmt = select(user_model.User).where(user_model.User.id == user_id)
     result = await db.execute(stmt)
     db_user = result.scalars().first()
@@ -182,7 +205,7 @@ async def update_user(
     await db.refresh(db_user) # Refresh to get any DB-side changes
     return db_user
 
-@router.delete("/admin/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/admin/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Delete User (Admin)")
 async def delete_user(
     user_id: int,
     db: AsyncSession = Depends(get_db),

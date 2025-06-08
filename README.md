@@ -5,7 +5,7 @@
 
 ## Status Atual
 
-**(Outubro de 2025)**: ✅ **Funcional e em Desenvolvimento Ativo** 🚧
+**(Novembro de 2025)**: ✅ **Funcional e em Desenvolvimento Ativo** 🚧
 
 O projeto está com seu ambiente de desenvolvimento 100% funcional. O bug crítico de login (Issue #11), que antes impedia o progresso, foi **resolvido** através da correta configuração do ambiente (proxy do Vite e limpeza de dependências).
 
@@ -16,7 +16,7 @@ Com a autenticação funcionando, o projeto está desbloqueado e o foco agora se
     * O fluxo de autenticação base (login, validação de token) está **operacional**.
     * As refatorações do Core (Issues #9, #17) foram **concluídas**.
     * A **Implementação do Mecanismo de Modularidade V1** (Issue #8) foi **concluída**.
-    * O **Gerenciamento de Usuários (Admin CRUD)** (Issues #13, #14) foi **concluído**. A próxima prioridade é **Solidificar e documentar as APIs do Core (Auth, User) (Issue #15)**.
+    * As **APIs do Core (Auth, User) foram solidificadas e documentadas (OpenAPI) (Issue #15)**. A próxima prioridade é **Estabelecer padrões claros para desenvolvimento de novos módulos (Issue #16)**.
 
 ## Visão Geral da Arquitetura
 
@@ -58,5 +58,4 @@ Consulte o guia detalhado em **[docs/02_SETUP_DESENVOLVIMENTO.md](./docs/02_SETU
 
 Consulte o [ROADMAP.md](./ROADMAP.md) para detalhes completos. As prioridades imediatas são (referências de Issue do GitHub):
 
-1.  **Solidificar e documentar as APIs do Core (Auth, User) (#15)** - *(Prioridade Atual)*.
-2.  **Estabelecer padrões claros para desenvolvimento de novos módulos (#16)** - *(Desbloqueado, Próxima Prioridade)*.
+1.  **Estabelecer padrões claros para desenvolvimento de novos módulos (#16)** - *(Prioridade Atual)*.
