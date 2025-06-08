@@ -1,7 +1,7 @@
 // frontend/src/components/AdminUsers.tsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridPaginationModel } from '@mui/x-data-grid'; // Added GridPaginationModel
 import { Box, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, FormControl, InputLabel, Select, MenuItem, Typography } from '@mui/material';
 import { useAuthStore } from '../stores/authStore';
 import { getUsers, updateUser, deleteUser, createUser } from '../services/api';
@@ -21,6 +21,9 @@ const AdminUsers = () => {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ id: 0, email: '', password: '', role: 'user', is_active: true });
   const [isEdit, setIsEdit] = useState(false);
+  const [page, setPage] = useState(0); // Current page index (0-based)
+  const [pageSize, setPageSize] = useState(10); // Rows per page
+  const [totalRowCount, setTotalRowCount] = useState(0); // Total number of users
 
   useEffect(() => {
     if (user?.role !== 'admin') {
@@ -28,17 +31,36 @@ const AdminUsers = () => {
       return;
     }
     fetchUsers();
-  }, [user, navigate]);
+  }, [user, navigate, page, pageSize]); // Added page and pageSize to dependency array
 
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const response = await getUsers();
-      setUsers(response);
+      // Calculate skip based on current page (0-indexed) and pageSize
+      const skip = page * pageSize;
+      const response = await getUsers(skip, pageSize); // New call with pagination params
+
+      if (response && response.items) {
+        setUsers(response.items);
+        setTotalRowCount(response.total);
+      } else {
+        // Handle cases where response or items might be undefined, though API should return UserListResponse
+        setUsers([]);
+        setTotalRowCount(0);
+        console.error('Error fetching users: Invalid response structure', response);
+      }
     } catch (error) {
       console.error('Error fetching users:', error);
+      setUsers([]); // Clear users on error
+      setTotalRowCount(0); // Reset total count on error
     }
     setLoading(false);
+  };
+
+  const handlePaginationModelChange = (model: GridPaginationModel) => {
+    setPage(model.page);
+    setPageSize(model.pageSize);
+    // Data fetching will be triggered by the useEffect hook that depends on 'page' and 'pageSize'
   };
 
   const handleOpen = (user?: User) => {
@@ -126,9 +148,14 @@ const AdminUsers = () => {
         <DataGrid
           rows={users}
           columns={columns}
-          pageSizeOptions={[5, 10, 25]}
+          rowCount={totalRowCount}
           loading={loading}
+          pageSizeOptions={[5, 10, 25]}
+          paginationMode="server"
+          onPaginationModelChange={handlePaginationModelChange}
+          paginationModel={{ page, pageSize }}
           disableRowSelectionOnClick
+          // autoHeight // Consider adding if not already there and appropriate
         />
       </Box>
       <Dialog open={open} onClose={handleClose}>
