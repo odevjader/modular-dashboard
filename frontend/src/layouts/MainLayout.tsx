@@ -1,130 +1,85 @@
-// frontend/src/layouts/MainLayout.tsx
-import React, { useState, useMemo } from 'react';
-import { Outlet, Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
-// import { mainNavItems } from '../config/navigation'; // Static navigation removed for sidebar
-// import { getIconComponent } from '../utils/iconMap'; // Not needed if FrontendModule.icon is component itself
+import React from 'react';
+import { Outlet, Link as RouterLink, useNavigate } from 'react-router-dom';
+import { styled, useTheme } from '@mui/material/styles'; // Added styled and ensure useTheme is here
 import {
-  AppBar, Toolbar, Typography, Box, Drawer, List, ListItem, ListItemButton,
-  ListItemIcon, ListItemText, IconButton, useTheme, useMediaQuery, CssBaseline, Icon,
-  Collapse, Button, Link
+  AppBar as MuiAppBarCore, // Renamed to avoid conflict with styled component if AppBar is also name of styled one
+  Toolbar, Typography, Box, Drawer as MuiDrawerCore, List, ListItem, ListItemButton,
+  ListItemIcon, ListItemText, IconButton, CssBaseline, Tooltip
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+// import ChevronRightIcon from '@mui/icons-material/ChevronRight'; // Not used in provided example if drawer closes only to left
+import HomeIcon from '@mui/icons-material/Home';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import LogoutIcon from '@mui/icons-material/Logout';
+
 import { useAuthStore } from '../stores/authStore';
-import { APP_MODULES, FrontendModule } from '../config/moduleRegistry'; // Import new module registry
+import { getModuleRegistry, ModuleConfig } from '../config/moduleRegistry';
+import { SvgIconComponent } from '@mui/icons-material';
 
-// Interface for items used by NavListItems - can be simplified if only for dynamic modules
-interface DisplayNavItem {
-  key: string;
-  label: string;
-  path?: string;
-  icon?: React.ElementType; // MUI SvgIcon compatible
-  children?: DisplayNavItem[];
-  onClick?: () => void;
-  selected?: boolean;
-}
+const drawerWidth = 240;
 
-const drawerWidth = 240; // Define drawerWidth for use in component styles
+const MuiAppBar = styled(MuiAppBarCore, { // Use MuiAppBarCore
+  shouldForwardProp: (prop) => prop !== 'open',
+// @ts-ignore Theme might not be perfectly matched, but this is from example
+})(({ theme, open }: { theme: any, open: boolean }) => ({ // Added explicit types for theme and open
+  zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(['width', 'margin'], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(open && {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+}));
 
-const DynamicNavListItems: React.FC<{
-  items: DisplayNavItem[],
-  isMobile: boolean,
-  handleDrawerToggle: () => void,
-  level?: number
-}> = ({ items, isMobile, handleDrawerToggle, level = 0 }) => {
-  const location = useLocation();
-  const [openItems, setOpenItems] = useState<{ [key: string]: boolean }>({});
+const MuiDrawer = styled(MuiDrawerCore, { shouldForwardProp: (prop) => prop !== 'open' })(
+// @ts-ignore Theme might not be perfectly matched
+  ({ theme, open }: { theme: any, open: boolean }) => ({ // Added explicit types
+    '& .MuiDrawer-paper': {
+      position: 'relative',
+      whiteSpace: 'nowrap',
+      width: drawerWidth,
+      transition: theme.transitions.create('width', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      boxSizing: 'border-box',
+      ...(!open && {
+        overflowX: 'hidden',
+        transition: theme.transitions.create('width', {
+          easing: theme.transitions.easing.sharp,
+          duration: theme.transitions.duration.leavingScreen,
+        }),
+        width: theme.spacing(7),
+        [theme.breakpoints.up('sm')]: {
+          width: theme.spacing(9),
+        },
+      }),
+    },
+  }),
+);
 
-  const handleCollapseToggle = (label: string) => {
-    setOpenItems(prev => ({ ...prev, [label]: !prev[label] }));
-  };
-
-  if (items.length === 0 && level === 0) {
-    return null; // No items to display
-  }
-
-  return (
-    <List sx={{ pl: level * 2 }}>
-      {items.map((item) => {
-        const IconComponent = item.icon;
-        // For children, selected state is handled by parent click or if a child is active.
-        // For simplicity, direct path match for selection here.
-        const isActive = item.path ? location.pathname === item.path && !item.children : false;
-        const isOpen = openItems[item.label] || false;
-
-        if (item.children && item.children.length > 0) {
-          return (
-            <React.Fragment key={item.key}>
-              <ListItemButton onClick={() => handleCollapseToggle(item.label)}>
-                {IconComponent && (
-                  <ListItemIcon sx={{ minWidth: '40px' }}>
-                    <IconComponent />
-                  </ListItemIcon>
-                )}
-                <ListItemText primary={item.label} />
-                {isOpen ? <ExpandLess /> : <ExpandMore />}
-              </ListItemButton>
-              <Collapse in={isOpen} timeout="auto" unmountOnExit>
-                <DynamicNavListItems
-                  items={item.children}
-                  isMobile={isMobile}
-                  handleDrawerToggle={handleDrawerToggle}
-                  level={level + 1}
-                />
-              </Collapse>
-            </React.Fragment>
-          );
-        }
-
-        if (item.path && item.path !== '#') {
-          return (
-            <ListItem key={item.key} disablePadding>
-              <ListItemButton
-                component={RouterLink}
-                to={item.path}
-                selected={item.selected !== undefined ? item.selected : isActive}
-                onClick={isMobile ? handleDrawerToggle : undefined}
-              >
-                {IconComponent && (
-                  <ListItemIcon sx={{ minWidth: '40px' }}>
-                    <IconComponent color={isActive ? 'primary' : 'inherit'} />
-                  </ListItemIcon>
-                )}
-                <ListItemText primary={item.label} />
-              </ListItemButton>
-            </ListItem>
-          );
-        }
-        // For items with onClick (like a group header that's not a link)
-        if (item.onClick && !item.path) {
-             return (
-                <ListItemButton key={item.key} onClick={item.onClick}>
-                    {IconComponent && (
-                        <ListItemIcon sx={{ minWidth: '40px' }}>
-                            <IconComponent />
-                        </ListItemIcon>
-                    )}
-                    <ListItemText primary={item.label} />
-                    {/* Optional: Add expand/collapse icon if children are manually handled via onClick */}
-                </ListItemButton>
-             );
-        }
-        return null;
-      })}
-    </List>
-  );
-};
 
 const MainLayout: React.FC = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const { logout, user } = useAuthStore(); // Get user for role checking
-  const navigate = useNavigate();
+  const theme = useTheme(); // useTheme must be called within the component
+  const [open, setOpen] = React.useState(true);
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
+  const { user, logout } = useAuthStore();
+  const navigate = useNavigate();
+  const moduleRegistry = getModuleRegistry();
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
   };
 
   const handleLogout = () => {
@@ -132,129 +87,169 @@ const MainLayout: React.FC = () => {
     navigate('/login');
   };
 
-  // --- Dynamic Sidebar Item Generation ---
-  const sidebarNavItems = useMemo(() => {
-    const userRoles = user?.roles || (user?.role ? (Array.isArray(user.role) ? user.role : [user.role]) : []);
-
-    return APP_MODULES
-      .filter(module => {
-        if (!module.showInNav) return false;
-        if (module.requiredRole) {
-          const roles = Array.isArray(module.requiredRole) ? module.requiredRole : [module.requiredRole];
-          return roles.some(role => userRoles.includes(role));
-        }
-        return true; // No specific role required, show to all authenticated users
-      })
-      .map((module: FrontendModule): DisplayNavItem => ({
-        key: module.id,
-        label: module.name,
-        path: module.path,
-        icon: module.icon, // Already a component
-        // children: undefined, // Add logic here if grouping is desired based on module.group
-      }));
-  }, [user]); // Recalculate if user (and thus roles) changes
-
-
-  // --- Static App Bar Items (can still come from navigation.ts or be hardcoded if few) ---
-  // For simplicity, let's keep app bar items minimal or also make them dynamic if needed.
-  // The original `mainNavItems` from `navigation.ts` could still be used for app bar or homepage buttons
-  // if its structure is maintained or adapted. For now, focusing on sidebar.
-  // Example: Hardcoded App Bar items or fetch from a different config
-  const appBarItems: Array<{path: string, label: string}> = [
-    // { path: "/info", label: "System Info"}, // Example, if System Info is always in app bar
-  ];
-   // Let's try to get appBarItems from the static navigation.ts for now, filtering by showInAppBar
-   // This requires re-introducing mainNavItems for this specific purpose or creating a new config.
-   // For now, we'll leave appBarItems empty to focus on dynamic sidebar.
-   // If `navigation.ts` is to be kept for other nav elements, it should be imported.
-   // import { mainNavItems as staticNavItems } from '../config/navigation';
-   // const appBarItems = staticNavItems.filter(item => item.showInAppBar && !item.children);
-
-
-  const drawerContent = (
-    <div>
-      <Toolbar /> {/* For spacing under the AppBar */}
-      <DynamicNavListItems items={sidebarNavItems} isMobile={isMobile} handleDrawerToggle={handleDrawerToggle} />
-    </div>
-  );
+  // Determine user role for filtering. Adapt if user.role is an array e.g. user.roles.includes('ADMIN')
+  const isAdmin = user?.role === 'ADMIN';
 
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{ width: { sm: `calc(100% - ${drawerWidth}px)` }, ml: { sm: `${drawerWidth}px` } }}
-      >
-        <Toolbar>
+      {/*
+// @ts-ignore TODO: Fix theme and open props for MuiAppBar type checking */}
+      <MuiAppBar position="absolute" open={open} theme={theme}>
+        <Toolbar
+          sx={{
+            pr: '24px',
+          }}
+        >
           <IconButton
+            edge="start"
             color="inherit"
             aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
+            onClick={handleDrawerOpen}
+            sx={{
+              marginRight: '36px',
+              ...(open && { display: 'none' }),
+            }}
           >
             <MenuIcon />
           </IconButton>
-          <Link
-            component={RouterLink}
-            to="/" // Default link for the title
-            sx={{
-              flexGrow: 1,
-              color: 'inherit',
-              textDecoration: 'none',
-              '&:hover': { textDecoration: 'none' },
-            }}
+          <Typography
+            component="h1"
+            variant="h6"
+            color="inherit"
+            noWrap
+            sx={{ flexGrow: 1 }}
           >
-            <Typography variant="h6" noWrap component="div">
-              Modular Dashboard {/* App Title */}
-            </Typography>
-          </Link>
-          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-            {appBarItems.map((item) => (
-              <Button
-                key={item.path}
-                color="inherit"
-                component={RouterLink}
-                to={item.path}
-              >
-                {item.label}
-              </Button>
-            ))}
-            {user && (
-              <Button color="inherit" onClick={handleLogout}>
-                Sair ({user?.email || 'User'}) {/* Display user email or a fallback */}
-              </Button>
-            )}
-          </Box>
+            Modular Dashboard
+          </Typography>
+          <Tooltip title="Logout">
+            <IconButton color="inherit" onClick={handleLogout}>
+              <LogoutIcon />
+            </IconButton>
+          </Tooltip>
         </Toolbar>
-      </AppBar>
-      <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }} aria-label="mailbox folders">
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }} // Better mobile performance
+      </MuiAppBar>
+      {/*
+// @ts-ignore TODO: Fix theme and open props for MuiDrawer type checking */}
+      <MuiDrawer variant="permanent" open={open} theme={theme}>
+        <Toolbar
           sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth }
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            px: [1],
           }}
         >
-          {drawerContent}
-        </Drawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth }
-          }}
-          open
-        >
-          {drawerContent}
-        </Drawer>
-      </Box>
-      <Box component="main" sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}>
-        <Toolbar /> {/* Ensure content is below AppBar */}
-        <Outlet /> {/* This is where the routed page components will render */}
+          <IconButton onClick={handleDrawerClose}>
+            <ChevronLeftIcon />
+          </IconButton>
+        </Toolbar>
+        <Box sx={{ overflowY: 'auto', overflowX: 'hidden', height: 'calc(100% - 64px)' }}> {/* Adjust height based on Toolbar */}
+          <List component="nav">
+            <ListItem disablePadding sx={{ display: 'block' }}>
+              <Tooltip title={open ? "" : "Home"} placement="right">
+                <ListItemButton
+                  component={RouterLink}
+                  to="/"
+                  sx={{
+                    minHeight: 48,
+                    justifyContent: open ? 'initial' : 'center',
+                    px: 2.5,
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : 'auto',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <HomeIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Home" sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </Tooltip>
+            </ListItem>
+
+            {Object.values(moduleRegistry).filter(module => !module.adminOnly || (module.adminOnly && isAdmin)).map((module: ModuleConfig) => {
+              const IconComponent = module.navIcon as SvgIconComponent | undefined;
+              return (
+                <ListItem key={module.name} disablePadding sx={{ display: 'block' }}>
+                  <Tooltip title={open ? "" : (module.navText || module.name)} placement="right">
+                    <ListItemButton
+                      component={RouterLink}
+                      to={module.basePath}
+                      sx={{
+                        minHeight: 48,
+                        justifyContent: open ? 'initial' : 'center',
+                        px: 2.5,
+                      }}
+                    >
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          mr: open ? 3 : 'auto',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        {IconComponent ? <IconComponent /> : <div style={{ width: 24, height: 24 }} /> }
+                      </ListItemIcon>
+                      <ListItemText primary={module.navText || module.name} sx={{ opacity: open ? 1 : 0 }} />
+                    </ListItemButton>
+                  </Tooltip>
+                </ListItem>
+              );
+            })}
+          </List>
+          {isAdmin && (
+            <>
+              <Box sx={{ my: 1, mx: open ? 2.5 : 'auto', pl: open ? 0 : 1.5 }}><Typography variant="caption" sx={{ opacity: open ? 0.7 : 0 }}>Admin</Typography></Box>
+              <List component="nav">
+                <ListItem disablePadding sx={{ display: 'block' }}>
+                  <Tooltip title={open ? "" : "Admin Users"} placement="right">
+                    <ListItemButton
+                      component={RouterLink}
+                      to="/admin/users"
+                      sx={{
+                        minHeight: 48,
+                        justifyContent: open ? 'initial' : 'center',
+                        px: 2.5,
+                      }}
+                    >
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          mr: open ? 3 : 'auto',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <AdminPanelSettingsIcon />
+                      </ListItemIcon>
+                      <ListItemText primary="Admin Users" sx={{ opacity: open ? 1 : 0 }} />
+                    </ListItemButton>
+                  </Tooltip>
+                </ListItem>
+              </List>
+            </>
+          )}
+        </Box>
+      </MuiDrawer>
+      <Box
+        component="main"
+        sx={{
+          backgroundColor: (theme) => // theme is accessible here
+            theme.palette.mode === 'light'
+              ? theme.palette.grey[100]
+              : theme.palette.grey[900],
+          flexGrow: 1,
+          height: '100vh',
+          overflow: 'auto',
+        }}
+      >
+        <Toolbar />
+        <Box sx={{ p: 3 }}>
+          <Outlet />
+        </Box>
       </Box>
     </Box>
   );

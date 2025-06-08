@@ -1,61 +1,52 @@
-// frontend/src/pages/HomePage.tsx
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { Container, Typography, Grid, Card, CardActionArea, CardContent, Box } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import { Grid, Card, CardActionArea, Typography, Box, Icon } from '@mui/material';
-import { mainNavItems } from '../config/navigation';
-import { funnyHomepageTitles } from '../config/phrases';
-import { getIconComponent } from '../utils/iconMap';
+import { getModuleRegistry, ModuleConfig } from '../config/moduleRegistry';
+import { useAuthStore } from '../stores/authStore'; // Using useAuthStore based on MainLayout
+import { SvgIconComponent } from '@mui/icons-material';
 
 const HomePage: React.FC = () => {
-  const [pageTitle, setPageTitle] = useState<string>("Dashboard Modules");
+  const { user } = useAuthStore(); // Using useAuthStore
+  const moduleRegistry = getModuleRegistry();
 
-  useEffect(() => {
-    const randomIndex = Math.floor(Math.random() * funnyHomepageTitles.length);
-    setPageTitle(funnyHomepageTitles[randomIndex]);
-  }, []);
+  // Determine user role for filtering. Adapt if user.role is an array e.g. user.roles.includes('ADMIN')
+  const isAdmin = user?.role === 'ADMIN';
 
-  // Filter items to show on the homepage
-  const homepageItems = mainNavItems.filter(item => item.showOnHomepage);
-  // --- ADDED DEBUG LOG ---
-  console.log('HomePage - Items filtered for homepage:', homepageItems);
-  // --- END DEBUG LOG ---
+  const availableModules = Object.values(moduleRegistry).filter(
+    (module) => !module.adminOnly || (module.adminOnly && isAdmin)
+  );
 
   return (
-    <Box sx={{ flexGrow: 1, p: 2 }}>
-      <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ mb: 4 }}>
-        {pageTitle}
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Welcome, {user?.username || user?.email || 'User'}!
       </Typography>
-      {homepageItems.length > 0 ? (
-        <Grid container spacing={3} justifyContent="center">
-          {homepageItems.map((item) => {
-            const ModuleIcon = getIconComponent(item.icon);
+      <Typography variant="body1" sx={{ mb: 4 }}>
+        Access available modules below.
+      </Typography>
+
+      {availableModules.length > 0 ? (
+        <Grid container spacing={3}>
+          {availableModules.map((module: ModuleConfig) => {
+            const IconComponent = module.navIcon as SvgIconComponent | undefined;
             return (
-              <Grid item key={item.path + item.label} xs={12} sm={6} md={4} lg={3}> {/* Added label to key for uniqueness */}
-                <Card
-                  elevation={3}
-                  sx={{
-                    height: '100%',
-                    display: 'flex',
-                    maxWidth: 300,
-                    margin: 'auto',
-                  }}
-                >
-                  <CardActionArea
-                    component={RouterLink}
-                    to={item.path}
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      p: 3,
-                      flexGrow: 1,
-                    }}
-                  >
-                    <Icon component={ModuleIcon} sx={{ fontSize: 50, mb: 2 }} color="primary" />
-                    <Typography variant="h6" component="div" align="center" sx={{ lineHeight: 1.3 }}>
-                      {item.label}
-                    </Typography>
+              <Grid item xs={12} sm={6} md={4} key={module.name}>
+                <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                  <CardActionArea component={RouterLink} to={module.basePath} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', p: 2, flexGrow: 1 }}>
+                      {IconComponent && (
+                        <IconComponent sx={{ fontSize: 40, mr: 2 }} />
+                      )}
+                      <CardContent sx={{ flexGrow: 1, p:0, '&:last-child': { pb: 0 } }}>
+                        <Typography gutterBottom variant="h5" component="div">
+                          {module.navText || module.name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Access the {module.name} module.
+                          {module.adminOnly && <Typography variant="caption" display="block" sx={{color: 'warning.main'}}> (Admin Only)</Typography>}
+                        </Typography>
+                      </CardContent>
+                    </Box>
                   </CardActionArea>
                 </Card>
               </Grid>
@@ -63,11 +54,11 @@ const HomePage: React.FC = () => {
           })}
         </Grid>
       ) : (
-        <Typography align="center" sx={{ mt: 5 }}>
-          No modules configured to display on the homepage.
+        <Typography variant="body1">
+          No modules are currently available to you.
         </Typography>
       )}
-    </Box>
+    </Container>
   );
 };
 
