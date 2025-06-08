@@ -14,7 +14,9 @@ export const ProtectedRoute = ({ children, roles }: ProtectedRouteProps) => {
   // Assuming useAuthStore() returns an object that includes:
   // - `token` (or a boolean like `isAuthenticated`)
   // - `user` (an object which might contain a `role` or `roles` property)
-  const { token, user } = useAuthStore(state => ({ token: state.token, user: state.user }));
+  // const { token, user } = useAuthStore(state => ({ token: state.token, user: state.user })); // Old problematic selector
+  const token = useAuthStore(state => state.token);
+  const user = useAuthStore(state => state.user);
 
   // 1. Check for basic authentication
   if (!token) {
