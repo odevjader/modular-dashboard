@@ -1,7 +1,7 @@
 import yaml
-from pydantic import BaseModel, validator, Field
 from typing import List, Optional, Dict, Any
 import importlib
+from app.schemas.module_config import ModulesFile # Added import
 from fastapi import APIRouter
 import os
 from app.core.config import logger # Assuming logger is configured here
@@ -10,83 +10,31 @@ from app.core.config import logger # Assuming logger is configured here
 APP_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # app/
 STANDARD_MODULES_BASE_DIR = os.path.join(APP_DIR, "modules") # app/modules/
 CORE_MODULES_BASE_DIR = os.path.join(APP_DIR, "core_modules") # app/core_modules/
-CONFIG_DIR = os.path.join(APP_DIR, "configs") # app/configs/
-MODULE_CONFIG_FILE = os.path.join(CONFIG_DIR, "modules.yaml")
+CONFIG_DIR = os.path.join(APP_DIR, "config") # app/config/
+MODULE_CONFIG_FILE = os.path.join(CONFIG_DIR, "modules.yaml") # <- This was already correct
 
-class ModuleConfig(BaseModel):
-    name: str = Field(..., description="Unique name of the module.")
-    # Path should be like: "modules.info.v1" or "core_modules.auth.v1"
-    # This path is relative to the `app` directory.
-    path: str = Field(..., description="Dot-notation path to the module's package from 'app' (e.g., 'modules.info.v1', 'core_modules.auth.v1').")
-    version: str = Field(..., description="Version of the module's API (e.g., 'v1'). Should match last part of 'path' typically.")
-    description: Optional[str] = Field(None, description="Brief description of the module.")
-    enabled: bool = Field(default=True, description="Whether the module is currently enabled.")
-    router_variable_name: str = Field(default="router", description="The variable name of the APIRouter instance in endpoints.py.")
-    prefix: Optional[str] = Field(None, description="Optional API prefix for the module. If None, uses /name/version.")
-    tags: Optional[List[str]] = Field(None, description="Optional tags for OpenAPI documentation. If None, uses [name.capitalize()].")
+# ModuleConfig and ModulesConfig classes are removed as per plan.
+# Their definitions were here.
+# Validator methods validate_module_path_structure and validate_version_format
+# were part of ModuleConfig and are thus also removed.
 
-    @validator('path')
-    def validate_module_path_structure(cls, v_path, values):
-        # Path examples: "modules.info.v1", "core_modules.auth.v1"
-        parts = v_path.split('.')
-        if len(parts) < 3:
-            raise ValueError(f"Module '{values.get('name')}': path '{v_path}' must have at least 3 parts (e.g., 'modules.name.version' or 'core_modules.name.version').")
-
-        module_type_folder = parts[0] # 'modules' or 'core_modules'
-        module_name_in_path = parts[1] # 'info', 'auth'
-        module_version_in_path = parts[-1] # 'v1' (last part is version)
-
-        if module_type_folder not in ["modules", "core_modules"]:
-            raise ValueError(f"Module '{values.get('name')}': path '{v_path}' must start with 'modules.' or 'core_modules.'")
-
-        # Validate physical existence of directory and endpoints.py
-        base_dir = STANDARD_MODULES_BASE_DIR if module_type_folder == "modules" else CORE_MODULES_BASE_DIR
-
-        # Construct physical path parts: base_dir / module_name_in_path / module_version_in_path / endpoints.py
-        # Example: app/modules/info/v1/endpoints.py
-        expected_endpoints_dir = os.path.join(base_dir, module_name_in_path, module_version_in_path)
-
-        if not os.path.isdir(expected_endpoints_dir):
-            raise ValueError(f"Module '{values.get('name')}': Directory for path '{v_path}' (resolved to '{expected_endpoints_dir}') does not exist.")
-
-        endpoints_file_path = os.path.join(expected_endpoints_dir, "endpoints.py")
-        if not os.path.isfile(endpoints_file_path):
-            raise ValueError(f"Module '{values.get('name')}': endpoints.py not found in '{expected_endpoints_dir}'.")
-
-        # Check consistency of version in path vs version field
-        config_version = values.get('version')
-        if config_version and module_version_in_path != config_version:
-            logger.warning(f"Module '{values.get('name')}': Version in path ('{module_version_in_path}') differs from 'version' field ('{config_version}'). Path version will be used for locating files.")
-
-        return v_path
-
-    @validator('version')
-    def validate_version_format(cls, v_version, values):
-        # Optional: Add specific version format validation, e.g., "v1", "v1.2", "v2beta"
-        if not v_version: # Should be caught by Field(...) if not optional
-            raise ValueError("Version field cannot be empty.")
-        return v_version
-
-
-class ModulesConfig(BaseModel):
-    modules: List[ModuleConfig]
-
-def load_modules_config(config_path: str = MODULE_CONFIG_FILE) -> ModulesConfig:
+def load_modules_config(config_path: str = MODULE_CONFIG_FILE) -> ModulesFile: # Return type changed
     logger.info(f"Attempting to load module configurations from: {config_path}")
     if not os.path.exists(config_path):
         logger.error(f"Module configuration file not found: {config_path}")
         # Return empty config instead of raising FileNotFoundError to allow app to start
         # if modules.yaml is optional or for testing. Error will be logged.
-        return ModulesConfig(modules=[])
+        return ModulesFile(modules=[]) # Changed to ModulesFile
 
     try:
         with open(config_path, 'r') as f:
             config_data = yaml.safe_load(f)
-        if not config_data or 'modules' not in config_data:
+        if not config_data or 'modules' not in config_data: # Ensure modules.yaml content is handled
             logger.warning(f"No modules defined or 'modules' key missing in {config_path}. Returning empty list.")
-            return ModulesConfig(modules=[])
+            return ModulesFile(modules=[]) # Changed to ModulesFile
 
-        parsed_config = ModulesConfig(**config_data)
+        # Use the imported ModulesFile schema for parsing and validation
+        parsed_config = ModulesFile(**config_data) # Changed to ModulesFile
         logger.info(f"Successfully loaded and validated {len(parsed_config.modules)} module configurations from {config_path}")
         return parsed_config
     except yaml.YAMLError as e:
@@ -97,7 +45,7 @@ def load_modules_config(config_path: str = MODULE_CONFIG_FILE) -> ModulesConfig:
         raise
 
 
-def discover_module_routers(modules_config: ModulesConfig) -> List[Dict[str, Any]]:
+def discover_module_routers(modules_config: ModulesFile) -> List[Dict[str, Any]]: # Parameter type changed
     loaded_routers_info = []
     if not modules_config or not modules_config.modules:
         logger.info("No modules to discover routers from based on provided config.")
