@@ -77,7 +77,14 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas em s
     docker-compose exec api alembic upgrade head
     ```
 
-5.  **Instalar Dependências do Frontend:**
+5.  **Criar Usuário Administrador Inicial (Opcional):**
+    O projeto inclui um script para criar um usuário administrador padrão com as credenciais `admin@gmail.com` / `admin@gmail.com`. Isso é útil para o primeiro acesso ao sistema. Para executá-lo:
+    ```bash
+    docker-compose exec api python app/create_admin_user.py
+    ```
+    O script verificará se o usuário já existe. Se existir e não for admin ou estiver inativo, tentará atualizá-lo.
+
+6.  **Instalar Dependências do Frontend:**
     Navegue até a pasta `frontend/` e use o `npm` para instalar todas as dependências listadas no `package.json`:
     ```bash
     cd frontend
@@ -85,7 +92,7 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas em s
     cd ..
     ```
 
-6.  **Iniciar o Servidor de Desenvolvimento do Frontend:**
+7.  **Iniciar o Servidor de Desenvolvimento do Frontend:**
     Ainda dentro da pasta `frontend/`, inicie o servidor de desenvolvimento do Vite:
     ```bash
     cd frontend
@@ -93,7 +100,7 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas em s
     ```
     O terminal indicará em qual porta o servidor frontend está rodando (normalmente 5173).
 
-7.  **Acessar a Aplicação:**
+8.  **Acessar a Aplicação:**
     Abra seu navegador e acesse:
     * **Frontend:** [http://localhost:5173](http://localhost:5173) (ou a porta indicada pelo `npm run dev`)
     * **Backend API Docs (Swagger UI):** [http://localhost:8000/docs](http://localhost:8000/docs) (Assumindo `APP_PORT=8000` e porta exposta `8000:8000` no compose)
@@ -107,4 +114,4 @@ Para parar os containers Docker (API e Banco de Dados) quando terminar de trabal
 docker-compose down
 (Isso irá parar e remover os containers, mas os volumes de dados do banco (se configurados no docker-compose.yml) geralmente são preservados).
 
-Pronto! Com esses passos, o ambiente de desenvolvimento deve estar configurado. Atenção: Atualmente (Abril 2025), o projeto está bloqueado por um erro de build do Docker (failed to fetch oauth token). A resolução deste problema é a prioridade antes de prosseguir com o desenvolvimento ou teste de funcionalidades.
+Pronto! Com esses passos, o ambiente de desenvolvimento deve estar configurado.

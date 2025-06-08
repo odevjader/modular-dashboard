@@ -3,11 +3,11 @@
 
 Este documento descreve o roadmap de alto nível planejado para o desenvolvimento do Modular Dashboard como uma plataforma base versátil e extensível. É um guia direcional e está sujeito a alterações.
 
-*(Última atualização: 07 de Junho de 2025)*
+*(Última atualização: Setembro de 2025)*
 
 ## Status Atual
 
-O mecanismo de modularidade V1 foi implementado. O foco técnico imediato passa a ser **Testar e finalizar endpoints Core de Autenticação (`/users/me`) e CRUD Admin (`/admin/users/*`) (#13)**.
+A funcionalidade de Gerenciamento de Usuários (Admin CRUD) foi implementada (Backend #13, Frontend #14). O foco técnico imediato passa a ser **Solidificar e documentar as APIs do Core (Auth, User) (#15)**.
 
 ## Fases Planejadas
 
@@ -35,9 +35,9 @@ O mecanismo de modularidade V1 foi implementado. O foco técnico imediato passa 
       * ✅ **Tarefa 2.1:** Criar o registro de módulos do frontend (`moduleRegistry.ts`).
       * ✅ **Tarefa 2.2:** Implementar o roteamento dinâmico no `App.tsx` usando o registro.
       * ✅ **Tarefa 2.3:** Implementar a navegação dinâmica (barra lateral, página inicial) a partir do registro.
-  * 🚧 **Testar e finalizar endpoints Core de Autenticação (`/users/me`) e CRUD Admin (`/admin/users/*`) (#13).** *(Prioridade Atual)*.
-  * ⬜ Re-integrar fluxo de autenticação e telas de Gerenciamento de Usuários no Frontend Core (#14). *(Depende de #13)*.
-  * ⬜ Solidificar e documentar as APIs do Core (Auth, User) (#15). *(Idealmente após #13)*.
+  * ✅ **Testar e finalizar endpoints Core de Autenticação (`/users/me`) e CRUD Admin (`/admin/users/*`) (#13).** *(Concluído)*.
+  * ✅ Re-integrar fluxo de autenticação e telas de Gerenciamento de Usuários no Frontend Core (#14). *(Concluído)*.
+  * 🚧 **Solidificar e documentar as APIs do Core (Auth, User) (#15).** *(Prioridade Atual)*.
   * 🚧 Estabelecer padrões claros para desenvolvimento de novos módulos (#16). *(Desbloqueado, Próxima Prioridade)*.
   * *(Nota: Implementação de Templates de Issue/PR (#3, #4) e Milestones (#6) adiada - ver backlog de Issues)*.
 
