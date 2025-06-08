@@ -58,6 +58,5 @@ Consulte o guia detalhado em **[docs/02_SETUP_DESENVOLVIMENTO.md](./docs/02_SETU
 
 Consulte o [ROADMAP.md](./ROADMAP.md) para detalhes completos. As prioridades imediatas são (referências de Issue do GitHub):
 
-1.  **Implementar Mecanismo de Modularidade v1 (Backend/Frontend - Revisado) (#8)** - *(Prioridade Atual)*.
-2.  **Testar e finalizar endpoints Core de Autenticação (`/users/me`) e CRUD Admin (`/admin/users/*`) (#13)** - *(Desbloqueado, Próxima Prioridade)*.
-3.  Re-integrar e/ou desenvolver a interface de Gerenciamento de Usuários no Frontend Core (#14) - *(Depende de #13)*.
+1.  **Testar e finalizar endpoints Core de Autenticação (`/users/me`) e CRUD Admin (`/admin/users/*`) (#13)** - *(Prioridade Atual)*.
+2.  Re-integrar e/ou desenvolver a interface de Gerenciamento de Usuários no Frontend Core (#14) - *(Depende de #13)*.
