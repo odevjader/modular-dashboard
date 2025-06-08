@@ -1,1 +1,0 @@
-{"environment":"development","project_name":"Modular Dashboard API (Dev)","server_time_utc":"2025-06-08T17:20:17.488593Z","api_prefix":"/api"}
