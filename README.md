@@ -5,7 +5,7 @@
 
 ## Status Atual
 
-**(Setembro de 2025)**: ✅ **Funcional e em Desenvolvimento Ativo** 🚧
+**(Outubro de 2025)**: ✅ **Funcional e em Desenvolvimento Ativo** 🚧
 
 O projeto está com seu ambiente de desenvolvimento 100% funcional. O bug crítico de login (Issue #11), que antes impedia o progresso, foi **resolvido** através da correta configuração do ambiente (proxy do Vite e limpeza de dependências).
 

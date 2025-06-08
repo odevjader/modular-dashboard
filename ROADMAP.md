@@ -3,7 +3,7 @@
 
 Este documento descreve o roadmap de alto nível planejado para o desenvolvimento do Modular Dashboard como uma plataforma base versátil e extensível. É um guia direcional e está sujeito a alterações.
 
-*(Última atualização: Setembro de 2025)*
+*(Última atualização: Outubro de 2025)*
 
 ## Status Atual
 

@@ -102,3 +102,40 @@ Successfully updated `README.md`.
 - Updated overall status date.
 - Updated "Status Técnico" to reflect completion of User Management and new priority.
 - Updated "Próximos Passos (Foco Atual)" to list new priorities (#15, #16).
+
+--- Subtask Report 19 (Correct isAdmin check in MainLayout.tsx) ---
+Successfully modified the `isAdmin` constant in `frontend/src/layouts/MainLayout.tsx`.
+The change involved updating the role comparison from uppercase 'ADMIN' to lowercase 'admin'.
+From: `const isAdmin = user?.role === 'ADMIN';`
+To: `const isAdmin = user?.role === 'admin';`
+
+--- Subtask Report 20 (Fix admin access in App.tsx and ProtectedRoute.tsx) ---
+Successfully applied fixes for admin access in `frontend/src/App.tsx` and `frontend/src/components/ProtectedRoute.tsx`.
+1. `frontend/src/App.tsx` Modifications: The `/admin/users` route was updated to be explicitly wrapped with `ProtectedRoute roles={['admin']}`.
+2. `frontend/src/components/ProtectedRoute.tsx` Modifications: The `ProtectedRouteProps` interface was updated to include `adminOnly?: boolean;`. The `ProtectedRoute` function logic was enhanced to handle the `adminOnly` prop, make role comparisons case-insensitive (lowercase), and ensure `user` and `user.role` are present before checking roles, redirecting to login if not.
+
+--- Subtask Report 21 (Add pagination state to AdminUsers.tsx) ---
+Successfully added state variables for pagination to `frontend/src/components/AdminUsers.tsx`.
+The following state declarations were added:
+`const [page, setPage] = useState(0);`
+`const [pageSize, setPageSize] = useState(10);`
+`const [totalRowCount, setTotalRowCount] = useState(0);`
+
+--- Subtask Report 22 (Modify fetchUsers in AdminUsers.tsx for pagination) ---
+Successfully updated the `fetchUsers` function in `frontend/src/components/AdminUsers.tsx` to support pagination.
+- `fetchUsers` now calculates `skip` based on `page` and `pageSize` state variables.
+- Call to `getUsers` updated to `getUsers(skip, pageSize)`.
+- State updates: `setUsers(response.items)` and `setTotalRowCount(response.total)`.
+- `useEffect` hook calling `fetchUsers` had `page` and `pageSize` added to its dependency array.
+
+--- Subtask Report 23 (Configure MUI DataGrid in AdminUsers.tsx for server-side pagination) ---
+Successfully configured the `<DataGrid>` component in `frontend/src/components/AdminUsers.tsx` for server-side pagination.
+- Imported `GridPaginationModel`.
+- Defined `handlePaginationModelChange` handler to update `page` and `pageSize` states.
+- Updated `<DataGrid>` props: `rowCount={totalRowCount}`, `paginationMode="server"`, `onPaginationModelChange={handlePaginationModelChange}`, `paginationModel={{ page, pageSize }}`.
+
+--- Subtask Report 24 (Implement get_db_contextmanager in backend database.py) ---
+Successfully added the `get_db_contextmanager` function to `backend/app/core/database.py`.
+- Imported `asynccontextmanager` from `contextlib`.
+- Defined `get_db_contextmanager` decorated with `@asynccontextmanager`, yielding an `AsyncSession` from `async_session_local`.
+- Includes checks for `async_session_local` initialization and robust session handling with `try...except...finally` for rollback and close.
