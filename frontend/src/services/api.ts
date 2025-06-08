@@ -31,7 +31,13 @@ export interface LoginResponse {
     access_token: string;
     token_type: string;
 }
-export interface UserResponse {
+
+// New UserBase interface
+export interface UserBase {
+  email: string;
+}
+
+export interface UserResponse { // Kept as is
     id: number;
     email: string;
     role: string;
@@ -39,16 +45,28 @@ export interface UserResponse {
     created_at: string;
     updated_at: string;
 }
-export interface UserCreateRequest {
+
+export interface UserCreate { // Renamed from UserCreateRequest and modified
     email: string;
     password: string;
     role: string;
+    is_active?: boolean; // Make optional, backend defaults if not sent
 }
-export interface UserUpdateRequest {
+
+export interface UserUpdateRequest { // Kept as is
     email?: string;
     password?: string;
     role?: string;
     is_active?: boolean;
+}
+
+// New UserListResponse interface
+export interface UserListResponse {
+  items: UserResponse[];
+  total: number;
+  page: number;
+  size: number;
+  pages: number;
 }
 
 // --- Generic API Client (for JSON endpoints) ---
@@ -153,13 +171,18 @@ export const getCurrentUser = async (token: string): Promise<UserResponse> => {
     });
 };
 
-/** Fetches all users (admin only). */
-export const getUsers = async (): Promise<UserResponse[]> => {
-    return apiClient<UserResponse[]>('/auth/v1/admin/users');
+/** Fetches all users (admin only) with pagination. */
+export const getUsers = async (skip: number, limit: number): Promise<UserListResponse> => {
+    return apiClient<UserListResponse>(`/auth/v1/admin/users?skip=${skip}&limit=${limit}`);
+};
+
+/** Fetches a specific user by ID (admin only). */
+export const getUser = async (userId: number): Promise<UserResponse> => {
+    return apiClient<UserResponse>(`/auth/v1/admin/users/${userId}`);
 };
 
 /** Creates a new user (admin only). */
-export const createUser = async (user: UserCreateRequest): Promise<UserResponse> => {
+export const createUser = async (user: UserCreate): Promise<UserResponse> => { // Parameter type updated
     return apiClient<UserResponse>('/auth/v1/admin/users', {
         method: 'POST',
         body: JSON.stringify(user),
