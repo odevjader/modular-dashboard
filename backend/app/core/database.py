@@ -5,6 +5,7 @@ from sqlalchemy.orm import declarative_base, DeclarativeBase
 from .config import settings, logger # Import settings and logger usando ponto (.)
 # --- FIM IMPORT CORRIGIDO ---
 from typing import AsyncGenerator
+from contextlib import asynccontextmanager # Added import
 
 # Use the ASYNC Database URL from settings for the application engine
 ASYNC_DATABASE_URL = settings.ASYNC_DATABASE_URL
@@ -61,3 +62,30 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
             await session.rollback()
             raise
         # Session is automatically closed by 'async with'
+
+@asynccontextmanager
+async def get_db_contextmanager() -> AsyncGenerator[AsyncSession, None]:
+    '''
+    Provides an SQLAlchemy AsyncSession within an async context manager.
+    Ensures the session is closed afterwards.
+    Useful for scripts or background tasks.
+    '''
+    if async_session_local is None:
+        logger.error("Database session factory (async_session_local) is not configured. Cannot get DB session.")
+        # Or raise an exception, depending on desired behavior for scripts
+        raise RuntimeError("Database session factory (async_session_local) is not available for context manager.")
+
+    session: AsyncSession = async_session_local()
+    logger.debug(f"Yielding database session from context manager: {session}")
+    try:
+        yield session
+        # For scripts, we might want to commit if no exceptions occurred,
+        # but typically the calling code should handle commits.
+        # await session.commit() # Optional: if you want auto-commit on successful exit
+    except Exception:
+        logger.exception("Exception within database context manager scope, rolling back.")
+        await session.rollback()
+        raise
+    finally:
+        logger.debug(f"Closing database session from context manager: {session}")
+        await session.close()
