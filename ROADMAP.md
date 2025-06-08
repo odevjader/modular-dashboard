@@ -27,8 +27,8 @@ O projeto está em **Desenvolvimento Ativo**. O bug crítico de login (Issue #11
   * ✅ **Corrigir bug crítico no endpoint `/api/auth/v1/login` (#11).** *(Resolvido via configuração de ambiente)*.
   * 🚧 **Implementar Mecanismo de Modularidade v1 (Issue #8).** *(Prioridade Atual)*.
     * **Backend:**
-      * ⬜ **Tarefa 1.1:** Criar o arquivo de configuração `modules.yaml` e os schemas de validação Pydantic.
-      * ⬜ **Tarefa 1.2:** Criar a função `load_modules` no novo arquivo `core/module_loader.py`.
+      * ✅ **Tarefa 1.1:** Criar o arquivo de configuração `modules.yaml` e os schemas de validação Pydantic.
+      * ✅ **Tarefa 1.2:** Criar a função `load_modules` no novo arquivo `core/module_loader.py`.
       * ✅ **Tarefa 1.3:** Integrar o `load_modules` na inicialização da aplicação (`main.py`).
       * ✅ **Tarefa 1.4:** Limpar as importações estáticas do `api_router.py`.
     * **Frontend:**
