@@ -1,99 +1,66 @@
 #docs/07_FLUXO_TRABALHO_DEV.md
-# Fluxo de Trabalho de Desenvolvimento (Experimental V5 - Formalizado)
+# Fluxo de Trabalho de Desenvolvimento (Híbrido IA)
 
-Este documento descreve o modelo de desenvolvimento colaborativo Humano-IA utilizado no projeto Modular Dashboard, envolvendo Desenvolvedores (Devs) Humanos, o Maestro IA (Orquestrador), e o Agente IA Coder (Integrado ao IDE, ex: RooCode), que agora opera com maior autonomia no detalhamento técnico.
+Este documento descreve o modelo de desenvolvimento colaborativo Humano-IA para o projeto Modular Dashboard, envolvendo Desenvolvedores Humanos (Devs), o Maestro IA (Orquestrador de alto nível), Google Jules (Agente de desenvolvimento primário) e IA Coder (Agente de desenvolvimento secundário local).
 
-*(Última atualização: 25 de Abril de 2025 - Adotando fluxo experimental V5 e clareza no formato de prompt)*
+*(Última atualização: 29 de Maio de 2024)*
 
 ## Filosofia e Papéis
 
-Mantemos a filosofia de colaboração Humano-IA, mas ajustamos as responsabilidades para otimizar o fluxo, com base em experimentos:
+A filosofia central é a colaboração eficiente entre humanos e IAs, onde cada um desempenha o papel para o qual é mais adequado.
 
-1.  **Dev (Desenvolvedor Humano):**
-    * **Centro Estratégico e de Execução:** Define requisitos, coordena, toma decisões finais, gerencia Git (Branches, Commits Frequentes, PRs).
-    * **Interface e Supervisor:** Interage com Maestro IA (planejamento, contexto, docs), passa tarefas/abordagem para o Coder IA, **supervisiona ativamente** as ações do Coder, **aprova planos detalhados**, fornece feedback, executa testes de validação finais, opera a ferramenta RooCode (para aplicar docs via prompt do Maestro).
-    * **Executor de Comandos:** Executa comandos de terminal (Docker, Git, etc.) quando necessário.
-    * **Garantidor do Estado:** **Crucial:** Garante que o repositório esteja em um estado "limpo" (sem alterações não commitadas) antes de iniciar uma nova tarefa com o Coder IA.
+1.  **Maestro IA (Orquestrador):**
+    *   **Responsabilidades:** Mantém o contexto global do projeto, planeja o roadmap, cria tarefas detalhadas (como esta) para o Google Jules. Gera documentação de alto nível e auxilia no planejamento estratégico.
+    *   **Limitações:** Não tem acesso em tempo real às mudanças de código no repositório. Baseia-se nos relatórios e no código enviado.
 
-2.  **Maestro IA (Orquestrador & Coordenador):**
-    * **Planejador e Contextualizador:** Mantém contexto geral, auxilia no planejamento, sugere branches, analisa sumários finais (fornecidos pelo Dev).
-    * **Orientador de Alto Nível:** Para cada tarefa, gera:
-        * O **objetivo de alto nível** (Issue #).
-        * O **contexto relevante**.
-        * Uma **lista explícita de documentos** que o Coder IA deve ler *antes* de planejar.
-        * Uma **sugestão de abordagem de alto nível** para a solução.
-        * **Não fornece mais os passos detalhados** de implementação.
-    * **Gerador de Documentação:** Gera prompts RooCode para o Dev aplicar atualizações na **documentação oficial**, seguindo estritamente o formato definido abaixo.
-    * **Facilitador:** Gera sumários de sessão, sugere mensagens de commit. NÃO executa código/comandos. Solicita arquivos via `code <path>`.
+2.  **Google Jules (Agente de Desenvolvimento Primário):**
+    *   **Responsabilidades:** Principal agente de desenvolvimento autônomo. Recebe tarefas do Maestro IA.
+    *   **Fluxo de Trabalho Típico:**
+        1.  Recebe uma tarefa detalhada.
+        2.  Clona o repositório GitHub para um ambiente de máquina virtual (VM) seguro e isolado.
+        3.  Analisa a tarefa e o código base relevante.
+        4.  Gera um plano de execução detalhado para aprovação do Desenvolvedor Humano.
+        5.  Após a aprovação, executa o plano, modificando o código, adicionando testes, e realizando outras ações necessárias.
+        6.  Envia (push) as alterações para uma nova branch, tipicamente denominada `jules`, no repositório GitHub.
+    *   **Interação:** Comunica o plano, progresso e resultados ao Desenvolvedor Humano para validação.
 
-3.  **Coder IA (Agente IA Coder - Integrado ao IDE, ex: RooCode):**
-    * **Implementador Técnico Detalhista:** Recebe objetivo, contexto, lista de docs e abordagem sugerida do Maestro (via Dev).
-    * **Planejador Detalhado:** **Lê os documentos indicados primeiro.** Elabora um **plano técnico detalhado** para implementar a abordagem sugerida. Apresenta este plano ao Dev para **aprovação antes de executar**.
-    * **Executor Supervisionado:** Implementa o plano aprovado, utilizando suas capacidades de acesso a arquivos e execução de terminal (sob supervisão e confirmação do Dev para ações significativas).
-    * **Verificador:** Realiza ou solicita ao Dev os passos necessários para **verificar se a implementação funciona corretamente** antes de finalizar.
-    * **Comunicador:** Interage com o Dev para feedback, esclarecimentos e status.
-    * **Sumarizador:** Gera o **"Sumário Final para Orquestrador"** detalhado ao concluir.
+3.  **IA Coder (Agente de Desenvolvimento Secundário Local):**
+    *   **Responsabilidades:** Opera diretamente na máquina local do Desenvolvedor Humano. Utilizado para tarefas que exigem acesso ao ambiente local específico do desenvolvedor, configurações particulares, ou para experimentação rápida que não necessita do ciclo completo de validação do Jules.
+    *   **Casos de Uso:** Debugging em ambiente local, pequenas refatorações com impacto local, integração com ferramentas específicas do desenvolvedor.
 
-4.  **RooCode (Ferramenta Integrada ao VS Code):**
-    * Atua como o **Coder IA** (Agente Tipo 1).
-    * Atua como a ferramenta que o **Dev** usa para aplicar os prompts `Action/Path/Content` gerados pelo **Maestro IA** (para atualização de documentação).
+4.  **Desenvolvedor Humano (Dev):**
+    *   **Responsabilidades:** Ponto central de decisão e validação. Define os requisitos macro, aprova os planos do Jules, valida o código gerado pelo Jules, e gerencia o ciclo de feedback. Orienta o uso do IA Coder local.
+    *   **Foco:** Revisão estratégica, garantia de qualidade, testes funcionais, integração final e merge do código.
 
-## Formato Padrão de Prompt para RooCode (Gerado pelo Maestro IA para Docs)
+## Fluxo de Validação do Desenvolvedor para o Código do Jules
 
-Mantém-se o formato para garantir clareza e execução correta pelo RooCode ao aplicar atualizações de documentação:
+Este fluxo é crucial para garantir a qualidade e a correta integração do código produzido pelo Google Jules.
 
-**Estrutura:**
-Linha 1: `Action: [Create File | Overwrite File | Append Lines]`
-Linha 2: `Relative Path: [Caminho/Relativo/Do/Arquivo.ext]`
-Linha 3: `--- START CONTENT ---`
-Linha 4 em diante: Conteúdo completo do arquivo (preservando formatação interna).
-Última Linha + 1: `--- END CONTENT ---`
+1.  **Notificação e Checkout:** Após o Google Jules enviar o código para a branch `jules`, o Desenvolvedor Humano é notificado.
+    *   O Desenvolvedor executa `git fetch origin` para buscar as atualizações remotas.
+    *   Em seguida, executa `git checkout jules` para mudar para a branch do Jules.
 
-**Observações Cruciais:**
-* **Importante:** O conteúdo entre `--- START CONTENT ---` e `--- END CONTENT ---` DEVE ser o conteúdo **completo e exato** do arquivo, sem abreviações ou omissões (ex: não usar '...' ou referências a seções omitidas). O conteúdo é literal.
-* **NÃO** usar delimitadores Markdown (```) dentro do bloco de conteúdo (ex: para blocos de código internos como Mermaid, YAML, etc.).
-* O Maestro IA apresentará o prompt completo dentro de um bloco ```text no chat apenas para facilitar a cópia pelo Dev. O que deve ser passado ao RooCode é o texto *dentro* desse bloco ```text.
-* **Padrão de Primeira Linha:** Todo arquivo modificado via prompt deve ter como primeira linha um comentário com seu caminho relativo: `#caminho/relativo/arquivo.ext` (sem espaço após #).
+2.  **Teste e Validação Local:**
+    *   O Desenvolvedor revisa o código, executa os testes automatizados (unitários, integração, etc.).
+    *   Valida se a funcionalidade implementada atende aos requisitos da tarefa e se integra corretamente ao restante do projeto.
 
-## Colaboração Multi-Usuário e Versionamento (Git)
+3.  **Ciclo de Feedback e Correção (Se Necessário):**
+    *   **Se forem necessárias correções:** O Desenvolvedor fornece feedback detalhado ao Google Jules, especificando as alterações ou ajustes requeridos.
+    *   O Google Jules processa o feedback, realiza as correções e gera novos commits na **mesma branch `jules`**.
+    *   Este ciclo de `git fetch`, teste local e feedback se repete até que o código seja aprovado pelo Desenvolvedor.
 
-O fluxo Git (Feature Branch, Rebase, Commits Frequentes, PRs) permanece o mesmo descrito anteriormente. **Reforça-se a importância de commitar o trabalho concluído antes de iniciar uma nova tarefa com o Coder IA para facilitar a recuperação em caso de problemas.**
+4.  **Merge e Limpeza:**
+    *   **Após a aprovação:** O Desenvolvedor faz o merge da branch `jules` na branch de trabalho principal (ex: `main`, `develop`).
+        *   `git checkout <branch_principal>`
+        *   `git merge jules --no-ff` (Recomenda-se `--no-ff` para manter o histórico de que o trabalho veio de uma feature branch).
+    *   Após o merge bem-sucedido e push da branch principal, a branch `jules` pode ser deletada:
+        *   `git push origin --delete jules` (deleta a branch remota)
+        *   `git branch -d jules` (deleta a branch local)
 
-## Iniciando uma Sessão de Trabalho
+## Colaboração e Versionamento
 
-O processo permanece similar:
-1. Dev sinaliza início.
-2. Dev garante repo atualizado e entra no branch correto. Informa o Maestro.
-3. Maestro solicita contexto (docs, `code <path>`) se necessário.
-4. Dev define meta(s) / Issue a trabalhar.
-5. Maestro confirma e prepara a definição da tarefa (objetivo, docs, abordagem).
+*   **Commits:** O Google Jules fará commits granulares em sua branch `jules`.
+*   **Branching:** A branch `jules` é dedicada ao trabalho do Google Jules para uma tarefa específica. O Desenvolvedor Humano integra esse trabalho na branch principal.
+*   **Comunicação:** A comunicação clara entre o Maestro IA, Google Jules e o Desenvolvedor Humano é essencial, utilizando as ferramentas e plataformas acordadas.
 
-## Fluxo de Interação Típico (Refinado)
-
-1.  **Definição da Tarefa (Maestro IA -> Dev):** Maestro gera o objetivo, contexto (incluindo lista explícita de docs relevantes), e sugestão de abordagem de alto nível. Inclui nota para o Dev sobre o modo "ARQUITECT".
-2.  **Instrução e Planejamento (Dev -> Coder IA -> Dev):** Dev passa a definição da tarefa ao Coder IA, instruindo a iniciar em modo "ARQUITECT" (ou similar). Coder IA lê os docs indicados, elabora o plano técnico detalhado e apresenta ao Dev para aprovação.
-3.  **Execução Supervisionada (Dev <-> Coder IA):** Dev aprova o plano. Coder IA (em modo de execução) implementa o plano passo a passo, solicitando confirmação do Dev para ações chave ou após cada modificação/comando. Dev fornece feedback e supervisão.
-4.  **Verificação (Coder IA + Dev):** Coder IA realiza/solicita passos para verificar se a implementação funciona. Dev realiza a validação final.
-5.  **Sumarização e Handoff (Coder IA -> Dev -> Maestro IA):** Coder IA gera o "Sumário Final para Orquestrador". Dev salva o sumário em `.logs/task_summaries/` (com Issue # no nome) e cola o conteúdo para o Maestro IA analisar.
-6.  **Análise e Preparação Docs (Maestro IA -> Dev):** Maestro IA analisa o sumário. Se ok, gera prompt(s) RooCode para atualizar a **documentação oficial** relevante.
-7.  **Aplicação Docs (Dev -> RooCode):** Dev executa o(s) prompt(s) RooCode gerados pelo Maestro para aplicar a documentação. Confirma para o Maestro.
-8.  **Commit (Maestro IA -> Dev):** Maestro sugere mensagem de commit. Dev executa `git add .`, `git commit`, `git push`.
-
-## Finalizando uma Sessão de Trabalho
-
-Processo similar ao anterior:
-1. Sinalização Dev -> Maestro.
-2. Garantir último sumário recebido pelo Maestro.
-3. Maestro fornece sumário geral da sessão.
-4. **Atualização Docs Pendentes (Importante):** Antes de finalizar, garantir que todos os prompts de documentação gerados pelo Maestro foram aplicados pelo Dev via RooCode.
-5. Sugestão de Commit Final (Maestro).
-6. Versionamento Final (Dev).
-
-## Comunicação
-
-* **Clareza:** Essencial. Maestro fornece docs explícitos. Coder apresenta plano claro. Dev dá feedback preciso.
-* **Confirmações:** `OK`/`K` ainda úteis.
-* **Solicitação de Arquivos:** Maestro usa `code <path>`. Coder também pode solicitar via Dev.
-* **Feedback:** Fundamental em todas as direções.
-
-*(Este documento agora reflete o fluxo de trabalho Humano-IA atualizado e formalizado para o projeto Modular Dashboard).*
+*(Este documento reflete o fluxo de trabalho de desenvolvimento híbrido Humano-IA adotado pelo projeto Modular Dashboard).*

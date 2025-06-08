@@ -161,3 +161,48 @@ This file provides comprehensive guidelines for developing new backend and front
 - References to example modules.
 - A development checklist and additional considerations like code style and security.
 The document uses markdown formatting with headers, lists, and code examples.
+
+---
+**Relatório de Atualização da Documentação do Fluxo de Trabalho Híbrido IA**
+
+**Data:** 29 de Maio de 2024
+
+**Resumo das Alterações:**
+
+Esta atualização teve como objetivo refatorar a documentação do projeto para refletir o novo fluxo de trabalho de desenvolvimento híbrido, que incorpora o Maestro IA, Google Jules (agente de desenvolvimento primário) e um IA Coder (agente de desenvolvimento secundário local).
+
+**Arquivos Modificados:**
+
+1.  **`docs/07_FLUXO_TRABALHO_DEV.md`**:
+    *   Completamente reescrito em pt-br.
+    *   Introduzidos os papéis do Maestro IA, Google Jules e IA Coder.
+    *   Detalhado o fluxo de trabalho do Google Jules, incluindo clonagem de repositório, planejamento, execução e push para a branch `jules`.
+    *   Adicionada a seção "Fluxo de Validação do Desenvolvedor para o Código do Jules", com os passos para fetch, checkout, teste, feedback e merge.
+
+2.  **`docs/08_ONBOARDING_HUMANO.md`**:
+    *   Completamente reescrito em pt-br.
+    *   Foco nas etapas práticas e responsabilidades do desenvolvedor humano.
+    *   Explicada a interação com o Maestro IA e Google Jules.
+    *   Enfatizado o papel do desenvolvedor no ciclo de validação do código do Jules (prompt, revisão de plano, ciclo de fetch -> teste -> feedback).
+    *   Descrito o papel do IA Coder local.
+    *   Removidas todas as menções à ferramenta obsoleta "RooCode".
+
+3.  **`docs/01_ARQUITETURA.md`**:
+    *   Atualizada a seção "Componentes Principais" em pt-br.
+    *   Removida menção à ferramenta "RooCode".
+    *   Adicionado "Google Jules" como componente chave (agente autônomo em ambiente remoto seguro).
+    *   Mencionado o "IA Coder" como parte do ecossistema de desenvolvimento local.
+
+4.  **`docs/jules/tasks_resolved.txt`**:
+    *   Renomeado para `docs/jules/tasks_reports.txt`.
+    *   Este relatório foi adicionado a este arquivo.
+
+5.  **`README.md` e `ROADMAP.md`**:
+    *   Revisados para consistência com o novo fluxo. Nenhuma alteração foi necessária.
+
+**Próximos Passos (Pós-Merge):**
+
+*   Os desenvolvedores devem ser comunicados sobre as atualizações na documentação, especialmente os guias de fluxo de trabalho e onboarding.
+*   A documentação de backup em `docs/backup/` pode ser arquivada ou removida após um período de validação das novas versões.
+
+---
