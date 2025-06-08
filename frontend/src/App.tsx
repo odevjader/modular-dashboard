@@ -30,7 +30,7 @@ function App() {
             }
           >
             <Route index element={<HomePage />} />
-            <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/users" element={<ProtectedRoute roles={['admin']}><AdminUsers /></ProtectedRoute>} />
             {/* Dynamic module routes */}
             {Object.values(moduleRegistry).map((module: ModuleConfig) =>
               module.routes.map((route) => (

@@ -86,7 +86,7 @@ const MainLayout: React.FC = () => {
   };
 
   // Determine user role for filtering. Adapt if user.role is an array e.g. user.roles.includes('ADMIN')
-  const isAdmin = user?.role === 'ADMIN';
+  const isAdmin = user?.role === 'admin'; // Changed to lowercase 'admin'
 
   return (
     <Box sx={{ display: 'flex' }}>
