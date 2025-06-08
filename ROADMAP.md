@@ -3,15 +3,15 @@
 
 Este documento descreve o roadmap de alto nível planejado para o desenvolvimento do Modular Dashboard como uma plataforma base versátil e extensível. É um guia direcional e está sujeito a alterações.
 
-*(Última atualização: Novembro de 2025)*
+*(Última atualização: Dezembro de 2025)*
 
 ## Status Atual
 
-As APIs do Core (Auth, User) foram solidificadas e documentadas (OpenAPI) (#15). O foco técnico imediato passa a ser **Estabelecer padrões claros para desenvolvimento de novos módulos (#16)**.
+A Fase 1 (Setup do Processo e Core Inicial), incluindo a definição de padrões para desenvolvimento de novos módulos (#16), foi concluída. O foco técnico imediato passa a ser **Criar Serviço Dedicado para PDF/OCR (Issue #7)** da Fase 2.
 
 ## Fases Planejadas
 
-### Fase 1: Setup do Processo e Core Inicial (Em Andamento)
+### Fase 1: Setup do Processo e Core Inicial (Concluída)
 
 * **Objetivo:** Estabelecer as ferramentas e processos para gerenciamento de tarefas, refatorar a estrutura Core e implementar a modularidade base.
 * **Tarefas Principais:**
@@ -38,14 +38,14 @@ As APIs do Core (Auth, User) foram solidificadas e documentadas (OpenAPI) (#15).
   * ✅ **Testar e finalizar endpoints Core de Autenticação (`/users/me`) e CRUD Admin (`/admin/users/*`) (#13).** *(Concluído)*.
   * ✅ Re-integrar fluxo de autenticação e telas de Gerenciamento de Usuários no Frontend Core (#14). *(Concluído)*.
   * ✅ **Solidificar e documentar as APIs do Core (Auth, User) (#15).** *(Concluído)*.
-  * 🚧 **Estabelecer padrões claros para desenvolvimento de novos módulos (#16).** *(Prioridade Atual)*.
+  * ✅ **Estabelecer padrões claros para desenvolvimento de novos módulos (#16).** *(Concluído)*.
   * *(Nota: Implementação de Templates de Issue/PR (#3, #4) e Milestones (#6) adiada - ver backlog de Issues)*.
 
 ### Fase 2: Performance do Core e Reintegração de Processamento Pesado
 
 * **Objetivo:** Otimizar a performance do Core e reintegrar funcionalidades de processamento pesado de forma mais robusta e escalável.
 * **Tarefas Principais:**
-  * ⬜ **Criar Serviço Dedicado para PDF/OCR (Issue #7):** Mover a lógica de processamento de PDF/OCR do `01_GERADOR_QUESITOS` para um container/serviço worker separado (ex: Celery, ARQ) para evitar bloqueio da API principal.
+  * 🚧 **Criar Serviço Dedicado para PDF/OCR (Issue #7):** Mover a lógica de processamento de PDF/OCR do `01_GERADOR_QUESITOS` para um container/serviço worker separado (ex: Celery, ARQ) para evitar bloqueio da API principal. *(Prioridade Atual)*.
   * ⬜ Reativar e refatorar o módulo `01_GERADOR_QUESITOS` para usar o novo serviço de processamento.
   * ⬜ Reativar e refatorar o módulo `03_AI_TEST` (se ainda for relevante) ou substituí-lo por uma suíte de health check de IA mais robusta.
   * ⬜ Implementar caching (Redis) para sessões de usuário e/ou resultados de queries frequentes.

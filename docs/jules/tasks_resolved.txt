@@ -150,3 +150,14 @@ Successfully applied documentation refinements to Auth & User API endpoints and 
     - Added `Field(description="...", example="...")` (and `min_length` where appropriate) to attributes within `UserBase`, `Token`, `TokenPayload`, `UserCreate`, `UserUpdate`, `UserResponse`, and `UserListResponse` schemas.
 
 These changes aim to improve the clarity and detail of the auto-generated OpenAPI documentation.
+
+--- Subtask Report 26 (Create Module Development Guide) ---
+Successfully created the new documentation file `docs/modules/00_DEVELOPING_MODULES.md`.
+This file provides comprehensive guidelines for developing new backend and frontend modules for the Modular Dashboard platform. Key sections include:
+- Introduction and modularity philosophy.
+- Naming conventions and initial planning.
+- Detailed backend module development steps: directory structure, FastAPI endpoint/schema/model creation, Alembic migrations, registration in `modules.yaml`, and testing.
+- Detailed frontend module development steps: directory structure, React component/routing creation, state management, API service usage, registration in `moduleRegistry.ts`, and testing.
+- References to example modules.
+- A development checklist and additional considerations like code style and security.
+The document uses markdown formatting with headers, lists, and code examples.
