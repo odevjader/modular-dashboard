@@ -1,0 +1,71 @@
+# Configuration file for backend modules.
+# Defines which modules are loaded by the application.
+#
+# name: Unique identifier for the module. Used for logging and potentially for default API paths.
+# path: Dot-notation path to the module's package relative to `app.modules` or `app.core_modules`.
+#       The loader will attempt to import `endpoints.py` from this path.
+#       Examples:
+#         - "info" (will look for app.modules.info.v1.endpoints if version is v1)
+#         - "gerador_quesitos.v1" (will look for app.modules.gerador_quesitos.v1.endpoints)
+# version: The version of the module, often part of the path and API prefix.
+# description: Optional human-readable description.
+# enabled: Boolean, if false, the module will not be loaded.
+# router_variable_name: The name of the APIRouter instance in the module's endpoints.py file. Default is "router".
+# prefix: Optional. The API prefix for all routes in this module (e.g., "/my_module/v2").
+#         If not provided, defaults to "/<name>/<version>".
+# tags: Optional. A list of tags for OpenAPI documentation for routes in this module.
+#       If not provided, defaults to a single tag: [name.capitalize()].
+
+modules:
+  - name: "health" # This is a core_module, path resolution needs care
+    path: "core_modules.health.v1" # Adjusted path to be more explicit for loader
+    version: "v1"
+    description: "Core health check module. Provides health status of the application."
+    enabled: true
+    router_variable_name: "router"
+    prefix: "/health/v1" # Keep consistent with existing static routes
+    tags: ["Health"]
+
+  - name: "auth" # This is a core_module
+    path: "core_modules.auth.v1" # Adjusted path
+    version: "v1"
+    description: "Core authentication and user management module."
+    enabled: true
+    router_variable_name: "router"
+    prefix: "/auth/v1" # Keep consistent
+    tags: ["Authentication"]
+
+  - name: "info"
+    path: "modules.info.v1" # Standard module path
+    version: "v1"
+    description: "Provides system and environment information."
+    enabled: true
+    router_variable_name: "router"
+    prefix: "/info/v1" # Keep consistent
+    tags: ["Info"]
+
+  - name: "ai_test"
+    path: "modules.ai_test.v1" # Standard module path
+    version: "v1"
+    description: "Simple AI ping/pong test module."
+    enabled: true
+    router_variable_name: "router"
+    prefix: "/ai_test/v1" # Keep consistent
+    tags: ["AI Test"]
+
+  - name: "gerador_quesitos"
+    path: "modules.gerador_quesitos.v1" # Standard module path
+    version: "v1"
+    description: "Generates legal questions (quesitos) from PDF documents."
+    enabled: true
+    router_variable_name: "router"
+    prefix: "/gerador_quesitos/v1" # Keep consistent
+    tags: ["Gerador Quesitos"]
+
+  # Example of a disabled module:
+  # - name: "experimental_feature"
+  #   path: "modules.experimental.v1"
+  #   version: "v1"
+  #   description: "An experimental feature module."
+  #   enabled: false
+  #   router_variable_name: "router"

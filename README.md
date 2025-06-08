@@ -15,7 +15,7 @@ Com a autenticação funcionando, o projeto está desbloqueado e o foco agora se
 * **Status Técnico:**
     * O fluxo de autenticação base (login, validação de token) está **operacional**.
     * As refatorações do Core (Issues #9, #17) foram **concluídas**.
-    * O **foco técnico atual** é a **Implementação do Mecanismo de Modularidade V1** (Issue #8).
+    * A **Implementação do Mecanismo de Modularidade V1** (Issue #8) foi **concluída**.
     * A próxima prioridade após a modularidade é o **desenvolvimento da interface de CRUD de usuários** e testes dos endpoints de admin (Issue #13).
 
 ## Visão Geral da Arquitetura
@@ -24,6 +24,7 @@ O projeto segue uma arquitetura com Frontend SPA (React/Vite) e Backend API REST
 
 * **Frontend:** React (TypeScript) com Material UI, Vite e Zustand.
 * **Backend:** API RESTful Assíncrona com FastAPI (Python), SQLAlchemy. Provê os serviços Core (em `core_modules`) e os endpoints para os módulos plugáveis (`modules`).
+    * Os módulos agora são carregados dinamicamente com base em configurações centrais, tanto no backend quanto no frontend, permitindo maior flexibilidade.*
 * **Banco de Dados:** PostgreSQL com extensão pgvector.
 * **Infraestrutura:** Docker e Docker Compose.
 

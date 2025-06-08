@@ -1,40 +1,53 @@
 # backend/app/api_router.py
 from fastapi import APIRouter
+from app.core.config import logger
+from app.core.module_loader import load_modules_config, discover_module_routers
 
-# Import module-specific routers
-from app.core_modules.health.v1 import endpoints as health_v1_endpoints
-from app.modules.info.v1 import endpoints as info_v1_endpoints
-from app.modules.ai_test.v1 import endpoints as ai_test_v1_endpoints
-from app.modules.gerador_quesitos.v1 import endpoints as gerador_quesitos_v1_endpoints
-from app.core_modules.auth.v1 import endpoints as auth_v1_endpoints # Import correto
-
-# Create the main API router - routers included here will be prefixed by /api from main.py
+# Create the main API router - this router will be prefixed by /api from main.py
 api_router = APIRouter()
 
-# --- Includes ---
-api_router.include_router(
-    health_v1_endpoints.router,
-    prefix="/health/v1",
-    tags=["Health"]
-)
-api_router.include_router(
-    info_v1_endpoints.router,
-    prefix="/info/v1",
-    tags=["Info"]
-)
-api_router.include_router(
-    ai_test_v1_endpoints.router,
-    prefix="/ai_test/v1",
-    tags=["AI Test"]
-)
-api_router.include_router(
-    gerador_quesitos_v1_endpoints.router,
-    prefix="/gerador_quesitos/v1",
-    tags=["Gerador Quesitos"]
-)
-api_router.include_router(
-    auth_v1_endpoints.router,
-    # --- PREFIX CORRIGIDO ---
-    prefix="/auth/v1", # Adicionado /v1 para consistência
-    tags=["Authentication"]
-)
+# --- Dynamic Module Router Inclusion ---
+# This section replaces the previous static imports and router inclusions.
+logger.info("api_router.py: Attempting to load and include dynamic module routers...")
+try:
+    # Load module configurations from the YAML file (e.g., app/configs/modules.yaml)
+    modules_configurations = load_modules_config()
+
+    # Discover actual APIRouter instances based on the configurations
+    # This returns a list of dicts: [{"router": APIRouter_instance, "prefix": "/prefix", "tags": ["Tag"], "name": "module_name"}, ...]
+    discovered_routers_info = discover_module_routers(modules_configurations)
+
+    if discovered_routers_info:
+        logger.info(f"api_router.py: Found {len(discovered_routers_info)} module routers to include.")
+        for router_info in discovered_routers_info:
+            instance = router_info.get("router")
+            prefix = router_info.get("prefix")
+            tags = router_info.get("tags")
+            name = router_info.get("name", "unknown") # Get module name for logging
+
+            if instance and prefix and tags:
+                api_router.include_router(instance, prefix=prefix, tags=tags)
+                logger.info(f"api_router.py: Successfully included router for module '{name}' with prefix '{prefix}' and tags {tags}.")
+            else:
+                logger.warning(f"api_router.py: Skipping a module due to missing router instance, prefix, or tags. Module: {name}")
+    else:
+        logger.info("api_router.py: No dynamic module routers were discovered or loaded. Check modules.yaml and module implementations.")
+
+except FileNotFoundError:
+    logger.error("api_router.py: CRITICAL - modules.yaml not found. No dynamic modules will be loaded.")
+except ValueError as ve:
+    logger.error(f"api_router.py: CRITICAL - Error parsing modules.yaml or validating module configurations: {ve}. No dynamic modules will be loaded.")
+except Exception as e:
+    logger.error(f"api_router.py: CRITICAL - An unexpected error occurred during dynamic router inclusion: {e}", exc_info=True)
+    # If this fails, the application might have no module-specific routes.
+
+# Note: Core modules like Auth and Health are now also expected to be defined in modules.yaml
+# and loaded dynamically. If any "always-on" static routes are needed, they could be added here,
+# but the goal is to make everything modular.
+
+# Example of a static route if needed (though ideally everything is a module):
+# @api_router.get("/ping", tags=["API System"])
+# async def ping():
+#     return {"message": "pong from api_router"}
+
+logger.info("api_router.py: Dynamic module router inclusion process complete.")
