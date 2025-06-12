@@ -1,13 +1,10 @@
-#ROADMAP.md
 # Roadmap - Modular Dashboard
 
 Este documento descreve o roadmap de alto nível planejado para o desenvolvimento do Modular Dashboard como uma plataforma base versátil e extensível. É um guia direcional e está sujeito a alterações.
 
-*(Última atualização: Dezembro de 2025)*
-
 ## Status Atual
 
-A Fase 1 (Setup do Processo e Core Inicial), incluindo a definição de padrões para desenvolvimento de novos módulos (#16), foi concluída. O foco técnico imediato passa a ser **Criar Serviço Dedicado para PDF/OCR (Issue #7)** da Fase 2.
+A Fase 1 (Setup do Processo e Core Inicial) foi concluída. O foco técnico imediato agora é avançar na Fase 2, começando pela criação de um serviço dedicado para PDF/OCR.
 
 ## Fases Planejadas
 
@@ -21,11 +18,11 @@ A Fase 1 (Setup do Processo e Core Inicial), incluindo a definição de padrões
   * ✅ Estrutura base do Backend para `Auth` e `User Management` implementada.
   * ✅ Documentação essencial inicial criada/atualizada.
   * ✅ Refatoração inicial do Container `api` (dependências não-core comentadas).
-  * ✅ **Implementar Modelo Híbrido de Gestão:** (Issue #2 concluída).
-  * ✅ Resolver erro de build Docker (`failed to fetch oauth token`). *(Resolvido)*.
-  * ✅ **Refatorar Estrutura: Mover APIs Core (`auth`, `health`) para core_modules/ (Issues #9, #17).** *(Concluído)*.
-  * ✅ **Corrigir bug crítico no endpoint `/api/auth/v1/login` (#11).** *(Resolvido via configuração de ambiente)*.
-  * ✅ **Implementar Mecanismo de Modularidade v1 (Issue #8).** *(Concluído)*.
+  * ✅ **Implementar Modelo Híbrido de Gestão** (Concluída).
+  * ✅ Resolver erro de build Docker (`failed to fetch oauth token`) (Resolvido).
+  * ✅ **Refatorar Estrutura: Mover APIs Core (`auth`, `health`) para core_modules/** (Concluído).
+  * ✅ **Corrigir bug crítico no endpoint `/api/auth/v1/login`** (Resolvido via configuração de ambiente).
+  * ✅ **Implementar Mecanismo de Modularidade v1** (Concluído).
     * **Backend:**
       * ✅ **Tarefa 1.1:** Criar o arquivo de configuração `modules.yaml` e os schemas de validação Pydantic.
       * ✅ **Tarefa 1.2:** Criar a função `load_modules` no novo arquivo `core/module_loader.py`.
@@ -35,11 +32,11 @@ A Fase 1 (Setup do Processo e Core Inicial), incluindo a definição de padrões
       * ✅ **Tarefa 2.1:** Criar o registro de módulos do frontend (`moduleRegistry.ts`).
       * ✅ **Tarefa 2.2:** Implementar o roteamento dinâmico no `App.tsx` usando o registro.
       * ✅ **Tarefa 2.3:** Implementar a navegação dinâmica (barra lateral, página inicial) a partir do registro.
-  * ✅ **Testar e finalizar endpoints Core de Autenticação (`/users/me`) e CRUD Admin (`/admin/users/*`) (#13).** *(Concluído)*.
-  * ✅ Re-integrar fluxo de autenticação e telas de Gerenciamento de Usuários no Frontend Core (#14). *(Concluído)*.
-  * ✅ **Solidificar e documentar as APIs do Core (Auth, User) (#15).** *(Concluído)*.
-  * ✅ **Estabelecer padrões claros para desenvolvimento de novos módulos (#16).** *(Concluído)*.
-  * *(Nota: Implementação de Templates de Issue/PR (#3, #4) e Milestones (#6) adiada - ver backlog de Issues)*.
+  * ✅ **Testar e finalizar endpoints Core de Autenticação (`/users/me`) e CRUD Admin (`/admin/users/*`)** (Concluído).
+  * ✅ Re-integrar fluxo de autenticação e telas de Gerenciamento de Usuários no Frontend Core (Concluído).
+  * ✅ **Solidificar e documentar as APIs do Core (Auth, User)** (Concluído).
+  * ✅ **Estabelecer padrões claros para desenvolvimento de novos módulos** (Concluído).
+  * *(Nota: Implementação de Templates de Issue/PR e Milestones adiada - ver backlog de Issues)*.
 
 ### Fase 2: Performance do Core e Reintegração de Processamento Pesado
 

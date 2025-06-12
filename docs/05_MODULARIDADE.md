@@ -1,9 +1,6 @@
-#docs/05_MODULARIDADE.md
 # Mecanismo de Modularidade V1
 
 Este documento detalha o funcionamento do sistema de modularidade V1 implementado no Modular Dashboard, cobrindo tanto o backend (FastAPI) quanto o frontend (React).
-
-*(Última atualização: 10 de Julho de 2025 - Centralização do carregador de módulos)*
 
 ## Visão Geral
 
@@ -13,13 +10,13 @@ O sistema de modularidade V1 permite que o Modular Dashboard carregue e integre 
 
 A modularidade no backend é gerenciada através de um arquivo de configuração YAML e um carregador de módulos Python.
 
-### 1. Configuração de Módulos: \`backend/app/configs/modules.yaml\`
+### 1. Configuração de Módulos: \`backend/app/config/modules.yaml\`
 
 Este arquivo é o coração da descoberta de módulos no backend. Ele define quais módulos estão disponíveis e como devem ser carregados.
 
 **Estrutura de \`modules.yaml\`:**
 \`\`\`yaml
-# backend/app/configs/modules.yaml
+# backend/app/config/modules.yaml
 modules:
   - name: "unique_module_name"  # Identificador único para o módulo
     # Caminho Python para o pacote do módulo, relativo a 'app'.
@@ -78,7 +75,7 @@ Este script Python é responsável por:
         return {"message": "Olá do Meu Novo Módulo!"}
     \`\`\`
 3.  **Registrar o Módulo em \`modules.yaml\`**:
-    *   Adicione uma nova entrada à lista \`modules\` em \`backend/app/configs/modules.yaml\`:
+    *   Adicione uma nova entrada à lista \`modules\` em \`backend/app/config/modules.yaml\`:
     \`\`\`yaml
       - name: "meu_novo_modulo"
         path: "modules.meu_novo_modulo.v1"

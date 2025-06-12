@@ -1,3 +1,4 @@
+# docs/modules/01_GERADOR_QUESITOS.md
 # Módulo: Gerador de Quesitos
 
 Este documento detalha a funcionalidade, a API e o fluxo técnico do módulo "Gerador de Quesitos" do Modular Dashboard.
@@ -9,11 +10,11 @@ O objetivo deste módulo é auxiliar profissionais da área jurídica/previdenci
 ## Funcionalidade Principal (Fluxo do Usuário)
 
 1.  **Acesso:** O usuário navega até a seção "Gerador de Quesitos" na interface do dashboard.
-2.  **Upload de Documentos:** O usuário seleciona e faz upload de um ou mais arquivos PDF relevantes para o caso (ex: petição inicial, laudos médicos, exames, documentos pessoais). O sistema previne o upload de arquivos duplicados na mesma sessão.
+2.  **Upload de Documentos:** O usuário seleciona e faz upload de um ou mais arquivos PDF relevantes para o caso (ex: petição inicial, laudos médicos, exames, documentos pessoais). O sistema evita o upload de arquivos duplicados na mesma sessão.
 3.  **Seleção de Parâmetros:** O usuário seleciona o tipo de benefício previdenciário pretendido e a profissão/atividade habitual do requerente em listas pré-definidas (dropdowns).
-4.  **(Opcional) Seleção de Modelo IA:** O usuário pode ter a opção de escolher um modelo de IA específico (ex: Gemini Pro, Gemma) para a geração.
+4.  **(Opcional) Seleção de Modelo IA:** Opcionalmente, o usuário pode escolher um modelo de IA específico (ex: Gemini Pro, Gemma) para a geração.
 5.  **Geração:** O usuário clica no botão "Gerar Quesitos".
-6.  **Feedback Visual:** Durante o processamento (que pode levar algum tempo devido ao processamento dos PDFs e chamada à IA), a interface desabilita os inputs, exibe indicadores de carregamento e possivelmente mensagens de status (ex: "Processando PDF 1 de 3...", "Consultando IA...", frases aleatórias).
+6.  **Feedback Visual:** Durante o processamento (que pode levar algum tempo devido ao processamento dos PDFs e chamada à IA), a interface desabilita os inputs, exibe indicadores de carregamento e possivelmente mensagens de status (ex: "Processando PDF 1 de 3...", "Consultando IA...").
 7.  **Exibição do Resultado:** Após a conclusão, os quesitos gerados pela IA são exibidos em uma área de texto na interface para o usuário revisar, copiar ou salvar.
 8.  **Persistência de Estado (UI):** O último resultado gerado ou erro ocorrido é persistido no estado do frontend (usando Zustand) para que o usuário não perca a informação caso navegue para outra página e retorne durante ou após o processamento.
 
@@ -37,7 +38,7 @@ O frontend interage com o seguinte endpoint no backend:
         * Uma parte chamada `tipo_beneficio` com o valor texto selecionado.
         * Uma parte chamada `profissao` com o valor texto selecionado.
         * Opcionalmente, uma parte `model_name` com o nome do modelo.
-    * Ferramentas como Postman ou código frontend (usando `FormData` com `Workspace`) podem construir essa requisição.
+    * Ferramentas como Postman ou código frontend (usando `FormData` com a API `fetch` ou um cliente HTTP como `axios`) podem construir essa requisição.
 
 * **Exemplo de Resposta (Sucesso - HTTP 200):**
     ```json
@@ -73,7 +74,7 @@ Quando o endpoint `/api/gerador_quesitos/v1/gerar` é chamado, o backend executa
 2.  **Processamento de PDFs:**
     * O sistema itera sobre a lista de `UploadFile` recebida.
     * Para cada arquivo, utiliza a biblioteca `DoclingLoader` (integrada via `langchain-docling`) para carregar e extrair o conteúdo textual.
-    * `DoclingLoader` é configurado para usar OCR (via Tesseract, **cuja instalação/acesso precisa ser garantida e documentada - ver `docs/02_SETUP_DESENVOLVIMENTO.md`**) para extrair texto de imagens dentro dos PDFs, se houver.
+    * `DoclingLoader` é configurado para usar OCR (via Tesseract, **cuja instalação/acesso precisa ser garantida e documentada - ver `docs/02_CONFIGURACAO_AMBIENTE.md`**) para extrair texto de imagens dentro dos PDFs, se houver.
     * O texto extraído de todos os PDFs válidos é concatenado em um único grande bloco de texto (contexto do caso).
     * *(**Nota:** Esta etapa é identificada como um potencial gargalo de performance).*
 3.  **Construção do Prompt para LLM:**
@@ -93,7 +94,7 @@ Quando o endpoint `/api/gerador_quesitos/v1/gerar` é chamado, o backend executa
 ## Tecnologias Específicas do Módulo
 
 * **Backend:** FastAPI, Pydantic, Langchain, `langchain-google-genai`, `langchain-docling` (requer Tesseract OCR).
-* **Frontend:** React, `Workspace` API, Zustand (para persistência de estado do resultado/erro).
+* **Frontend:** React, API `fetch` (com `FormData`), Zustand (para persistência de estado do resultado/erro).
 
 ## Considerações e Melhorias Futuras
 
