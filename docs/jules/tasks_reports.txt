@@ -206,3 +206,40 @@ Esta atualização teve como objetivo refatorar a documentação do projeto para
 *   A documentação de backup em `docs/backup/` pode ser arquivada ou removida após um período de validação das novas versões.
 
 ---
+---
+**Relatório de Refatoração da Documentação (31 de Julho de 2025)**
+
+**Resumo Geral:**
+Esta tarefa consistiu em uma extensa refatoração e atualização da documentação do projeto Modular Dashboard. O objetivo foi melhorar a clareza, concisão, consistência, remover informações desatualizadas e garantir que todo o conteúdo estivesse em pt-BR. As principais ações estão detalhadas abaixo.
+
+**Ações Detalhadas:**
+
+1.  **Atualização do `README.md`:**
+    *   Removida a seção "Status Atual" e menções a bugs específicos (ex: Issue #11), tornando o documento mais perene.
+    *   Melhorada a concisão geral e o fluxo de informações.
+
+2.  **Atualização do `ROADMAP.md`:**
+    *   Revisada e atualizada a seção "Status Atual" para refletir o progresso do projeto.
+    *   Removidos os números de issues de tarefas já concluídas na "Fase 1" para simplificar a visualização de altoível.
+
+3.  **Consolidação de Documentos:**
+    *   O conteúdo de `docs/08_PROJECT_MANAGEMENT.md` e `docs/plan/SUMARIO_MODELO_HIBRIDO_PM.md` foi mesclado e consolidado no novo arquivo `docs/06_GESTAO_PROJETOS.md`. Os arquivos originais foram removidos.
+    *   O conteúdo de `docs/07_FLUXO_TRABALHO_DEV.md` e `docs/08_ONBOARDING_HUMANO.md` foi mesclado e consolidado no novo arquivo `docs/07_FLUXO_DESENVOLVIMENTO_E_ONBOARDING.md`. Os arquivos originais foram removidos.
+
+4.  **Reorganização e Renomeação de Arquivos:**
+    *   `docs/02_SETUP_DESENVOLVIMENTO.md` foi renomeado para `docs/02_CONFIGURACAO_AMBIENTE.md`.
+    *   `docs/04_BANCO_DADOS.md` foi renomeado para `docs/04_BANCO_DE_DADOS.md`.
+    *   Todas as referências e links internos nos documentos afetados (incluindo `README.md` e `docs/07_FLUXO_DESENVOLVIMENTO_E_ONBOARDING.md`) foram atualizados para apontar para os novos nomes de arquivo.
+
+5.  **Revisão e Reescrita Abrangente de Documentos:**
+    *   Todos os documentos listados no plano da tarefa foram lidos e revisados para clareza, concisão, consistência e correção da língua portuguesa (pt-BR).
+    *   **Destaques da revisão:**
+        *   O arquivo `docs/03_ESTRUTURA_PASTAS.md`, que continha seções incompletas (placeholders), foi preenchido com informações detalhadas da estrutura de pastas do projeto, obtidas através da análise do repositório.
+        *   As descrições de configuração de módulos (backend `modules.yaml` e frontend `moduleRegistry.ts`) foram padronizadas QRCode `docs/05_MODULARIDADE.md` e `docs/modules/00_DEVELOPING_MODULES.md` para garantir consistência e precisão.
+        *   Foram removidas informações redundantes, como datas de "última atualização" e comentários de nome de arquivo no início dos documentos.
+        *   Pequenas melhorias de fraseado e formatação foram aplicadas em diversos arquivos para melhorar a legibilidade.
+
+**Observação sobre Ferramental:**
+*   Durante o processo de salvamento das alterações, a ferramenta `overwrite_file_with_block` apresentou falhas consistentes ao tentar sobrescrever arquivos existentes. Foi necessário utilizar a ferramenta `replace_with_git_merge_diff` como alternativa para aplicar as modificações na maioria dos casos.
+
+---

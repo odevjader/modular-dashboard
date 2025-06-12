@@ -196,28 +196,32 @@ async def create_new_resource(db: AsyncSession, resource_data: schemas.YourResou
 
 ### 3.6. Registro do Módulo (`backend/app/config/modules.yaml`)
 
-Para que o backend carregue seu módulo (especificamente seus endpoints), ele precisa ser registrado no arquivo `modules.yaml`.
+Para que o backend carregue seu módulo (especificamente seus endpoints), ele precisa ser registrado no arquivo `modules.yaml`. A estrutura detalhada deste arquivo e o comportamento do carregador são descritos em `docs/05_MODULARIDADE.md`.
 
-Adicione uma nova entrada à lista `modules`:
+**Exemplo de Adição:**
 ```yaml
+# backend/app/config/modules.yaml
 modules:
-  - id: "auth" # Módulo Core existente
-    name: "Authentication"
-    description: "Handles user authentication, tokens, and basic user info."
-    router_path: "app.core_modules.auth.v1.endpoints.router" # Caminho para o objeto APIRouter
-    # enabled: true # Opcional, padrão é true
+  # ... módulos existentes (ex: auth, health) ...
 
-  - id: "your_module_id"  # O ID do seu módulo
-    name: "Your Module Name" # Nome legível
-    description: "A brief description of what your module does."
-    router_path: "app.modules.your_module_id.endpoints.router" # Caminho para o seu APIRouter
-    # enabled: true # Descomente e sete para false para desabilitar o carregamento
+  - name: "your_module_id"  # Identificador único para o módulo (snake_case preferido)
+    path: "modules.your_module_id.v1" # Caminho Python para o pacote do módulo (ex: app.modules.your_module_id.v1)
+    version: "v1"                 # Versão do módulo
+    description: "Descrição concisa do seu módulo." # Opcional
+    enabled: true                 # true para carregar, false para desabilitar (padrão: true)
+    # router_variable_name: "router" # Opcional: Nome da var APIRouter em endpoints.py (padrão: "router")
+    # prefix: "/custom_prefix"      # Opcional: Prefixo da API (padrão: "/<name>/<version>")
+    # tags: ["Custom Tag"]         # Opcional: Tags OpenAPI (padrão: [name.capitalize()])
 ```
-*   `id`: O identificador único do seu módulo (o mesmo usado no nome do diretório).
-*   `name`: Nome legível para listagens ou logs.
-*   `description`: Breve descrição.
-*   `router_path`: O caminho Python completo para a instância `APIRouter` definida em seu `endpoints.py`.
-*   `enabled` (opcional): Se `false`, o módulo não será carregado. Padrão é `true`.
+**Campos Chave (conforme `docs/05_MODULARIDADE.md`):**
+*   `name`: Identificador único do módulo (usado para diretórios e URLs padrão).
+*   `path`: Caminho Python para o pacote do módulo (onde `endpoints.py` reside).
+*   `version`: Versão do módulo (ex: "v1").
+*   `description` (opcional): Breve descrição.
+*   `enabled` (opcional): `true` ou `false` para carregar o módulo.
+*   `router_variable_name` (opcional): Nome da variável do `APIRouter` em `endpoints.py` (padrão: `"router"`).
+*   `prefix` (opcional): Prefixo de URL para as rotas do módulo (padrão: `/{name}/{version}`).
+*   `tags` (opcional): Lista de tags para o OpenAPI (padrão: `[name.capitalize()]`).
 
 ### 3.7. Testes Básicos
 
@@ -333,51 +337,63 @@ export const createYourModuleResource = async (payload: YourModuleCreatePayload)
 
 ### 4.6. Registro do Módulo (`frontend/src/config/moduleRegistry.ts`)
 
-Para que o frontend reconheça seu módulo, suas rotas e links de navegação, ele precisa ser registrado em `moduleRegistry.ts`.
+Para que o frontend reconheça seu módulo, suas rotas e links de navegação, ele precisa ser registrado em `moduleRegistry.ts`. Este arquivo define a estrutura e lista todos os módulos de frontend disponíveis, utilizando a interface `FrontendModule` (detalhada em `docs/05_MODULARIDADE.md`).
 
-Adicione uma nova entrada ao objeto `moduleRegistry`:
+**Exemplo de Adição ao array `APP_MODULES`:**
 ```typescript
+// frontend/src/config/moduleRegistry.ts
 import React from 'react'; // Necessário para React.lazy
-// Importe ícones do MUI ou use caminhos de string para imagens
-import YourModuleIcon from '@mui/icons-material/YourDesiredIcon'; // Exemplo
+import YourModuleIcon from '@mui/icons-material/YourDesiredIcon'; // Exemplo de Ícone MUI
+// Importe SvgIconProps se estiver usando ícones MUI diretamente
+// import { SvgIconProps } from '@mui/material/SvgIcon';
 
-// ... (definições de ModuleRoute, ModuleConfig, ModuleRegistry) ...
+// Supondo que a interface FrontendModule e FrontendModuleRoute estão definidas aqui ou importadas
+// (Conforme detalhado em docs/05_MODULARIDADE.md)
+// export interface FrontendModuleRoute { path: string; component: React.LazyExoticComponent<any>; exact?: boolean; }
+// export interface FrontendModule { id: string; path: string; name: string; component?: React.LazyExoticComponent<any>; icon?: React.ComponentType<SvgIconProps>; showInNav: boolean; requiredRole?: string | string[]; group?: string; routes?: FrontendModuleRoute[]; }
 
-const moduleRegistry: ModuleRegistry = {
-  // ... outros módulos ...
-  yourModuleId: { // Chave deve ser o ID do seu módulo (camelCase ou como preferir, mas seja consistente)
-    name: 'Your Module Name',        // Nome legível para UI
-    basePath: '/your-module-path',   // Caminho base para todas as rotas deste módulo
-    navIcon: YourModuleIcon,         // Ícone para a navegação (MUI SvgIconComponent ou string path)
-    navText: 'Your Nav Text',        // Texto para o link de navegação (default: `name`)
-    adminOnly: false,                // `true` se apenas admins podem ver/acessar
-    routes: [
+export const APP_MODULES: FrontendModule[] = [
+  // ... outros módulos existentes ...
+  {
+    id: 'yourModuleId',                // Identificador único do módulo (ex: 'meuNovoModulo')
+    path: '/your-module-path',         // Caminho base para as rotas deste módulo (ex: '/meu-novo-modulo')
+    name: 'Your Module Name',          // Nome legível para UI (navegação, títulos)
+    icon: YourModuleIcon,              // Ícone MUI para a navegação (opcional)
+    showInNav: true,                   // Define se aparece no menu de navegação principal
+    // requiredRole: 'ADMIN',          // Opcional: role(s) necessárias para acessar/ver o módulo
+    // component: lazy(() => import('../modules/your_module_id/YourModulePage')), // Use se o path base renderiza uma página diretamente
+    routes: [                          // Rotas específicas do módulo
       {
-        path: '/',                   // Rota relativa ao `basePath` (ex: /your-module-path/)
-        component: React.lazy(() => import('../modules/your_module_id/YourModulePage')),
-        exact: true,                 // `true` para match exato do path
+        path: '/',                     // Rota relativa ao module.path (ex: '/your-module-path/')
+        component: React.lazy(() => import('../modules/your_module_id/YourModulePage')), // Componente da página principal
+        exact: true,
       },
+      // Exemplo de sub-rota:
       // {
-      //   path: '/details/:id',    // Exemplo de rota com parâmetro
-      //   component: React.lazy(() => import('../modules/your_module_id/YourDetailPage')),
+      //   path: '/details/:itemId',
+      //   component: React.lazy(() => import('../modules/your_module_id/DetailPage')),
       //   exact: true,
       // },
     ],
   },
-};
+];
 
-// ... (funções getModuleRegistry, registerModule, getModule, export default) ...
+// As funções auxiliares como getModuleRegistry, registerModule, getModule, etc., devem ser
+// consistentes com a estrutura de APP_MODULES e a interface FrontendModule.
 ```
-*   **Chave do Objeto:** Um identificador para o seu módulo (ex: `geradorQuesitos`, `meuModulo`).
-*   `name`: Nome legível.
-*   `basePath`: O prefixo do URL para todas as rotas dentro deste módulo (ex: `/gerador-quesitos`).
-*   `routes`: Um array de objetos `ModuleRoute`:
-    *   `path`: Relativo ao `basePath`. Se `basePath` é `/meu-modulo` e `path` é `/lista`, a URL final será `/meu-modulo/lista`.
-    *   `component`: O componente React da página, carregado com `React.lazy()`. O caminho para o import deve ser relativo a `moduleRegistry.ts`.
+**Campos Chave da Interface `FrontendModule` (conforme `docs/05_MODULARIDADE.md`):**
+*   `id`: Identificador único do módulo.
+*   `path`: Caminho base do React Router para o módulo.
+*   `name`: Nome legível para UI.
+*   `component` (opcional): Componente principal se o `path` base renderizar diretamente uma página.
+*   `icon` (opcional): Ícone MUI para navegação.
+*   `showInNav`: Booleano para exibir no menu de navegação.
+*   `requiredRole` (opcional): Role(s) necessárias para acesso.
+*   `group` (opcional): Agrupamento na navegação (uso futuro).
+*   `routes` (opcional): Array de `FrontendModuleRoute` para sub-rotas ou rotas principais do módulo.
+    *   `path`: Relativo ao `path` do módulo.
+    *   `component`: Componente React da página (`React.lazy` para code splitting).
     *   `exact` (opcional): Booleano para correspondência exata de rota.
-*   `navIcon` (opcional): Um componente de ícone MUI (ex: `<HomeIcon />`) ou uma string para o caminho de uma imagem. Usado na barra de navegação.
-*   `navText` (opcional): Texto a ser exibido na barra de navegação. Se omitido, o `name` do módulo será usado.
-*   `adminOnly` (opcional): Se `true`, o link de navegação e as rotas do módulo só serão acessíveis/visíveis para usuários com role "admin".
 
 ### 4.7. Geração Automática de Navegação
 

@@ -1,3 +1,4 @@
+# docs/04_BANCO_DE_DADOS.md
 # Banco de Dados - Modular Dashboard
 
 Este documento descreve a configuração do banco de dados, o schema das tabelas existentes e o processo de gerenciamento de migrações para o projeto Modular Dashboard.
@@ -32,11 +33,11 @@ Atualmente, o banco de dados contém a seguinte tabela principal, definida em `b
 
 * **Enum `UserRole`:**
     * Definido em: `backend/app/models/enums.py`
-    * Valores Possíveis: `ADMIN`, `USER` (Confirmado no código).
+    * Valores Possíveis: `ADMIN`, `USER`.
 
 ### Outras Tabelas
 
-*No momento (Abril de 2025), não existem outras tabelas de aplicação definidas no schema principal.*
+Atualmente, além da tabela `users`, não há outras tabelas de aplicação definidas no schema principal do Core. Módulos plugáveis podem definir suas próprias tabelas.
 
 ## Migrações (Alembic)
 
