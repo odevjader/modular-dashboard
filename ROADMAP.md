@@ -26,6 +26,16 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 
 ---
 
+## Fase 1.5: Implementação do Sistema Jules-Flow ✅
+
+**Épico:** Configurar o sistema de gerenciamento de tarefas Jules-Flow.
+*Objetivo: Estabelecer a estrutura e os processos para que Jules (AI Agent) possa gerenciar suas próprias tarefas de desenvolvimento de forma organizada e rastreável.*
+
+* ✅ **Criação da Estrutura Inicial do Jules-Flow:** Diretórios, arquivos base (`README.md`, `INSTRUCTIONS_FOR_JULES.md`, `TASK_INDEX.md`), e o template de tarefas (`task_template.md`) foram configurados.
+* 📝 **Definição do Processo de Criação de Tarefas On-Demand:** Documentação atualizada para permitir que o Desenvolvedor solicite tarefas diretamente, além daquelas geradas pelo Roadmap. (Referência: Commit de atualização de documentação do Jules-Flow)
+
+---
+
 ## Fase 2: Infraestrutura de Microserviços 🎯
 
 **Épico:** Construir a pipeline de extração de documentos como um microserviço, utilizando a API principal como um Gateway seguro.
