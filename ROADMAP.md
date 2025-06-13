@@ -81,54 +81,21 @@ _Objetivo: Criar a fundação de backend necessária para o processamento de PDF
 
 ---
 
-## Fase 3: Módulo Piloto Autônomo e Integração (Próximos Passos 🚀)
+## Fase 3: Governança e Maturidade (Visão Futura 🔭)
 
-**Épico: Refatorar o `gerador_quesitos` para Usar a Nova Arquitetura.**
+**Épico: Amadurecer a Plataforma.**
 
-_Objetivo: Transformar o primeiro módulo para que ele consuma a nova pipeline de processamento, servindo como um modelo para todos os futuros módulos de IA._
-
-#### Tarefas Priorizadas:
-
-7.  **Refatorar o Frontend do Módulo `gerador_quesitos`:**
-    * **Descrição:** Modificar o componente React (`GeradorQuesitos.tsx`).
-    * **Passos:**
-        1.  Adicionar um componente de UI para upload de arquivo (`<input type="file">`).
-        2.  Implementar a lógica no frontend para chamar o novo endpoint de delegação (`/api/v1/documents/upload-and-process`).
-        3.  Armazenar o `file_hash` retornado no estado do componente.
-    * **Entregável:** Interface do módulo `gerador_quesitos` com capacidade de upload.
-
-8.  **Refatorar o Backend do Módulo `gerador_quesitos`:**
-    * **Descrição:** Modificar o endpoint existente do módulo.
-    * **Passos:**
-        1.  O endpoint não receberá mais o arquivo, mas sim o `file_hash` e a pergunta do usuário.
-        2.  A lógica interna buscará os `chunk_text` da tabela `pdf_processed_chunks` usando o `file_hash`.
-        3.  Com os textos recuperados, a lógica existente do LangChain será executada para vetorizar o texto, fazer a busca e gerar a resposta.
-    * **Entregável:** Endpoint do `gerador_quesitos` atualizado e funcional com a nova arquitetura.
-
----
-
-## Fase 4: Expansão, Refinamento e Governança (Visão Futura 🔭)
-
-**Épico: Amadurecer a Plataforma e Expandir Funcionalidades.**
-
-_Objetivo: Com a arquitetura principal definida e validada, o foco muda para a construção de novas funcionalidades, melhoria da experiência do usuário e garantia da qualidade e segurança do sistema._
+_Objetivo: Com a arquitetura principal definida, o foco muda para a garantia da qualidade e segurança do sistema._
 
 #### Tarefas (Sem ordem de prioridade definida):
 
-* **Desenvolver Novo Módulo: Analisador de Documentos (RAG):**
-    * Criar um novo módulo autônomo que permite ao usuário "conversar" com um documento enviado, implementando o fluxo completo validado na Fase 3.
-
-* **Implementar Controle de Acesso (RBAC):**
-    * Associar permissões a perfis de usuário (`Admin`, `User`).
-    * Proteger módulos e endpoints com base no perfil do usuário logado.
-
-* **Melhorar a Experiência do Frontend:**
-    * Implementar um seletor de tema (claro/escuro).
-    * Preparar a estrutura para internacionalização (i18n).
-
-* **Estabelecer CI/CD:**
-    * Criar um pipeline no GitHub Actions para rodar testes e, futuramente, automatizar o deploy.
+* **Implementar Mecanismo de Notificação Global no Frontend:**
+    * **Descrição:** Criar um sistema centralizado para exibir notificações (alertas, "snackbars" ou "toasts") ao usuário.
+    * **Objetivo:** Fornecer feedback claro e consistente para ações como "Upload bem-sucedido", "Erro de processamento", etc.
+    * **Tecnologia Sugerida:** Integrar uma biblioteca como `notistack` ou `react-toastify`.
 
 * **Implementar Logging e Monitoramento:**
-    * Configurar um sistema de logging estruturado para todos os serviços.
-    * Avaliar e implementar uma ferramenta de Application Performance Monitoring (APM).
+    * **Descrição:** Configurar um sistema de logging estruturado para todos os serviços e avaliar uma ferramenta de Application Performance Monitoring (APM).
+
+* **Implementar Sistema de Alertas de Backend:**
+    * **Descrição:** Configurar alertas proativos para falhas críticas (ex: serviço offline, erros 5xx), com notificação para a equipe de desenvolvimento via e-mail.
