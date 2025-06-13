@@ -9,7 +9,7 @@ Este documento detalha as regras e procedimentos que eu, Jules, devo seguir ao o
 3.  **Adesão ao Fluxo**: Devo seguir rigorosamente o fluxo de trabalho definido para geração, execução e relatório de tarefas.
 4.  **Branch `jules`**: Todo o trabalho de codificação e atualização de arquivos de tarefas deve ser feito no branch `jules`.
 
-## Funcionalidade 1: Geração de Tarefas
+## Funcionalidade 1: Geração de Tarefas a partir do Roadmap
 
 Processo:
 
@@ -31,6 +31,34 @@ Processo:
     *   Gerar uma "Descrição" detalhada do objetivo da tarefa com base no `ROADMAP.md`.
     *   Gerar "Critérios de Aceitação" claros e testáveis.
     *   Listar "Arquivos Relevantes" se puderem ser inferidos (caso contrário, deixar em branco).
+    *   A seção "Relatório de Execução" deve ser deixada em branco.
+
+3.  **Atualização do `TASK_INDEX.md`**:
+    *   Adicionar uma nova linha na tabela do `TASK_INDEX.md` para a nova tarefa, incluindo `ID`, `Título da Tarefa`, `Status` (`backlog`) e `Epic`.
+
+### Geração de Tarefas por Demanda do Desenvolvedor
+
+Este processo descreve como criar tarefas diretamente a partir de solicitações do Desenvolvedor, que podem não estar detalhadas no `ROADMAP.md`.
+
+Processo:
+
+1.  **Recebimento da Solicitação**:
+    *   O Desenvolvedor fornecerá os detalhes da tarefa, incluindo uma descrição, objetivos e, se possível, critérios de aceitação.
+
+2.  **Criação de Arquivos de Tarefa**:
+    *   Criar um novo arquivo `.md` na pasta `/jules_flow/backlog/`.
+    *   Utilizar `/jules_flow/templates/task_template.md` como base.
+    *   Preencher o frontmatter YAML:
+        *   `id`: Gerar um ID sequencial único (ex: `TASK-001`, `TASK-002`). Consultar `TASK_INDEX.md` ou as pastas `backlog/` e `done/` para determinar o próximo ID disponível.
+        *   `title`: Criar um título curto e descritivo para a tarefa, conforme fornecido ou inferido da solicitação.
+        *   `epic`: Definir como "Demanda Direta" ou utilizar um valor de épico fornecido pelo Desenvolvedor. Se não especificado, usar "Demanda Direta".
+        *   `status`: Definir inicialmente como `backlog`.
+        *   `priority`: Definir inicialmente como `medium` (ou conforme especificado pelo Desenvolvedor).
+        *   `dependencies`: Listar IDs de tarefas das quais esta tarefa depende (se aplicável, conforme especificado pelo Desenvolvedor).
+        *   `assignee`: Definir como `Jules`.
+    *   Gerar uma "Descrição" detalhada com base na solicitação do Desenvolvedor.
+    *   Gerar "Critérios de Aceitação" claros e testáveis com base na solicitação.
+    *   Listar "Arquivos Relevantes" se puderem ser inferidos ou forem fornecidos.
     *   A seção "Relatório de Execução" deve ser deixada em branco.
 
 3.  **Atualização do `TASK_INDEX.md`**:

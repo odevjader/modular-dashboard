@@ -9,8 +9,10 @@ Jules-Flow é um sistema de gerenciamento de microtarefas projetado para ser ope
 O fluxo de trabalho no Jules-Flow é centrado em arquivos Markdown que representam tarefas individuais. O processo geral é o seguinte:
 
 1.  **Geração de Tarefas**:
-    *   Tarefas são geradas a partir do `ROADMAP.md` principal do projeto.
-    *   Jules analisa os épicos e objetivos descritos no roadmap.
+    *   Tarefas podem ser geradas de duas formas:
+        *   A partir da análise do `ROADMAP.md` principal do projeto.
+        *   Através de solicitações diretas do Desenvolvedor para tarefas não planejadas no roadmap.
+    *   Para tarefas do roadmap, Jules analisa os épicos e objetivos descritos. Para demandas diretas, Jules utiliza as informações fornecidas pelo Desenvolvedor.
     *   Para cada microtarefa identificada, um novo arquivo `.md` é criado na pasta `/jules_flow/backlog/` usando o `/jules_flow/templates/task_template.md`.
     *   O frontmatter YAML do arquivo da tarefa é preenchido com `id`, `title`, `epic`, e o `status` inicial é definido como `backlog`.
 
