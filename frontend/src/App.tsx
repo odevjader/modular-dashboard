@@ -12,7 +12,6 @@ import { getModuleRegistry, ModuleConfig } from './config/moduleRegistry'; // En
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import { useNotificationStore } from './stores/notificationStore';
-import { AuthProvider } from './stores/authStore'; // Assuming AuthProvider exists and is set up for context
 
 // Small component to bridge notistack's context with Zustand store
 const NotificationSetup: React.FC = () => {
@@ -36,10 +35,10 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AuthProvider> {/* AuthProvider wraps SnackbarProvider and Router */}
-        <SnackbarProvider
-          maxSnack={5}
-          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      {/* AuthProvider was removed from here */}
+      <SnackbarProvider
+        maxSnack={5}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
           autoHideDuration={3000}
         >
           <NotificationSetup /> {/* Initialize store with notistack functions */}
@@ -83,7 +82,7 @@ function App() {
             </Suspense>
           </Router>
         </SnackbarProvider>
-      </AuthProvider>
+      {/* AuthProvider was removed from here */}
     </ThemeProvider>
   );
 }
