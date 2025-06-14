@@ -3,21 +3,26 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Box, Typography, Container, Alert } from '@mui/material';
 import { useAuthStore } from '../stores/authStore';
+import { showSuccess, showError } from '../stores/notificationStore'; // Import notification helpers
 
 export const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [formError, setFormError] = useState(''); // Renamed to avoid conflict with notification showError
   const { login } = useAuthStore();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError(''); // Clear previous local errors
     try {
       await login(email, password);
+      showSuccess('Login bem-sucedido! Redirecionando...'); // Show success notification
       navigate('/');
-    } catch (err) {
-      setError('Email ou senha incorretos');
+    } catch (err: any) { // Added type any to err for accessing response properties
+      const errorMessage = err.response?.data?.detail || err.message || 'Falha no login. Verifique suas credenciais ou tente novamente.';
+      showError(errorMessage); // Show error notification
+      setFormError(errorMessage); // Also set local error if needed for display within the form
     }
   };
 
@@ -44,7 +49,7 @@ export const Login = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+          {formError && <Alert severity="error" sx={{ mt: 2 }}>{formError}</Alert>}
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
             Entrar
           </Button>
