@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet, Link as RouterLink, useNavigate } from 'react-router-dom';
 import { styled, useTheme, Theme } from '@mui/material/styles'; // Added Theme
+import useMediaQuery from '@mui/material/useMediaQuery'; // Import useMediaQuery
 import {
   AppBar as MuiAppBarCore,
   Toolbar, Typography, Box, Drawer as MuiDrawerCore, List, ListItem, ListItemButton,
@@ -21,13 +22,13 @@ const drawerWidth = 240;
 
 const MuiAppBar = styled(MuiAppBarCore, {
   shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme, open }: { theme: Theme, open: boolean }) => ({
+})(({ theme, open }: { theme: Theme, open: boolean }) => ({ // 'open' here refers to the prop passed to MuiAppBar, not the drawer's own state directly if temporary
   zIndex: theme.zIndex.drawer + 1,
   transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-  ...(open && {
+  ...(open && { // This 'open' means the permanent drawer is open, so shift the AppBar
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px)`,
     transition: theme.transitions.create(['width', 'margin'], {
@@ -38,9 +39,9 @@ const MuiAppBar = styled(MuiAppBarCore, {
 }));
 
 const MuiDrawer = styled(MuiDrawerCore, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }: { theme: Theme, open: boolean }) => ({
+  ({ theme, open, variantProp }: { theme: Theme, open: boolean, variantProp?: string }) => ({ // Added variantProp to pass isSmallScreen
     '& .MuiDrawer-paper': {
-      position: 'relative',
+      position: 'relative', // Default for permanent
       whiteSpace: 'nowrap',
       width: drawerWidth,
       transition: theme.transitions.create('width', {
@@ -48,7 +49,8 @@ const MuiDrawer = styled(MuiDrawerCore, { shouldForwardProp: (prop) => prop !== 
         duration: theme.transitions.duration.enteringScreen,
       }),
       boxSizing: 'border-box',
-      ...(!open && {
+      // Styles for collapsed permanent drawer
+      ...(variantProp !== 'temporary' && !open && {
         overflowX: 'hidden',
         transition: theme.transitions.create('width', {
           easing: theme.transitions.easing.sharp,
@@ -65,8 +67,9 @@ const MuiDrawer = styled(MuiDrawerCore, { shouldForwardProp: (prop) => prop !== 
 
 
 const MainLayout: React.FC = () => {
-  const theme = useTheme(); // useTheme must be called within the component
-  const [open, setOpen] = React.useState(true);
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const [open, setOpen] = React.useState(!isSmallScreen); // Closed on small screens, open on large
 
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
@@ -91,10 +94,11 @@ const MainLayout: React.FC = () => {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <MuiAppBar position="absolute" open={open}>
+      {/* AppBar's 'open' prop should only be true if the drawer is permanent and open */}
+      <MuiAppBar position="absolute" open={open && !isSmallScreen}>
         <Toolbar
           sx={{
-            pr: '24px',
+            pr: '24px', // keep right padding for actions like logout
           }}
         >
           <IconButton
@@ -104,7 +108,7 @@ const MainLayout: React.FC = () => {
             onClick={handleDrawerOpen}
             sx={{
               marginRight: '36px',
-              ...(open && { display: 'none' }),
+              ...(open && !isSmallScreen && { display: 'none' }), // Hide only if permanent drawer is open
             }}
           >
             <MenuIcon />
@@ -125,7 +129,7 @@ const MainLayout: React.FC = () => {
           </Tooltip>
         </Toolbar>
       </MuiAppBar>
-      <MuiDrawer variant="permanent" open={open}>
+      <MuiDrawer variant={isSmallScreen ? "temporary" : "permanent"} open={open} onClose={handleDrawerClose} variantProp={isSmallScreen ? "temporary" : "permanent"}>
         <Toolbar
           sx={{
             display: 'flex',
@@ -145,6 +149,7 @@ const MainLayout: React.FC = () => {
                 <ListItemButton
                   component={RouterLink}
                   to="/"
+                  onClick={() => { if (isSmallScreen) { handleDrawerClose(); } }}
                   sx={{
                     minHeight: 48,
                     justifyContent: open ? 'initial' : 'center',
@@ -173,6 +178,7 @@ const MainLayout: React.FC = () => {
                     <ListItemButton
                       component={RouterLink}
                       to={module.basePath}
+                      onClick={() => { if (isSmallScreen) { handleDrawerClose(); } }}
                       sx={{
                         minHeight: 48,
                         justifyContent: open ? 'initial' : 'center',
@@ -204,6 +210,7 @@ const MainLayout: React.FC = () => {
                     <ListItemButton
                       component={RouterLink}
                       to="/admin/users"
+                      onClick={() => { if (isSmallScreen) { handleDrawerClose(); } }}
                       sx={{
                         minHeight: 48,
                         justifyContent: open ? 'initial' : 'center',
@@ -241,7 +248,8 @@ const MainLayout: React.FC = () => {
         }}
       >
         <Toolbar />
-        <Box sx={{ p: 3 }}>
+        {/* Responsive padding for the main content area */}
+        <Box sx={{ p: { xs: 1, sm: 2, md: 3 } }}>
           <Outlet />
         </Box>
       </Box>
