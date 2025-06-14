@@ -2,13 +2,13 @@
 id: TASK-003
 title: FE Core: Implementar Notificações Globais (Toasts/Snackbars)
 epic: Melhorias do Frontend Core (Fase 3)
-status: backlog
+status: done
 priority: medium
 dependencies: []
 assignee: Jules
 complexity: medium
 created_at: YYYY-MM-DD
-completed_at:
+completed_at: YYYY-MM-DD
 ---
 
 ### Descrição
@@ -28,8 +28,35 @@ Implementar um mecanismo de notificação global (toasts/snackbars) no layout pr
 
 ### Arquivos Relevantes
 
-* `caminho/para/arquivo1.py`
+* `frontend/src/stores/notificationStore.ts`
+* `frontend/src/App.tsx`
+* `frontend/src/components/Login.tsx`
 
 ### Relatório de Execução
 
-(Esta seção deve ser deixada em branco no template)
+O sistema de notificações globais (toasts/snackbars) foi implementado com sucesso.
+
+**Resumo das Alterações:**
+
+1.  **Biblioteca e Estado:**
+    *   A biblioteca `notistack` foi instalada e configurada como provedora de notificações.
+    *   Um store Zustand (`frontend/src/stores/notificationStore.ts`) foi criado para gerenciar o estado e as ações de notificação. Ele fornece funções auxiliares como `showSuccess`, `showError`, `showInfo`, e `showWarning` para disparar notificações.
+
+2.  **Integração Global:**
+    *   O `SnackbarProvider` do `notistack` foi integrado ao `frontend/src/App.tsx`, envolvendo a aplicação para garantir que as notificações estejam disponíveis globalmente.
+    *   O provedor foi configurado para exibir até 5 notificações simultaneamente no canto superior direito, com desaparecimento automático após 3 segundos.
+    *   Uma pequena componente `NotificationSetup` foi usada para conectar as funções do `notistack` (`enqueueSnackbar`, `closeSnackbar`) ao store Zustand.
+
+3.  **Demonstração e Uso:**
+    *   Para demonstrar a funcionalidade, notificações de sucesso e erro foram adicionadas ao componente `frontend/src/components/Login.tsx`. As mensagens são exibidas em pt-BR (ex: "Login bem-sucedido!", "Falha no login...").
+
+4.  **Estilo e Acessibilidade:**
+    *   A biblioteca `notistack` é projetada para ser compatível com Material UI, garantindo consistência visual com o tema da aplicação.
+    *   As configurações padrão de acessibilidade (ARIA roles) do `notistack` foram mantidas.
+
+5.  **Testes (via revisão de código):**
+    *   Todos os tipos de notificação (`success`, `error`, `info`, `warning`) foram corretamente mapeados para as variantes do `notistack`.
+    *   A configuração do `SnackbarProvider` (posicionamento, auto-hide) foi verificada.
+    *   As mensagens em pt-BR no exemplo de login foram confirmadas.
+
+O sistema de notificação está agora operacional e pode ser utilizado em toda a aplicação frontend para fornecer feedback aos usuários.
