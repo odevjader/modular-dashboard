@@ -60,3 +60,20 @@ O sistema de notificações globais (toasts/snackbars) foi implementado com suce
     *   As mensagens em pt-BR no exemplo de login foram confirmadas.
 
 O sistema de notificação está agora operacional e pode ser utilizado em toda a aplicação frontend para fornecer feedback aos usuários.
+
+---
+**Pós-Conclusão: Correção de Bug (Follow-up)**
+
+Após a conclusão e commit inicial desta tarefa, um bug de runtime foi identificado no frontend:
+`Uncaught SyntaxError: The requested module '/src/stores/authStore.ts' does not provide an export named 'AuthProvider' (at App.tsx:15:10)`
+
+**Causa Raiz:**
+Durante a integração do `SnackbarProvider` em `frontend/src/App.tsx`, um wrapper `<AuthProvider>` foi incorretamente adicionado. O `authStore.ts` é um store Zustand e não define nem exporta um componente `AuthProvider` no estilo React Context.
+
+**Resolução:**
+1.  O import de `AuthProvider` de `./stores/authStore` foi removido de `frontend/src/App.tsx`.
+2.  As tags `<AuthProvider>` e `</AuthProvider>` que envolviam o `SnackbarProvider` e o `Router` em `frontend/src/App.tsx` foram removidas.
+3.  A correção foi verificada, e o erro de runtime foi resolvido.
+4.  Um commit subsequente (`Fix: Remove erroneous AuthProvider wrapper from App.tsx`) foi realizado para aplicar esta correção.
+
+Esta nota serve para registrar a resolução completa de todos os impactos relacionados à implementação original da TASK-003.
