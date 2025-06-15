@@ -157,7 +157,12 @@ export const login = async (email: string, password: string): Promise<LoginRespo
             try { errorData = await response.json(); } catch (e) { /* Ignore */ }
             throw new Error(`Login failed: ${response.status} ${response.statusText}${errorData ? ` - ${JSON.stringify(errorData)}` : ''}`);
         }
-        return await response.json() as LoginResponse;
+        const data = await response.json() as LoginResponse;
+        if (data.access_token) {
+            localStorage.setItem('token', data.access_token);
+            // No global axios instance to update, apiClient reads from localStorage each time
+        }
+        return data;
     } catch (error) {
         console.error('Error in login:', error);
         throw error;
