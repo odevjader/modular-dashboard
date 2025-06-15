@@ -14,6 +14,7 @@ import { getModuleRegistry, ModuleConfig } from './config/moduleRegistry'; // En
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import { useNotificationStore } from './stores/notificationStore';
+import { useAuthStore } from './stores/authStore'; // Import useAuthStore
 
 // Small component to bridge notistack's context with Zustand store
 const NotificationSetup: React.FC = () => {
@@ -33,6 +34,11 @@ const NotificationSetup: React.FC = () => {
 
 function App() {
   const moduleRegistry = getModuleRegistry();
+  const initializeAuth = useAuthStore((state) => state.initializeAuth);
+
+  useEffect(() => {
+    initializeAuth(); // Call it on app mount
+  }, [initializeAuth]);
 
   return (
     <ThemeProvider theme={theme}>

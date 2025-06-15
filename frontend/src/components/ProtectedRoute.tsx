@@ -1,7 +1,9 @@
 // frontend/src/components/ProtectedRoute.tsx
 import { Navigate } from 'react-router-dom';
-import { useAuthStore } from '../stores/authStore'; // Assuming authStore provides user role info
-import { ReactNode } from 'react'; // Import ReactNode for children type
+import { useAuthStore } from '../stores/authStore';
+import { ReactNode } from 'react';
+import CircularProgress from '@mui/material/CircularProgress'; // For loading
+import Box from '@mui/material/Box'; // For centering
 
 // Define the props for ProtectedRoute
 interface ProtectedRouteProps {
@@ -13,6 +15,16 @@ interface ProtectedRouteProps {
 export const ProtectedRoute = ({ children, roles, adminOnly }: ProtectedRouteProps) => {
   const token = useAuthStore(state => state.token);
   const user = useAuthStore(state => state.user);
+  const isLoadingAuth = useAuthStore(state => state.isLoading); // New state
+
+  if (isLoadingAuth) {
+    // Show a loading spinner while auth state is being determined
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh"> {/* Adjust minHeight as needed */}
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   if (!token) {
     return <Navigate to="/login" replace />;
@@ -24,15 +36,12 @@ export const ProtectedRoute = ({ children, roles, adminOnly }: ProtectedRoutePro
   }
 
   if (effectiveRoles) {
-    if (!user || !user.role) { // If roles are required, user and user.role must exist
-      // This handles cases where user data might not be loaded yet or role is missing.
-      // Consider a loading indicator or specific handling if user loading is async on refresh.
-      // For now, redirecting to login if user/role is missing for a role-protected route.
-      // console.warn("ProtectedRoute: User data or role not available for role check. Redirecting to login.");
+    if (!user || !user.role) {
+      // This now correctly implies user is not loaded or doesn't have role AFTER loading is false
       return <Navigate to="/login" replace />;
     }
 
-    const userRoleString = user.role.toLowerCase(); // Ensure user's role is lowercased
+    const userRoleString = user.role.toLowerCase();
     const userRolesArray = [userRoleString]; // Assuming user.role is a single string like "admin" or "user"
 
     const requiredRoles = Array.isArray(effectiveRoles)
