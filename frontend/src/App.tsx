@@ -3,15 +3,18 @@ import { BrowserRouter as Router, Route, Routes, Outlet } from 'react-router-dom
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { SnackbarProvider, useSnackbar } from 'notistack';
 import theme from './styles/theme';
-import MainLayout from './layouts/MainLayout';
-import { Login } from './components/Login';
+// Lazy loaded components
+const MainLayout = React.lazy(() => import('./layouts/MainLayout'));
+const Login = React.lazy(() => import('./components/Login').then(module => ({ default: module.Login })));
+const AdminUsers = React.lazy(() => import('./components/AdminUsers'));
+const HomePage = React.lazy(() => import('./pages/HomePage'));
+
 import { ProtectedRoute } from './components/ProtectedRoute';
-import AdminUsers from './components/AdminUsers';
-import HomePage from './pages/HomePage'; // Make sure HomePage is imported
 import { getModuleRegistry, ModuleConfig } from './config/moduleRegistry'; // Ensure correct path
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import { useNotificationStore } from './stores/notificationStore';
+import { useAuthStore } from './stores/authStore'; // Import useAuthStore
 
 // Small component to bridge notistack's context with Zustand store
 const NotificationSetup: React.FC = () => {
@@ -31,6 +34,11 @@ const NotificationSetup: React.FC = () => {
 
 function App() {
   const moduleRegistry = getModuleRegistry();
+  const initializeAuth = useAuthStore((state) => state.initializeAuth);
+
+  useEffect(() => {
+    initializeAuth(); // Call it on app mount
+  }, [initializeAuth]);
 
   return (
     <ThemeProvider theme={theme}>

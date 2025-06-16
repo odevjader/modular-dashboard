@@ -1,6 +1,6 @@
 import React from 'react';
-import { Outlet, Link as RouterLink, useNavigate } from 'react-router-dom';
-import { styled, useTheme, Theme } from '@mui/material/styles'; // Added Theme
+import { Outlet, Link as RouterLink, useNavigate, NavLink as RouterNavLink, useMatch, useResolvedPath } from 'react-router-dom';
+import { styled, useTheme, Theme, alpha } from '@mui/material/styles'; // Added alpha
 import useMediaQuery from '@mui/material/useMediaQuery'; // Import useMediaQuery
 import {
   AppBar as MuiAppBarCore,
@@ -91,6 +91,67 @@ const MainLayout: React.FC = () => {
   // Determine user role for filtering. Adapt if user.role is an array e.g. user.roles.includes('ADMIN')
   const isAdmin = user?.role === 'admin'; // Changed to lowercase 'admin'
 
+  // Helper component for NavListItems to handle active state and styling
+  interface NavListItemProps {
+    to: string;
+    primary: string;
+    icon: React.ReactElement;
+    open: boolean; // Drawer open state
+    isSmallScreen: boolean;
+    onClick?: () => void;
+    exact?: boolean; // For exact path matching
+  }
+
+  const NavListItem: React.FC<NavListItemProps> = ({ to, primary, icon, open, isSmallScreen, onClick, exact = false }) => {
+    const resolvedPath = useResolvedPath(to);
+    const isActive = !!useMatch({ path: resolvedPath.pathname, end: exact });
+
+    return (
+      <ListItem disablePadding sx={{ display: 'block' }}>
+        <Tooltip title={open ? "" : primary} placement="right">
+          <ListItemButton
+            component={RouterLink}
+            to={to}
+            selected={isActive}
+            onClick={() => {
+              if (isSmallScreen && onClick) {
+                onClick();
+              }
+            }}
+            sx={{
+              minHeight: 48,
+              justifyContent: open ? 'initial' : 'center',
+              px: 2.5,
+              '&:hover': {
+                backgroundColor: theme.palette.action.hover,
+              },
+              '&.Mui-selected': {
+                backgroundColor: alpha(theme.palette.primary.main, 0.08),
+                '&:hover': {
+                  backgroundColor: alpha(theme.palette.primary.main, 0.12),
+                },
+                '.MuiListItemIcon-root, .MuiListItemText-primary': {
+                  color: theme.palette.primary.main,
+                },
+              },
+            }}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: open ? 3 : 'auto',
+                justifyContent: 'center',
+              }}
+            >
+              {icon}
+            </ListItemIcon>
+            <ListItemText primary={primary} sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
+        </Tooltip>
+      </ListItem>
+    );
+  };
+
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -109,6 +170,12 @@ const MainLayout: React.FC = () => {
             sx={{
               marginRight: '36px',
               ...(open && !isSmallScreen && { display: 'none' }), // Hide only if permanent drawer is open
+              '&:hover': {
+                backgroundColor: alpha(theme.palette.common.white, 0.08),
+              },
+              '&:active': {
+                backgroundColor: alpha(theme.palette.common.white, 0.15),
+              }
             }}
           >
             <MenuIcon />
@@ -123,7 +190,16 @@ const MainLayout: React.FC = () => {
             Modular Dashboard
           </Typography>
           <Tooltip title="Logout">
-            <IconButton color="inherit" onClick={handleLogout}>
+            <IconButton color="inherit" onClick={handleLogout}
+              sx={{
+                '&:hover': {
+                  backgroundColor: alpha(theme.palette.common.white, 0.08),
+                },
+                '&:active': {
+                  backgroundColor: alpha(theme.palette.common.white, 0.15),
+                }
+              }}
+            >
               <LogoutIcon />
             </IconButton>
           </Tooltip>
@@ -138,66 +214,44 @@ const MainLayout: React.FC = () => {
             px: [1],
           }}
         >
-          <IconButton onClick={handleDrawerClose}>
+          <IconButton onClick={handleDrawerClose}
+            sx={{
+              '&:hover': {
+                backgroundColor: alpha(theme.palette.action.hover, 0.08), // Adjusted for potentially lighter background if theme changes
+              },
+              '&:active': {
+                backgroundColor: alpha(theme.palette.action.active, 0.1), // Adjusted
+              }
+            }}
+          >
             <ChevronLeftIcon />
           </IconButton>
         </Toolbar>
         <Box sx={{ overflowY: 'auto', overflowX: 'hidden', height: 'calc(100% - 64px)' }}> {/* Adjust height based on Toolbar */}
           <List component="nav">
-            <ListItem disablePadding sx={{ display: 'block' }}>
-              <Tooltip title={open ? "" : "Home"} placement="right">
-                <ListItemButton
-                  component={RouterLink}
-                  to="/"
-                  onClick={() => { if (isSmallScreen) { handleDrawerClose(); } }}
-                  sx={{
-                    minHeight: 48,
-                    justifyContent: open ? 'initial' : 'center',
-                    px: 2.5,
-                  }}
-                >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : 'auto',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <HomeIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Home" sx={{ opacity: open ? 1 : 0 }} />
-                </ListItemButton>
-              </Tooltip>
-            </ListItem>
+            <NavListItem
+              to="/"
+              primary="Home"
+              icon={<HomeIcon />}
+              open={open}
+              isSmallScreen={isSmallScreen}
+              onClick={handleDrawerClose}
+              exact={true}
+            />
 
             {Object.values(moduleRegistry).filter(module => !module.adminOnly || (module.adminOnly && isAdmin)).map((module: ModuleConfig) => {
               const IconComponent = module.navIcon as SvgIconComponent | undefined;
               return (
-                <ListItem key={module.name} disablePadding sx={{ display: 'block' }}>
-                  <Tooltip title={open ? "" : (module.navText || module.name)} placement="right">
-                    <ListItemButton
-                      component={RouterLink}
-                      to={module.basePath}
-                      onClick={() => { if (isSmallScreen) { handleDrawerClose(); } }}
-                      sx={{
-                        minHeight: 48,
-                        justifyContent: open ? 'initial' : 'center',
-                        px: 2.5,
-                      }}
-                    >
-                      <ListItemIcon
-                        sx={{
-                          minWidth: 0,
-                          mr: open ? 3 : 'auto',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        {IconComponent ? <IconComponent /> : <div style={{ width: 24, height: 24 }} /> }
-                      </ListItemIcon>
-                      <ListItemText primary={module.navText || module.name} sx={{ opacity: open ? 1 : 0 }} />
-                    </ListItemButton>
-                  </Tooltip>
-                </ListItem>
+                <NavListItem
+                  key={module.name}
+                  to={module.basePath}
+                  primary={module.navText || module.name}
+                  icon={IconComponent ? <IconComponent /> : <div style={{ width: 24, height: 24 }} />}
+                  open={open}
+                  isSmallScreen={isSmallScreen}
+                  onClick={handleDrawerClose}
+                  exact={module.basePath === '/'} // Assuming only home is truly exact, others might have sub-routes
+                />
               );
             })}
           </List>
@@ -205,31 +259,14 @@ const MainLayout: React.FC = () => {
             <>
               <Box sx={{ my: 1, mx: open ? 2.5 : 'auto', pl: open ? 0 : 1.5 }}><Typography variant="caption" sx={{ opacity: open ? 0.7 : 0 }}>Admin</Typography></Box>
               <List component="nav">
-                <ListItem disablePadding sx={{ display: 'block' }}>
-                  <Tooltip title={open ? "" : "Admin Users"} placement="right">
-                    <ListItemButton
-                      component={RouterLink}
-                      to="/admin/users"
-                      onClick={() => { if (isSmallScreen) { handleDrawerClose(); } }}
-                      sx={{
-                        minHeight: 48,
-                        justifyContent: open ? 'initial' : 'center',
-                        px: 2.5,
-                      }}
-                    >
-                      <ListItemIcon
-                        sx={{
-                          minWidth: 0,
-                          mr: open ? 3 : 'auto',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <AdminPanelSettingsIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Admin Users" sx={{ opacity: open ? 1 : 0 }} />
-                    </ListItemButton>
-                  </Tooltip>
-                </ListItem>
+                <NavListItem
+                  to="/admin/users"
+                  primary="Admin Users"
+                  icon={<AdminPanelSettingsIcon />}
+                  open={open}
+                  isSmallScreen={isSmallScreen}
+                  onClick={handleDrawerClose}
+                />
               </List>
             </>
           )}
