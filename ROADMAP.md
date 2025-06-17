@@ -63,6 +63,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 6. 📝 **Endpoint Gateway na API Principal:** Implementar o endpoint `POST /api/v1/documents/upload-and-process`. Este endpoint será o único ponto de entrada público, responsável por:
    * Validar a autenticação e autorização do usuário.
    * Atuar como um proxy seguro, chamando o endpoint do microserviço.
+   * ✅ Implementado endpoint `/api/documents/upload` (TASK-013) para upload e encaminhamento ao `transcritor_pdf_service`.
 
 ---
 
