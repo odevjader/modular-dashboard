@@ -4,14 +4,34 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Database connection parameters from environment variables with defaults
-DB_USER = os.getenv("DB_USER", "postgres")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "postgres")
-DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_PORT = os.getenv("DB_PORT", "5432")
-DB_NAME = os.getenv("DB_NAME", "transcritor_pdf_db") # Changed default for clarity
+# Attempt to use ASYNC_DATABASE_URL first, then DATABASE_URL
+# The default value is a placeholder and should ideally not be used if .env is set up correctly.
+ASYNC_DB_URL_FROM_ENV = os.getenv("ASYNC_DATABASE_URL")
+DB_URL_FROM_ENV = os.getenv("DATABASE_URL")
 
-DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+if ASYNC_DB_URL_FROM_ENV:
+    DATABASE_URL = ASYNC_DB_URL_FROM_ENV
+    logger.info(f"Using ASYNC_DATABASE_URL for transcritor-pdf: {DATABASE_URL}")
+elif DB_URL_FROM_ENV:
+    # If using a sync URL for an async app, ensure it's adapted if necessary,
+    # though asyncpg typically expects the connection string without a specific +driver.
+    # For simplicity, we'll assume it's compatible or will be made so.
+    DATABASE_URL = DB_URL_FROM_ENV
+    logger.info(f"Using DATABASE_URL for transcritor-pdf: {DATABASE_URL}")
+    # Potentially adapt if it's a sync-only DSN like 'postgresql://...' for asyncpg
+    if not DATABASE_URL.startswith("postgresql+asyncpg://") and DATABASE_URL.startswith("postgresql://"):
+         # This basic replacement might not cover all cases but is a common adaptation.
+         # DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+         # logger.info(f"Adapted DATABASE_URL for asyncpg: {DATABASE_URL}")
+         # For now, let's assume the URL provided in .env is suitable or will be adjusted there.
+         pass # Keep it simple, rely on .env to provide a compatible URL
+else:
+    # Fallback if neither is set (should not happen in a configured environment)
+    DATABASE_URL = "postgresql+asyncpg://user:pass@host:port/db" # Placeholder
+    logger.warning("Neither ASYNC_DATABASE_URL nor DATABASE_URL found in environment. Using placeholder for transcritor-pdf.")
+
+# The rest of the file (db_pool, connect_to_db, close_db_connection)
+# will use this DATABASE_URL.
 
 # Placeholder for embedding dimensions - this might come from a model config later
 # For now, common dimensions are 384 (e.g., all-MiniLM-L6-v2), 768 (e.g., BERT base), 1536 (OpenAI Ada-002)
@@ -31,7 +51,7 @@ async def connect_to_db():
         logger.info("Database connection pool already exists.")
         return
 
-    logger.info(f"Attempting to connect to database: {DB_HOST}:{DB_PORT}/{DB_NAME} as user {DB_USER}")
+    logger.info(f"Attempting to connect to database using URL: {DATABASE_URL}") # Updated log message
     try:
         pool = await asyncpg.create_pool(
             dsn=DATABASE_URL,
