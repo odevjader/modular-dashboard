@@ -46,3 +46,9 @@ def process_pdf_task(file_content_bytes: bytes, filename: str) -> dict:
         # Re-raise the exception so Celery can mark the task as FAILED
         # and store the exception information.
         raise
+
+from .celery_app import app
+
+@app.task(name="transcritor_pdf.tasks.health_check_task")
+def health_check_task():
+    return "Celery is healthy!"

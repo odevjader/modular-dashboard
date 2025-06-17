@@ -23,6 +23,11 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **Banco de Dados:** Configurado com PostgreSQL e Alembic.
 * ✅ **Módulos de Exemplo:** Criados `gerador_quesitos`, `ai_test`, `info`.
 * ✅ **Documentação Inicial:** Criada a documentação base do projeto.
+* ✅ **Pesquisa de Documentação (Docker, Redis, Celery):** Documentação oficial e melhores práticas pesquisadas (TASK-003).
+* ✅ **Resumo de Documentação (Docker, Redis, Celery):** Sumários criados em `docs/reference/` (TASK-004).
+* ✅ **Planejamento de Testes (Fase 1 Infra):** Plano de teste para a configuração da infraestrutura da Fase 1 criado (TASK-005).
+* ✅ **Implementação de Testes (Fase 1 Infra):** Scripts de teste de integração para configuração da infraestrutura criados (TASK-006).
+* ⚠️ **Execução de Testes (Fase 1 Infra):** BLOCKED - Pending manual execution due to environment limitations (TASK-007).
 
 ---
 
@@ -32,6 +37,8 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 *Objetivo: Estabelecer a estrutura e os processos para que Jules (AI Agent) possa gerenciar suas próprias tarefas de desenvolvimento de forma organizada e rastreável.*
 
 * ✅ **Criação da Estrutura Inicial do Jules-Flow:** Diretórios, arquivos base (`README.md`, `INSTRUCTIONS_FOR_JULES.md`, `TASK_INDEX.md`), e o template de tarefas (`task_template.md`) foram configurados.
+* ✅ **Centralização de Documentos de Referência:** Documentos de referência do `transcritor-pdf` movidos para `docs/reference` (TASK-001).
+* ✅ **Revisão de .env.example Pós-Fase 1:** Arquivos `.env.example` verificados e considerados adequados (TASK-002).
 * 📝 **Definição do Processo de Criação de Tarefas On-Demand:** Documentação atualizada para permitir que o Desenvolvedor solicite tarefas diretamente, além daquelas geradas pelo Roadmap. (Referência: Commit de atualização de documentação do Jules-Flow)
 
 ---
@@ -43,6 +50,11 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 
 #### Tarefas Priorizadas:
 
+* ✅ **DOC-SEARCH: Pesquisar Documentação (FastAPI)** (TASK-008)
+* ✅ **DOC-SUMMARIZE: Resumir Documentação (FastAPI para Gateway)** (TASK-009)
+* ✅ **DEV: Criar Módulo `documents` na API Principal** (TASK-010)
+* ✅ **TEST-PLAN: Planejar Testes para Módulo `documents` (Estrutura)** (TASK-011)
+* ✅ **TEST-IMPL: Implementar Testes para Módulo `documents` (Estrutura)** (TASK-012)
 1. 📝 **DB Schema:** Definir e criar a migração (Alembic) para a nova tabela `pdf_processed_chunks`.
 2. 📝 **Orquestração:** Atualizar o `docker-compose.yml` para incluir o novo `pdf_processor_service` e garantir a comunicação entre os containers.
 3. 📝 **Estrutura do Microserviço:** Criar a estrutura de pastas e arquivos (`Dockerfile`, `requirements.txt`, etc.) para o `pdf_processor_service`.

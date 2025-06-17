@@ -2,7 +2,7 @@
 id: TASK-002
 title: "ENV-REVIEW: Revisar e Atualizar .env.example Após Fase 1"
 epic: "Meta-Phase: Documentação e Preparação de Testes"
-status: backlog
+status: done
 priority: medium
 dependencies: ["TASK-001"] # Depends on infra changes that might affect .env
 assignee: Jules
@@ -25,4 +25,4 @@ Analisar `backend/.env.example`. Verificar se variáveis de Redis, Celery, DB UR
 
 ### Relatório de Execução
 
-(Esta seção deve ser deixada em branco no template)
+Os arquivos `backend/.env.example` e `frontend/.env.example` foram revisados. As variáveis de ambiente para Redis, Celery, e URLs de banco de dados no `backend/.env.example` estão presentes, corretas e usam placeholders seguros. A `SECRET_KEY` possui um placeholder adequado. O `frontend/.env.example` também está correto. Nenhuma alteração foi necessária. Todos os critérios de aceitação foram cumpridos.

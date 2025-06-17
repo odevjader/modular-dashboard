@@ -2,7 +2,7 @@
 id: TASK-001
 title: "DOC-CENTRALIZE: Centralizar Documentos de Referência Existentes"
 epic: "Meta-Phase: Documentação e Preparação de Testes"
-status: backlog
+status: done
 priority: medium
 dependencies: []
 assignee: Jules
@@ -26,4 +26,4 @@ Mover todos os arquivos de `transcritor-pdf/docs/reference/` para `docs/referenc
 
 ### Relatório de Execução
 
-(Esta seção deve ser deixada em branco no template)
+O diretório `docs/reference/` foi criado. O arquivo `.gitkeep` foi movido de `transcritor-pdf/docs/reference/` para `docs/reference/`. O diretório `transcritor-pdf/docs/reference/` foi removido. Todos os critérios de aceitação foram cumpridos.
