@@ -24,6 +24,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **Módulos de Exemplo:** Criados `gerador_quesitos`, `ai_test`, `info`.
 * ✅ **Documentação Inicial:** Criada a documentação base do projeto.
 * ✅ **Pesquisa de Documentação (Docker, Redis, Celery):** Documentação oficial e melhores práticas pesquisadas (TASK-003).
+* ✅ **Resumo de Documentação (Docker, Redis, Celery):** Sumários criados em `docs/reference/` (TASK-004).
 
 ---
 
