@@ -1,29 +1,26 @@
 ---
 id: TASK-017
-title: "Transcritor-PDF: Construir Orquestrador de Respostas com LLM"
-epic: "Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF)"
+title: "Jules-Flow: Gerar Arquivos de Tarefa e Atualizar Índice"
+epic: "Fase Extra: Criação de Tarefas no Jules-Flow"
 status: backlog
 priority: medium
-dependencies: ["TASK-016"]
+dependencies: []
 assignee: Jules
 ---
 
 ### Descrição
 
-Criar `query_processor.py` em `transcritor-pdf` que usa a busca vetorial para obter contexto e um LLM para gerar respostas a perguntas sobre o documento.
+Criar os arquivos .md para todas as tarefas do plano (TASK-009 a TASK-024) no diretório `jules_flow/backlog/` e atualizar `jules_flow/TASK_INDEX.md`.
 
 ### Critérios de Aceitação
 
-- [ ] `src/query_processor.py` (ou similar) existe.
-- [ ] Orquestrador recebe pergunta e ID do documento.
-- [ ] Usa a inteligência de busca (TASK-016) para obter contexto.
-- [ ] Constrói prompt e chama LLM (via `llm_client.py`).
-- [ ] Retorna resposta do LLM.
+- [ ] Arquivos `TASK-009.md` a `TASK-024.md` criados em `jules_flow/backlog/` conforme o template e detalhes do plano.
+- [ ] `jules_flow/TASK_INDEX.md` atualizado com entradas para `TASK-009` a `TASK-024`.
 
 ### Arquivos Relevantes
 
-* `transcritor-pdf/src/query_processor.py`
-* `transcritor-pdf/src/extractor/llm_client.py`
+* `jules_flow/backlog/TASK-*.md`
+* `jules_flow/TASK_INDEX.md`
 
 ### Relatório de Execução
 

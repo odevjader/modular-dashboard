@@ -1,30 +1,28 @@
 ---
 id: TASK-011
-title: "Config: Ajustar Variáveis de Ambiente para API e Transcritor-PDF"
-epic: "Fase 1: Configuração da Infraestrutura e Integração Base"
+title: "API: Expandir Gateway para Diálogo com Documentos"
+epic: "Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF)"
 status: backlog
 priority: medium
-dependencies: ["TASK-009"]
+dependencies: ["TASK-006", "TASK-010"]
 assignee: Jules
 ---
 
 ### Descrição
 
-Adicionar `REDIS_URL` e `DATABASE_URL` (se necessário) ao `.env.example`. Modificar `transcritor-pdf` e API principal para ler estas variáveis. Garantir que os serviços no Docker Compose as utilizem.
+Adicionar rota `POST /api/documents/query/{document_id}` na API principal, autenticada, que repassa a pergunta ao novo endpoint de diálogo do `transcritor-pdf`.
 
 ### Critérios de Aceitação
 
-- [ ] `backend/.env.example` (ou similar) contém `REDIS_URL`.
-- [ ] `transcritor-pdf/src/db_config.py` (ou similar) lê `DATABASE_URL` e `REDIS_URL` do ambiente.
-- [ ] `backend/app/core/config.py` carrega `REDIS_URL` se necessário.
-- [ ] Serviços `api`, `transcritor_pdf`, `transcritor_pdf_worker` no `docker-compose.yml` usam estas variáveis.
+- [ ] Rota `POST /api/documents/query/{document_id}` existe em `documents/router.py`.
+- [ ] Requer autenticação.
+- [ ] Aceita pergunta no corpo da requisição.
+- [ ] `documents/services.py` tem função para chamar `http://transcritor_pdf_service:8002/query-document/{document_id}`.
 
 ### Arquivos Relevantes
 
-* `backend/.env.example`
-* `transcritor-pdf/src/db_config.py` (ou similar)
-* `backend/app/core/config.py`
-* `docker-compose.yml`
+* `backend/app/modules/documents/router.py`
+* `backend/app/modules/documents/services.py`
 
 ### Relatório de Execução
 

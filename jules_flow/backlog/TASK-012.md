@@ -1,27 +1,26 @@
 ---
 id: TASK-012
-title: "Docker Compose: Corrigir Dependências e Conectividade"
-epic: "Fase 1: Configuração da Infraestrutura e Integração Base"
+title: "Frontend: Criar Página Analisador de Documentos"
+epic: "Fase 4: Construção da Experiência do Usuário (Frontend)"
 status: backlog
 priority: medium
-dependencies: ["TASK-010", "TASK-011"]
+dependencies: [] # Frontend pode começar em paralelo
 assignee: Jules
 ---
 
 ### Descrição
 
-Revisar `docker-compose.yml` para garantir que `api`, `transcritor_pdf`, e `transcritor_pdf_worker` tenham as corretas `depends_on` declarações para `redis` e `db`. Verificar `PYTHONPATH` para os serviços do transcritor.
+Criar componente `AnalisadorDocumentosPage.tsx` e adicionar rota para ele.
 
 ### Critérios de Aceitação
 
-- [ ] `api` depende de `redis` (se aplicável) no `docker-compose.yml`.
-- [ ] `transcritor_pdf` depende de `redis` e `db` no `docker-compose.yml`.
-- [ ] `transcritor_pdf_worker` depende de `redis` e `db` no `docker-compose.yml`.
-- [ ] `PYTHONPATH` está corretamente configurado para `transcritor-pdf` e `transcritor_pdf_worker`.
+- [ ] `frontend/src/pages/AnalisadorDocumentosPage.tsx` existe.
+- [ ] Rota para `/analisador-documentos` (ou similar) está configurada em `App.tsx`.
 
 ### Arquivos Relevantes
 
-* `docker-compose.yml`
+* `frontend/src/pages/AnalisadorDocumentosPage.tsx`
+* `frontend/src/App.tsx`
 
 ### Relatório de Execução
 

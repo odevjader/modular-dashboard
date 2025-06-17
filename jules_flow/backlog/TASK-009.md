@@ -1,27 +1,29 @@
 ---
 id: TASK-009
-title: "Docker Compose: Adicionar Suporte a Filas de Tarefas (Redis)"
-epic: "Fase 1: Configuração da Infraestrutura e Integração Base"
+title: "Transcritor-PDF: Construir Orquestrador de Respostas com LLM"
+epic: "Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF)"
 status: backlog
 priority: medium
-dependencies: []
+dependencies: ["TASK-008"]
 assignee: Jules
 ---
 
 ### Descrição
 
-Modificar o arquivo `docker-compose.yml` para adicionar um novo serviço Redis, configurar persistência (opcional), expor a porta e definir dependências para outros serviços.
+Criar `query_processor.py` em `transcritor-pdf` que usa a busca vetorial para obter contexto e um LLM para gerar respostas a perguntas sobre o documento.
 
 ### Critérios de Aceitação
 
-- [ ] `docker-compose.yml` inclui um serviço `redis` usando imagem oficial.
-- [ ] Redis está configurado para persistência (se aplicável).
-- [ ] Porta `6379` do Redis está exposta à `app-network`.
-- [ ] Serviços `api` (se aplicável), `transcritor_pdf` e o futuro `transcritor_pdf_worker` declaram `depends_on: redis`.
+- [ ] `src/query_processor.py` (ou similar) existe.
+- [ ] Orquestrador recebe pergunta e ID do documento.
+- [ ] Usa a inteligência de busca (TASK-016) para obter contexto.
+- [ ] Constrói prompt e chama LLM (via `llm_client.py`).
+- [ ] Retorna resposta do LLM.
 
 ### Arquivos Relevantes
 
-* `docker-compose.yml`
+* `transcritor-pdf/src/query_processor.py`
+* `transcritor-pdf/src/extractor/llm_client.py`
 
 ### Relatório de Execução
 

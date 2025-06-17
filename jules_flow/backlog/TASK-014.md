@@ -1,29 +1,27 @@
 ---
 id: TASK-014
-title: "API: Implementar Endpoint de Upload no Módulo `documents`"
-epic: "Fase 2: Implementação do Gateway de Comunicação na API Principal"
+title: "Frontend: Implementar Feedback de Processamento de Upload"
+epic: "Fase 4: Construção da Experiência do Usuário (Frontend)"
 status: backlog
 priority: medium
-dependencies: ["TASK-013", "TASK-010"] # Depende do worker e API do transcritor estarem prontos para receber
+dependencies: ["TASK-013"] # Depende do upload
 assignee: Jules
 ---
 
 ### Descrição
 
-Criar rota `POST /upload` no módulo `documents`, protegida por autenticação, que aceita `UploadFile` e usa um serviço para repassar o arquivo ao `transcritor-pdf`.
+Exibir status de processamento na UI após upload, possivelmente com polling a um endpoint de status (a ser definido, pode precisar de um novo endpoint no backend).
 
 ### Critérios de Aceitação
 
-- [ ] Rota `POST /api/documents/upload` existe em `documents/router.py`.
-- [ ] Rota requer autenticação (`get_current_active_user`).
-- [ ] Aceita `UploadFile`.
-- [ ] `documents/services.py` tem função para chamar `http://transcritor_pdf_service:8002/process-pdf` (ou endpoint similar do transcritor) com o arquivo.
-- [ ] Respostas e erros do microserviço são gerenciados.
+- [ ] Interface exibe "Processando..." ou similar após upload.
+- [ ] Mecanismo de polling ou WebSocket para verificar status do processamento.
+- [ ] (Potencialmente) Novo endpoint no backend para `GET /api/documents/status/{job_id_or_document_id}`.
 
 ### Arquivos Relevantes
 
-* `backend/app/modules/documents/router.py`
-* `backend/app/modules/documents/services.py`
+* `frontend/src/pages/AnalisadorDocumentosPage.tsx`
+* (Potencialmente) `backend/app/modules/documents/router.py`
 
 ### Relatório de Execução
 

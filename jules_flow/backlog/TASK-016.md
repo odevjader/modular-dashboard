@@ -1,26 +1,25 @@
 ---
 id: TASK-016
-title: "Transcritor-PDF: Desenvolver Inteligência de Busca Vetorial"
-epic: "Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF)"
+title: "Frontend: Integrar Página ao Menu de Navegação"
+epic: "Fase 4: Construção da Experiência do Usuário (Frontend)"
 status: backlog
 priority: medium
-dependencies: ["TASK-010"] # Assume que o transcritor já processa e armazena vetores
+dependencies: ["TASK-012"]
 assignee: Jules
 ---
 
 ### Descrição
 
-Implementar função em `transcritor-pdf` para buscar chunks de texto similares a uma query em um documento específico, usando pgvector.
+Adicionar item 'Analisador de Documentos' ao menu principal que leva à nova página.
 
 ### Critérios de Aceitação
 
-- [ ] Função em `src/vectorizer/vector_store_handler.py` (ou similar) aceita query e document ID.
-- [ ] Função consulta PostgreSQL/pgvector usando similaridade vetorial.
-- [ ] Retorna os chunks de texto relevantes.
+- [ ] Item "Analisador de Documentos" no menu de `MainLayout.tsx` (ou similar).
+- [ ] Item navega para a `AnalisadorDocumentosPage`.
 
 ### Arquivos Relevantes
 
-* `transcritor-pdf/src/vectorizer/vector_store_handler.py`
+* `frontend/src/layouts/MainLayout.tsx`
 
 ### Relatório de Execução
 
