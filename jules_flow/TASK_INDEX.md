@@ -6,10 +6,10 @@
 | TASK-003 | DOC-SEARCH: Pesquisar Documentação (Docker, Redis, Celery) | done     | Fase 1: Configuração da Infraestrutura e Integração Base (Revisão e Testes)       |
 | TASK-004 | DOC-SUMMARIZE: Resumir Documentação (Docker, Redis, Celery) | done     | Fase 1: Configuração da Infraestrutura e Integração Base (Revisão e Testes)       |
 | TASK-005 | TEST-PLAN: Planejar Testes para Configuração da Fase 1 | done     | Fase 1: Configuração da Infraestrutura e Integração Base (Revisão e Testes)       |
-| TASK-006 | TEST-IMPL: Implementar Testes para Configuração da Fase 1 | backlog | Fase 1: Configuração da Infraestrutura e Integração Base (Revisão e Testes) |
-| TASK-007 | TEST-EXEC: Executar Testes da Configuração da Fase 1 | backlog | Fase 1: Configuração da Infraestrutura e Integração Base (Revisão e Testes) |
-| TASK-008 | DOC-SEARCH: Pesquisar Documentação (FastAPI) | backlog | Fase 2: Implementação do Gateway de Comunicação na API Principal |
-| TASK-009 | DOC-SUMMARIZE: Resumir Documentação (FastAPI para Gateway) | backlog | Fase 2: Implementação do Gateway de Comunicação na API Principal |
+| TASK-006 | TEST-IMPL: Implementar Testes para Configuração da Fase 1 | done     | Fase 1: Configuração da Infraestrutura e Integração Base (Revisão e Testes)       |
+| TASK-007 | TEST-EXEC: Executar Testes da Configuração da Fase 1 (BLOCKED - Manual Execution Required) | blocked  | Fase 1: Configuração da Infraestrutura e Integração Base (Revisão e Testes)       |
+| TASK-008 | DOC-SEARCH: Pesquisar Documentação (FastAPI) | done     | Fase 2: Implementação do Gateway de Comunicação na API Principal                   |
+| TASK-009 | DOC-SUMMARIZE: Resumir Documentação (FastAPI para Gateway) | done     | Fase 2: Implementação do Gateway de Comunicação na API Principal                   |
 | TASK-010 | DEV: Criar Módulo `documents` na API Principal | backlog | Fase 2: Implementação do Gateway de Comunicação na API Principal |
 | TASK-011 | TEST-PLAN: Planejar Testes para Módulo `documents` (Estrutura) | backlog | Fase 2: Implementação do Gateway de Comunicação na API Principal |
 | TASK-012 | TEST-IMPL: Implementar Testes para Módulo `documents` (Estrutura) | backlog | Fase 2: Implementação do Gateway de Comunicação na API Principal |

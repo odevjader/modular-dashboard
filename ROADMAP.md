@@ -26,6 +26,8 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **Pesquisa de Documentação (Docker, Redis, Celery):** Documentação oficial e melhores práticas pesquisadas (TASK-003).
 * ✅ **Resumo de Documentação (Docker, Redis, Celery):** Sumários criados em `docs/reference/` (TASK-004).
 * ✅ **Planejamento de Testes (Fase 1 Infra):** Plano de teste para a configuração da infraestrutura da Fase 1 criado (TASK-005).
+* ✅ **Implementação de Testes (Fase 1 Infra):** Scripts de teste de integração para configuração da infraestrutura criados (TASK-006).
+* ⚠️ **Execução de Testes (Fase 1 Infra):** BLOCKED - Pending manual execution due to environment limitations (TASK-007).
 
 ---
 
@@ -48,6 +50,8 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 
 #### Tarefas Priorizadas:
 
+* ✅ **DOC-SEARCH: Pesquisar Documentação (FastAPI)** (TASK-008)
+* ✅ **DOC-SUMMARIZE: Resumir Documentação (FastAPI para Gateway)** (TASK-009)
 1. 📝 **DB Schema:** Definir e criar a migração (Alembic) para a nova tabela `pdf_processed_chunks`.
 2. 📝 **Orquestração:** Atualizar o `docker-compose.yml` para incluir o novo `pdf_processor_service` e garantir a comunicação entre os containers.
 3. 📝 **Estrutura do Microserviço:** Criar a estrutura de pastas e arquivos (`Dockerfile`, `requirements.txt`, etc.) para o `pdf_processor_service`.

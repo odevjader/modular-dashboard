@@ -20,8 +20,13 @@ Executar os testes de infraestrutura implementados e registrar resultados. Corri
 
 ### Arquivos Relevantes
 
-* (Relatório de teste, pode ser parte do log do commit ou um arquivo em `docs/test_reports/`)
+* `docs/tests/phase1_infra_test_plan.md`
+* `tests/integration/check_services.sh`
 
 ### Relatório de Execução
 
-(Esta seção deve ser deixada em branco no template)
+Automated execution of infrastructure tests failed due to environment limitations with `docker-compose`.
+**Action Required:** Please manually execute the tests as defined in `docs/tests/phase1_infra_test_plan.md` using the scripts in `tests/integration/`.
+Specifically, run `chmod +x tests/integration/check_services.sh && bash tests/integration/check_services.sh` in a suitable environment after ensuring the Docker environment is up (e.g., with `docker-compose up -d --build`).
+Report the success or failure of these tests. If failures occur, please provide details so that corrective actions can be planned.
+This task will remain in 'backlog' (or be considered 'blocked') until manual test results are provided and processed.
