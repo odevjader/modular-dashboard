@@ -24,4 +24,4 @@ Executar os testes implementados para o endpoint de upload e registrar resultado
 
 ### Relatório de Execução
 
-(Esta seção deve ser deixada em branco no template)
+User has indicated they will handle the test execution for this task manually at a later stage. Task status reverted to backlog pending manual execution and reporting.

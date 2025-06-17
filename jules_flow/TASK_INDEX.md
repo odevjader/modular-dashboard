@@ -13,12 +13,12 @@
 | TASK-010 | DEV: Criar Módulo `documents` na API Principal | done     | Fase 2: Implementação do Gateway de Comunicação na API Principal                   |
 | TASK-011 | TEST-PLAN: Planejar Testes para Módulo `documents` (Estrutura) | done     | Fase 2: Implementação do Gateway de Comunicação na API Principal                   |
 | TASK-012 | TEST-IMPL: Implementar Testes para Módulo `documents` (Estrutura) | done     | Fase 2: Implementação do Gateway de Comunicação na API Principal                   |
-| TASK-013 | DEV: Implementar Endpoint de Upload no Módulo `documents` | backlog | Fase 2: Implementação do Gateway de Comunicação na API Principal |
-| TASK-014 | DEV: Registrar Módulo `documents` na API Principal | backlog | Fase 2: Implementação do Gateway de Comunicação na API Principal |
-| TASK-015 | TEST-PLAN: Planejar Testes para Endpoint de Upload | backlog | Fase 2: Implementação do Gateway de Comunicação na API Principal |
-| TASK-016 | TEST-IMPL: Implementar Testes para Endpoint de Upload | backlog | Fase 2: Implementação do Gateway de Comunicação na API Principal |
-| TASK-017 | TEST-EXEC: Executar Testes do Módulo `documents` (Gateway Upload) | backlog | Fase 2: Implementação do Gateway de Comunicação na API Principal |
-| TASK-018 | DOC-SEARCH: Pesquisar Documentação (pgvector, LLM Client) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
+| TASK-013 | DEV: Implementar Endpoint de Upload no Módulo `documents` | done     | Fase 2: Implementação do Gateway de Comunicação na API Principal |
+| TASK-014 | DEV: Registrar Módulo `documents` na API Principal | done     | Fase 2: Implementação do Gateway de Comunicação na API Principal |
+| TASK-015 | TEST-PLAN: Planejar Testes para Endpoint de Upload | done     | Fase 2: Implementação do Gateway de Comunicação na API Principal |
+| TASK-016 | TEST-IMPL: Implementar Testes para Endpoint de Upload | done     | Fase 2: Implementação do Gateway de Comunicação na API Principal |
+| TASK-017 | TEST-EXEC: Executar Testes do Módulo `documents` (Gateway Upload) | backlog  | Fase 2: Implementação do Gateway de Comunicação na API Principal |
+| TASK-018 | DOC-SEARCH: Pesquisar Documentação (pgvector, LLM Client) | done     | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-019 | DOC-SUMMARIZE: Resumir Documentação (pgvector, LLM Client) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-020 | DEV: Implementar Endpoint de Processamento de PDF no Transcritor-PDF | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-021 | TEST-PLAN: Planejar Testes para Endpoint `process-pdf` (Transcritor) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |

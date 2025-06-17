@@ -63,6 +63,18 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 6. 📝 **Endpoint Gateway na API Principal:** Implementar o endpoint `POST /api/v1/documents/upload-and-process`. Este endpoint será o único ponto de entrada público, responsável por:
    * Validar a autenticação e autorização do usuário.
    * Atuar como um proxy seguro, chamando o endpoint do microserviço.
+   * ✅ Implementado endpoint `/api/documents/upload` (TASK-013) para upload e encaminhamento ao `transcritor_pdf_service`.
+   * ✅ Criado plano de testes para o endpoint de upload `/api/documents/upload` (TASK-015).
+   * ✅ Implementados testes de integração para `/api/documents/upload` (TASK-016, com ressalvas sobre execução ambiental).
+
+---
+
+## Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) 📝
+
+**Épico:** Habilitar a interação e diálogo com documentos através do backend do Transcritor-PDF.
+*Objetivo: Desenvolver o backend do `transcritor-pdf` para suportar busca semântica e interação baseada em LLM com os textos extraídos. Esta fase foca na construção dos componentes de backend que permitem ao sistema 'entender' e responder perguntas sobre os documentos processados.*
+
+* ✅ **DOC-SEARCH: Pesquisar Documentação (pgvector, LLM Client)** (TASK-018)
 
 ---
 
