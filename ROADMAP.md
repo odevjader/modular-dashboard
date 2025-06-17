@@ -69,6 +69,15 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 
 ---
 
+## Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) 📝
+
+**Épico:** Habilitar a interação e diálogo com documentos através do backend do Transcritor-PDF.
+*Objetivo: Desenvolver o backend do `transcritor-pdf` para suportar busca semântica e interação baseada em LLM com os textos extraídos. Esta fase foca na construção dos componentes de backend que permitem ao sistema 'entender' e responder perguntas sobre os documentos processados.*
+
+* ✅ **DOC-SEARCH: Pesquisar Documentação (pgvector, LLM Client)** (TASK-018)
+
+---
+
 ## Fase 3: Melhorias do Frontend Core ✅
 
 **Épico:** Aprimorar a usabilidade, consistência e performance da interface principal da aplicação.
