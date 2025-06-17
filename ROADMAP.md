@@ -65,6 +65,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
    * Atuar como um proxy seguro, chamando o endpoint do microserviço.
    * ✅ Implementado endpoint `/api/documents/upload` (TASK-013) para upload e encaminhamento ao `transcritor_pdf_service`.
    * ✅ Criado plano de testes para o endpoint de upload `/api/documents/upload` (TASK-015).
+   * ✅ Implementados testes de integração para `/api/documents/upload` (TASK-016, com ressalvas sobre execução ambiental).
 
 ---
 

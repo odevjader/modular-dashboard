@@ -181,3 +181,41 @@ async def test_upload_document_unexpected_service_exception(mock_httpx_post, moc
 # Original: `files={'file': ('test.pdf', file_content, 'application/pdf')}`
 # Correct for TestClient: `files={'file': ('test.pdf', io.BytesIO(file_content), 'application/pdf')}`
 # This is already correctly reflected in the code block above.
+
+
+def test_upload_document_no_auth_token():
+    # Test uploading a document without providing an authentication token.
+    file_content = b"dummy pdf content"
+    files_data = {'file': ('test.pdf', io.BytesIO(file_content), 'application/pdf')}
+    response = client.post("/api/documents/upload", files=files_data)
+    assert response.status_code == 401
+    assert response.json() == {"detail": "Not authenticated"}
+
+def test_upload_document_invalid_auth_token():
+    # Test uploading a document with an invalid authentication token.
+    file_content = b"dummy pdf content"
+    files_data = {'file': ('test.pdf', io.BytesIO(file_content), 'application/pdf')}
+    headers = {"Authorization": "Bearer invalidtokenstring"}
+    response = client.post("/api/documents/upload", files=files_data, headers=headers)
+    assert response.status_code == 401
+    assert response.json().get("detail") == "Could not validate credentials"
+
+@patch('app.modules.documents.router.get_current_active_user')
+def test_upload_document_missing_file(mock_get_user):
+    # Test uploading without a file, expecting a 422 Unprocessable Entity error.
+    mock_get_user.return_value = get_mock_active_user() # Simulate authenticated user
+
+    response = client.post("/api/documents/upload") # No 'files' data sent
+
+    assert response.status_code == 422
+    response_json = response.json()
+    assert isinstance(response_json.get("detail"), list), "Detail field should be a list."
+
+    file_error_found = False
+    for error in response_json["detail"]:
+        # Check for the specific error related to the 'file' field being missing.
+        # The exact 'type' can vary slightly (e.g., 'missing', 'value_error.missing').
+        if error.get("loc") == ["body", "file"] and "missing" in error.get("type", "").lower():
+            file_error_found = True
+            break
+    assert file_error_found, "Specific error for missing 'file' field not found in details."
