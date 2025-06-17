@@ -23,6 +23,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **Banco de Dados:** Configurado com PostgreSQL e Alembic.
 * ✅ **Módulos de Exemplo:** Criados `gerador_quesitos`, `ai_test`, `info`.
 * ✅ **Documentação Inicial:** Criada a documentação base do projeto.
+* ✅ **Pesquisa de Documentação (Docker, Redis, Celery):** Documentação oficial e melhores práticas pesquisadas (TASK-003).
 
 ---
 
@@ -32,6 +33,8 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 *Objetivo: Estabelecer a estrutura e os processos para que Jules (AI Agent) possa gerenciar suas próprias tarefas de desenvolvimento de forma organizada e rastreável.*
 
 * ✅ **Criação da Estrutura Inicial do Jules-Flow:** Diretórios, arquivos base (`README.md`, `INSTRUCTIONS_FOR_JULES.md`, `TASK_INDEX.md`), e o template de tarefas (`task_template.md`) foram configurados.
+* ✅ **Centralização de Documentos de Referência:** Documentos de referência do `transcritor-pdf` movidos para `docs/reference` (TASK-001).
+* ✅ **Revisão de .env.example Pós-Fase 1:** Arquivos `.env.example` verificados e considerados adequados (TASK-002).
 * 📝 **Definição do Processo de Criação de Tarefas On-Demand:** Documentação atualizada para permitir que o Desenvolvedor solicite tarefas diretamente, além daquelas geradas pelo Roadmap. (Referência: Commit de atualização de documentação do Jules-Flow)
 
 ---
