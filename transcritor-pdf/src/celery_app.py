@@ -1,14 +1,13 @@
+import os
 from celery import Celery
 
-# TODO: Make broker and backend URLs configurable via environment variables
-# For now, using localhost for Redis. This assumes Redis is running.
-# In a Dockerized setup (e.g., with modular-dashboard-adv), this would be 'redis://redis:6379/0'
-# if the Redis service is named 'redis'.
+# Broker and backend URLs are now configurable via environment variables.
+# Defaults point to a Redis service named 'redis' as expected in Docker Compose.
 
 celery_app = Celery(
     'transcritor_pdf', # Using the project name as the main app name
-    broker='redis://localhost:6379/0',
-    backend='redis://localhost:6379/1', # Using a different DB for backend
+    broker=os.getenv('CELERY_BROKER_URL', 'redis://redis:6379/0'),
+    backend=os.getenv('CELERY_BACKEND_URL', 'redis://redis:6379/1'), # Using a different DB for backend
     include=['src.tasks'] # List of modules to import when worker starts
 )
 
