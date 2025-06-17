@@ -75,6 +75,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 *Objetivo: Desenvolver o backend do `transcritor-pdf` para suportar busca semântica e interação baseada em LLM com os textos extraídos. Esta fase foca na construção dos componentes de backend que permitem ao sistema 'entender' e responder perguntas sobre os documentos processados.*
 
 * ✅ **DOC-SEARCH: Pesquisar Documentação (pgvector, LLM Client)** (TASK-018)
+* ✅ **DOC-SUMMARIZE: Resumir Documentação (pgvector, LLM Client)** (TASK-019)
 
 ---
 
