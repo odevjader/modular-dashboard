@@ -2,7 +2,7 @@
 id: TASK-007
 title: "TEST-EXEC: Executar Testes da Configuração da Fase 1"
 epic: "Fase 1: Configuração da Infraestrutura e Integração Base (Revisão e Testes)"
-status: backlog
+status: blocked
 priority: medium
 dependencies: ["TASK-006"]
 assignee: Jules
@@ -30,3 +30,5 @@ Automated execution of infrastructure tests failed due to environment limitation
 Specifically, run `chmod +x tests/integration/check_services.sh && bash tests/integration/check_services.sh` in a suitable environment after ensuring the Docker environment is up (e.g., with `docker-compose up -d --build`).
 Report the success or failure of these tests. If failures occur, please provide details so that corrective actions can be planned.
 This task will remain in 'backlog' (or be considered 'blocked') until manual test results are provided and processed.
+
+Jules (re-evaluation): Confirming this task is blocked pending manual execution of tests by the Developer as per prior note. Changing status to 'blocked'.
