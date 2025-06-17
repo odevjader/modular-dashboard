@@ -25,6 +25,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **Documentação Inicial:** Criada a documentação base do projeto.
 * ✅ **Pesquisa de Documentação (Docker, Redis, Celery):** Documentação oficial e melhores práticas pesquisadas (TASK-003).
 * ✅ **Resumo de Documentação (Docker, Redis, Celery):** Sumários criados em `docs/reference/` (TASK-004).
+* ✅ **Planejamento de Testes (Fase 1 Infra):** Plano de teste para a configuração da infraestrutura da Fase 1 criado (TASK-005).
 
 ---
 

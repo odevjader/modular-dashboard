@@ -26,4 +26,4 @@ Criar resumos para Docker, Redis e Celery em `docs/reference/`. Ex: `docker_summ
 
 ### Relatório de Execução
 
-Summaries for Docker, Redis, and Celery created and saved to `docs/reference/docker_summary.md`, `docs/reference/redis_summary.md`, and `docs/reference/celery_summary.md` respectively. All criteria met.
+Summaries for Docker, Redis, and Celery were refined and updated by merging information from existing .txt files (`docker_compose_summary.txt`, `redis_summary.txt`, `celery_summary.txt`) with previously drafted content. The final summaries are now stored in `docs/reference/docker_summary.md`, `docs/reference/redis_summary.md`, and `docs/reference/celery_summary.md`. The original .txt files have been deleted. All criteria met.
