@@ -1,26 +1,25 @@
 ---
 id: TASK-012
-title: "Frontend: Criar Página Analisador de Documentos"
-epic: "Fase 4: Construção da Experiência do Usuário (Frontend)"
+title: "TEST-IMPL: Implementar Testes para Módulo `documents` (Estrutura)"
+epic: "Fase 2: Implementação do Gateway de Comunicação na API Principal"
 status: backlog
 priority: medium
-dependencies: [] # Frontend pode começar em paralelo
+dependencies: ["TASK-011"]
 assignee: Jules
 ---
 
 ### Descrição
 
-Criar componente `AnalisadorDocumentosPage.tsx` e adicionar rota para ele.
+Testes unitários simples para verificar a importação do router do módulo `documents` e a existência dos arquivos.
 
 ### Critérios de Aceitação
 
-- [ ] `frontend/src/pages/AnalisadorDocumentosPage.tsx` existe.
-- [ ] Rota para `/analisador-documentos` (ou similar) está configurada em `App.tsx`.
+- [ ] Testes unitários implementados (e.g., em `backend/tests/test_documents_module.py`).
+- [ ] Testes verificam que o router pode ser importado e que os arquivos básicos do módulo existem.
 
 ### Arquivos Relevantes
 
-* `frontend/src/pages/AnalisadorDocumentosPage.tsx`
-* `frontend/src/App.tsx`
+* `backend/tests/test_documents_module.py`
 
 ### Relatório de Execução
 

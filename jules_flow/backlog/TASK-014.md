@@ -1,27 +1,26 @@
 ---
 id: TASK-014
-title: "Frontend: Implementar Feedback de Processamento de Upload"
-epic: "Fase 4: Construção da Experiência do Usuário (Frontend)"
+title: "DEV: Registrar Módulo `documents` na API Principal"
+epic: "Fase 2: Implementação do Gateway de Comunicação na API Principal"
 status: backlog
 priority: medium
-dependencies: ["TASK-013"] # Depende do upload
+dependencies: ["TASK-010"] # Depends on module router existence
 assignee: Jules
 ---
 
 ### Descrição
 
-Exibir status de processamento na UI após upload, possivelmente com polling a um endpoint de status (a ser definido, pode precisar de um novo endpoint no backend).
+Adicionar módulo `documents` ao `modules.yaml`. (Original TASK-007 do backlog)
 
 ### Critérios de Aceitação
 
-- [ ] Interface exibe "Processando..." ou similar após upload.
-- [ ] Mecanismo de polling ou WebSocket para verificar status do processamento.
-- [ ] (Potencialmente) Novo endpoint no backend para `GET /api/documents/status/{job_id_or_document_id}`.
+- [ ] Entrada para o módulo `documents` adicionada em `backend/app/config/modules.yaml`.
+- [ ] Prefixo `/api/documents` configurado para o módulo.
+- [ ] API principal carrega o módulo `documents` corretamente.
 
 ### Arquivos Relevantes
 
-* `frontend/src/pages/AnalisadorDocumentosPage.tsx`
-* (Potencialmente) `backend/app/modules/documents/router.py`
+* `backend/app/config/modules.yaml`
 
 ### Relatório de Execução
 

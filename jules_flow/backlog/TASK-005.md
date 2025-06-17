@@ -1,29 +1,30 @@
 ---
 id: TASK-005
-title: "API: Criar Módulo `documents`"
-epic: "Fase 2: Implementação do Gateway de Comunicação na API Principal"
+title: "TEST-PLAN: Planejar Testes para Configuração da Fase 1"
+epic: "Fase 1: Configuração da Infraestrutura e Integração Base (Revisão e Testes)"
 status: backlog
 priority: medium
-dependencies: [] # Fase 2 pode iniciar em paralelo com algumas partes da Fase 1
+dependencies: ["TASK-004"]
 assignee: Jules
 ---
 
 ### Descrição
 
-Criar a estrutura de pastas e arquivos (`__init__.py`, `router.py`, `schemas.py`, `services.py`) para o novo módulo `documents` na API principal.
+Definir plano de teste para a infraestrutura: inicialização de containers, conectividade (api-redis, worker-redis, worker-db), tarefa Celery simples.
 
 ### Critérios de Aceitação
 
-- [ ] Diretório `backend/app/modules/documents/` existe.
-- [ ] Contém `__init__.py`, `router.py`, `schemas.py`, `services.py`.
-- [ ] `router.py` define um `APIRouter`.
+- [ ] Documento de plano de teste criado (pode ser um .md em `docs/tests/phase1_infra_test_plan.md`).
+- [ ] Plano detalha os passos para verificar:
+    - Inicialização dos containers: `api`, `transcritor_pdf`, `transcritor_pdf_worker`, `redis`, `db`.
+    - Conectividade `api` <-> `redis`.
+    - Conectividade `transcritor_pdf_worker` <-> `redis`.
+    - Conectividade `transcritor_pdf_worker` <-> `db`.
+    - Processamento de uma tarefa Celery de exemplo.
 
 ### Arquivos Relevantes
 
-* `backend/app/modules/documents/__init__.py`
-* `backend/app/modules/documents/router.py`
-* `backend/app/modules/documents/schemas.py`
-* `backend/app/modules/documents/services.py`
+* `docs/tests/phase1_infra_test_plan.md` (a ser criado)
 
 ### Relatório de Execução
 

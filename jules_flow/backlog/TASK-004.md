@@ -1,27 +1,28 @@
 ---
 id: TASK-004
-title: "Docker Compose: Corrigir Dependências e Conectividade"
-epic: "Fase 1: Configuração da Infraestrutura e Integração Base"
+title: "DOC-SUMMARIZE: Resumir Documentação (Docker, Redis, Celery)"
+epic: "Fase 1: Configuração da Infraestrutura e Integração Base (Revisão e Testes)"
 status: backlog
 priority: medium
-dependencies: ["TASK-002", "TASK-003"]
+dependencies: ["TASK-003"]
 assignee: Jules
 ---
 
 ### Descrição
 
-Revisar `docker-compose.yml` para garantir que `api`, `transcritor_pdf`, e `transcritor_pdf_worker` tenham as corretas `depends_on` declarações para `redis` e `db`. Verificar `PYTHONPATH` para os serviços do transcritor.
+Criar resumos para Docker, Redis e Celery em `docs/reference/`. Ex: `docker_summary.md`, `redis_summary.md`, `celery_summary.md`.
 
 ### Critérios de Aceitação
 
-- [ ] `api` depende de `redis` (se aplicável) no `docker-compose.yml`.
-- [ ] `transcritor_pdf` depende de `redis` e `db` no `docker-compose.yml`.
-- [ ] `transcritor_pdf_worker` depende de `redis` e `db` no `docker-compose.yml`.
-- [ ] `PYTHONPATH` está corretamente configurado para `transcritor-pdf` e `transcritor_pdf_worker`.
+- [ ] Arquivo `docs/reference/docker_summary.md` criado com resumo dos conceitos chave de Docker e Compose.
+- [ ] Arquivo `docs/reference/redis_summary.md` criado com resumo do uso de Redis como cache e broker.
+- [ ] Arquivo `docs/reference/celery_summary.md` criado com resumo da configuração e workers Celery.
 
 ### Arquivos Relevantes
 
-* `docker-compose.yml`
+* `docs/reference/docker_summary.md`
+* `docs/reference/redis_summary.md`
+* `docs/reference/celery_summary.md`
 
 ### Relatório de Execução
 

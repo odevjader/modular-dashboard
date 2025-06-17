@@ -1,28 +1,25 @@
 ---
 id: TASK-011
-title: "API: Expandir Gateway para Diálogo com Documentos"
-epic: "Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF)"
+title: "TEST-PLAN: Planejar Testes para Módulo `documents` (Estrutura)"
+epic: "Fase 2: Implementação do Gateway de Comunicação na API Principal"
 status: backlog
 priority: medium
-dependencies: ["TASK-006", "TASK-010"]
+dependencies: ["TASK-010"]
 assignee: Jules
 ---
 
 ### Descrição
 
-Adicionar rota `POST /api/documents/query/{document_id}` na API principal, autenticada, que repassa a pergunta ao novo endpoint de diálogo do `transcritor-pdf`.
+Definir testes para verificar a criação correta da estrutura do módulo `documents` e o registro básico do router.
 
 ### Critérios de Aceitação
 
-- [ ] Rota `POST /api/documents/query/{document_id}` existe em `documents/router.py`.
-- [ ] Requer autenticação.
-- [ ] Aceita pergunta no corpo da requisição.
-- [ ] `documents/services.py` tem função para chamar `http://transcritor_pdf_service:8002/query-document/{document_id}`.
+- [ ] Plano de teste criado (e.g., `docs/tests/documents_module_structure_test_plan.md`).
+- [ ] Plano detalha verificações para: existência dos arquivos do módulo, importação do router, registro na app.
 
 ### Arquivos Relevantes
 
-* `backend/app/modules/documents/router.py`
-* `backend/app/modules/documents/services.py`
+* `docs/tests/documents_module_structure_test_plan.md`
 
 ### Relatório de Execução
 

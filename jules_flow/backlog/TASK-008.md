@@ -1,26 +1,25 @@
 ---
 id: TASK-008
-title: "Transcritor-PDF: Desenvolver Inteligência de Busca Vetorial"
-epic: "Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF)"
+title: "DOC-SEARCH: Pesquisar Documentação (FastAPI)"
+epic: "Fase 2: Implementação do Gateway de Comunicação na API Principal"
 status: backlog
 priority: medium
-dependencies: ["TASK-002"] # Assume que o transcritor já processa e armazena vetores
+dependencies: ["TASK-007"] # Fase 2 inicia após conclusão e teste da Fase 1
 assignee: Jules
 ---
 
 ### Descrição
 
-Implementar função em `transcritor-pdf` para buscar chunks de texto similares a uma query em um documento específico, usando pgvector.
+Revisar/pesquisar documentação FastAPI sobre: módulos/routers, UploadFile, requisições HTTP (httpx), autenticação.
 
 ### Critérios de Aceitação
 
-- [ ] Função em `src/vectorizer/vector_store_handler.py` (ou similar) aceita query e document ID.
-- [ ] Função consulta PostgreSQL/pgvector usando similaridade vetorial.
-- [ ] Retorna os chunks de texto relevantes.
+- [ ] URLs das seções relevantes da documentação FastAPI coletadas.
+- [ ] Entendimento dos patterns para criação de gateway, file upload e chamadas a microserviços.
 
 ### Arquivos Relevantes
 
-* `transcritor-pdf/src/vectorizer/vector_store_handler.py`
+* (Nenhum arquivo de código, pesquisa externa)
 
 ### Relatório de Execução
 

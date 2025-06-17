@@ -1,30 +1,25 @@
 ---
 id: TASK-003
-title: "Config: Ajustar Variáveis de Ambiente para API e Transcritor-PDF"
-epic: "Fase 1: Configuração da Infraestrutura e Integração Base"
+title: "DOC-SEARCH: Pesquisar Documentação (Docker, Redis, Celery)"
+epic: "Fase 1: Configuração da Infraestrutura e Integração Base (Revisão e Testes)"
 status: backlog
 priority: medium
-dependencies: ["TASK-001"]
+dependencies: ["TASK-002"]
 assignee: Jules
 ---
 
 ### Descrição
 
-Adicionar `REDIS_URL` e `DATABASE_URL` (se necessário) ao `.env.example`. Modificar `transcritor-pdf` e API principal para ler estas variáveis. Garantir que os serviços no Docker Compose as utilizem.
+Pesquisar documentação oficial e melhores práticas para Docker (geral, Docker Compose), Redis (cache, broker Celery) e Celery (configuração, workers).
 
 ### Critérios de Aceitação
 
-- [ ] `backend/.env.example` (ou similar) contém `REDIS_URL`.
-- [ ] `transcritor-pdf/src/db_config.py` (ou similar) lê `DATABASE_URL` e `REDIS_URL` do ambiente.
-- [ ] `backend/app/core/config.py` carrega `REDIS_URL` se necessário.
-- [ ] Serviços `api`, `transcritor_pdf`, `transcritor_pdf_worker` no `docker-compose.yml` usam estas variáveis.
+- [ ] URLs das páginas principais da documentação oficial para Docker, Docker Compose, Redis e Celery coletadas.
+- [ ] Entendimento inicial das seções relevantes para o projeto obtido.
 
 ### Arquivos Relevantes
 
-* `backend/.env.example`
-* `transcritor-pdf/src/db_config.py` (ou similar)
-* `backend/app/core/config.py`
-* `docker-compose.yml`
+* (Nenhum arquivo de código, pesquisa externa)
 
 ### Relatório de Execução
 

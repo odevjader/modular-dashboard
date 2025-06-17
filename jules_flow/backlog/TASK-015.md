@@ -1,26 +1,25 @@
 ---
 id: TASK-015
-title: "Frontend: Construir Interface de Chat"
-epic: "Fase 4: Construção da Experiência do Usuário (Frontend)"
+title: "TEST-PLAN: Planejar Testes para Endpoint de Upload"
+epic: "Fase 2: Implementação do Gateway de Comunicação na API Principal"
 status: backlog
 priority: medium
-dependencies: ["TASK-014", "TASK-011"] # Depende do processamento concluído e do endpoint de query da API
+dependencies: ["TASK-013", "TASK-014"]
 assignee: Jules
 ---
 
 ### Descrição
 
-Na `AnalisadorDocumentosPage.tsx`, após processamento, exibir interface de chat para enviar perguntas e ver respostas sobre o documento.
+Testes de integração para `/api/documents/upload`: upload sucesso (mock `transcritor-pdf`), sem auth, tipo de arquivo incorreto.
 
 ### Critérios de Aceitação
 
-- [ ] Interface de chat é exibida após conclusão do processamento.
-- [ ] Contém área de exibição de conversa e input para perguntas.
-- [ ] Ao enviar pergunta, chama `/api/documents/query/{document_id}`.
+- [ ] Plano de teste criado (e.g., `docs/tests/documents_upload_test_plan.md`).
+- [ ] Detalha cenários: upload bem-sucedido (mockando `transcritor-pdf`), falha de autenticação, falha de validação de tipo de arquivo (se aplicável).
 
 ### Arquivos Relevantes
 
-* `frontend/src/pages/AnalisadorDocumentosPage.tsx`
+* `docs/tests/documents_upload_test_plan.md`
 
 ### Relatório de Execução
 

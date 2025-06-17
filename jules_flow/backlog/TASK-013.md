@@ -1,26 +1,28 @@
 ---
 id: TASK-013
-title: "Frontend: Desenvolver Interface de Upload na Página"
-epic: "Fase 4: Construção da Experiência do Usuário (Frontend)"
+title: "DEV: Implementar Endpoint de Upload no Módulo `documents`"
+epic: "Fase 2: Implementação do Gateway de Comunicação na API Principal"
 status: backlog
 priority: medium
-dependencies: ["TASK-012", "TASK-006", "TASK-007"] # Depende da página e do endpoint de upload da API
+dependencies: ["TASK-010", "TASK-012"] # Depends on module structure and its tests
 assignee: Jules
 ---
 
 ### Descrição
 
-Adicionar formulário de upload de PDF na `AnalisadorDocumentosPage.tsx` que chama o endpoint `/api/documents/upload`.
+Rota `POST /upload` autenticada, aceitando `UploadFile`. Serviço para repassar o arquivo ao `transcritor-pdf` (endpoint `http://transcritor_pdf_service:8002/process-pdf`). (Original TASK-006 do backlog)
 
 ### Critérios de Aceitação
 
-- [ ] `AnalisadorDocumentosPage.tsx` tem formulário com input de arquivo PDF e botão de envio.
-- [ ] Ao enviar, chama `api.ts` que faz POST para `/api/documents/upload`.
+- [ ] Rota `POST /api/documents/upload` implementada em `documents/router.py`.
+- [ ] Rota usa `Depends(get_current_active_user)`.
+- [ ] Aceita `UploadFile`.
+- [ ] `documents/services.py` contém lógica para encaminhar o request para `http://transcritor_pdf_service:8002/process-pdf`.
 
 ### Arquivos Relevantes
 
-* `frontend/src/pages/AnalisadorDocumentosPage.tsx`
-* `frontend/src/services/api.ts`
+* `backend/app/modules/documents/router.py`
+* `backend/app/modules/documents/services.py`
 
 ### Relatório de Execução
 

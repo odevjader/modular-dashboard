@@ -1,29 +1,27 @@
 ---
 id: TASK-006
-title: "API: Implementar Endpoint de Upload no Módulo `documents`"
-epic: "Fase 2: Implementação do Gateway de Comunicação na API Principal"
+title: "TEST-IMPL: Implementar Testes para Configuração da Fase 1"
+epic: "Fase 1: Configuração da Infraestrutura e Integração Base (Revisão e Testes)"
 status: backlog
 priority: medium
-dependencies: ["TASK-005", "TASK-002"] # Depende do worker e API do transcritor estarem prontos para receber
+dependencies: ["TASK-005"]
 assignee: Jules
 ---
 
 ### Descrição
 
-Criar rota `POST /upload` no módulo `documents`, protegida por autenticação, que aceita `UploadFile` e usa um serviço para repassar o arquivo ao `transcritor-pdf`.
+Implementar scripts/procedimentos para executar o plano de teste da Fase 1. Para Celery, um script Python para disparar e verificar uma task.
 
 ### Critérios de Aceitação
 
-- [ ] Rota `POST /api/documents/upload` existe em `documents/router.py`.
-- [ ] Rota requer autenticação (`get_current_active_user`).
-- [ ] Aceita `UploadFile`.
-- [ ] `documents/services.py` tem função para chamar `http://transcritor_pdf_service:8002/process-pdf` (ou endpoint similar do transcritor) com o arquivo.
-- [ ] Respostas e erros do microserviço são gerenciados.
+- [ ] Scripts ou instruções detalhadas para execução dos testes criados.
+- [ ] Script Python para teste da tarefa Celery existe (e.g., em `backend/tests/test_celery_setup.py` ou similar).
+- [ ] Tarefa Celery de exemplo definida no `transcritor-pdf` se necessário para o teste.
 
 ### Arquivos Relevantes
 
-* `backend/app/modules/documents/router.py`
-* `backend/app/modules/documents/services.py`
+* `backend/tests/test_celery_setup.py` (ou similar)
+* (possivelmente) `transcritor-pdf/src/tasks.py`
 
 ### Relatório de Execução
 

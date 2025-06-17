@@ -1,20 +1,20 @@
 ---
-id: TASK-017
-title: "TEST-EXEC: Executar Testes do Módulo `documents` (Gateway Upload)"
-epic: "Fase 2: Implementação do Gateway de Comunicação na API Principal"
+id: TASK-045
+title: "TEST-EXEC: Executar Testes da Fase 4 (Frontend Analisador)"
+epic: "Fase 4: Construção da Experiência do Usuário (Frontend)"
 status: backlog
 priority: medium
-dependencies: ["TASK-016"]
+dependencies: ["TASK-044"]
 assignee: Jules
 ---
 
 ### Descrição
 
-Executar os testes implementados para o endpoint de upload e registrar resultados.
+Executar todos os testes de frontend para o analisador de documentos.
 
 ### Critérios de Aceitação
 
-- [ ] Testes de TASK-016 executados.
+- [ ] Todos os testes de frontend (componentes, E2E) executados.
 - [ ] Resultados documentados.
 - [ ] Problemas identificados e corrigidos.
 
