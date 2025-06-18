@@ -16,6 +16,8 @@ except ImportError:
     sys.exit(1)
 from dotenv import load_dotenv, find_dotenv
 
+from src.vectorizer import embedding_generator # Added for search_similar_chunks
+
 logger = logging.getLogger(__name__)
 
 def load_db_config() -> Dict[str, Optional[str]]:
@@ -113,6 +115,115 @@ async def add_chunks_to_vector_store(rag_chunks: List[Dict[str, Any]]):
         raise # Re-raise other unexpected errors
     finally:
         if conn and not conn.is_closed(): await conn.close(); logger.info("Database connection closed.")
+
+
+async def search_similar_chunks(
+    query_text: str,
+    top_k: int = 5,
+    document_filename: Optional[str] = None
+) -> List[Dict[str, Any]]:
+    """
+    Searches for text chunks most similar to the query_text using vector embeddings.
+
+    Args:
+        query_text: The text to search for.
+        top_k: The number of top similar chunks to retrieve.
+        document_filename: Optional. If provided, filters chunks by this filename.
+
+    Returns:
+        A list of dictionaries, each representing a similar chunk with its
+        ID, text content, metadata, and similarity score. Returns an empty
+        list if an error occurs or no chunks are found.
+    """
+    logger.info(f"Starting similarity search for query: '{query_text[:50]}...', top_k={top_k}, filename_filter='{document_filename}'")
+
+    if top_k <= 0:
+        logger.warning("top_k must be positive. Returning empty list.")
+        return []
+
+    try:
+        # Note: embedding_generator.get_embedding_client() and .embed_query() are synchronous
+        embedding_client = embedding_generator.get_embedding_client()
+        query_embedding = embedding_client.embed_query(query_text)
+        logger.info(f"Generated embedding for query (Dimension: {len(query_embedding)})")
+    except Exception as e:
+        logger.error(f"Error generating query embedding: {e}", exc_info=True)
+        return []
+
+    db_config = load_db_config()
+    if not all([db_config["database"], db_config["user"], db_config["password"]]):
+        error_msg = "Database connection details missing in .env (DB_NAME, DB_USER, DB_PASSWORD) for search."
+        logger.critical(error_msg)
+        raise ConnectionError(error_msg)
+
+    conn: Optional[asyncpg.Connection] = None
+    results: List[Dict[str, Any]] = []
+
+    try:
+        logger.info(f"Connecting to PostgreSQL database '{db_config['database']}' on {db_config['host']} for search...")
+        conn = await asyncpg.connect(**db_config)
+        logger.info("Database connection successful for search (asyncpg).")
+
+        table_name = "documents"  # Ensure this matches your actual table name
+        params: List[Any] = [query_embedding]
+
+        # Base query using cosine distance operator <=>
+        sql_query_parts = [
+            f"SELECT chunk_id, text_content, metadata, embedding <=> $1 AS distance FROM {table_name}"
+        ]
+        param_idx = 2  # Start next param index from $2 ($1 is query_embedding)
+
+        if document_filename:
+            # Assumes metadata is a JSONB column and 'filename' is a top-level key in it.
+            sql_query_parts.append(f"WHERE metadata->>'filename' = ${param_idx}")
+            params.append(document_filename)
+            param_idx += 1
+
+        sql_query_parts.append(f"ORDER BY distance ASC LIMIT ${param_idx}")
+        params.append(top_k)
+
+        sql_query_string = " ".join(sql_query_parts)
+
+        # Log query without actual embedding for security/brevity
+        log_params_str = [str(p) if not isinstance(p, list) else f"<embedding_vector_len_{len(p)}>" for p in params]
+        logger.info(f"Executing search query: {sql_query_string} with params: {log_params_str}")
+
+        rows = await conn.fetch(sql_query_string, *params)
+
+        for row in rows:
+            # Cosine distance (row['distance']) is 0 for identical, 2 for opposite.
+            # Similarity score = 1 - distance.
+            similarity_score = 1 - row['distance']
+
+            # Ensure metadata is loaded as dict if it's stored as JSON string in DB (asyncpg might do this automatically for JSONB)
+            metadata_content = row['metadata']
+            if isinstance(metadata_content, str):
+                try:
+                    metadata_content = json.loads(metadata_content)
+                except json.JSONDecodeError:
+                    logger.warning(f"Failed to parse metadata JSON for chunk_id {row['chunk_id']}: {metadata_content}")
+
+            results.append({
+                "chunk_id": row['chunk_id'],
+                "text_content": row['text_content'],
+                "metadata": metadata_content,
+                "similarity_score": similarity_score
+            })
+
+        logger.info(f"Found {len(results)} similar chunks.")
+        return results
+
+    except (asyncpg.PostgresError, OSError) as db_error:
+        logger.critical(f"Database connection or query error during search: {db_error}", exc_info=True)
+        raise ConnectionError(f"Database connection or query failed during search: {db_error}") from db_error
+    except Exception as e:
+        logger.critical(f"An unexpected error occurred during search: {e}", exc_info=True)
+        raise # Re-raise other unexpected errors
+    finally:
+        if conn and not conn.is_closed():
+            await conn.close()
+            logger.info("Database connection closed after search.")
+
 
 # Example usage block (remains the same)
 if __name__ == "__main__":
