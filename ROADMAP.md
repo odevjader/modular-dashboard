@@ -101,6 +101,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 *Objetivo: Criar uma interface intuitiva no frontend que permita aos usuários fazer upload de documentos, visualizar o status do processamento, e interagir com os documentos processados através de um sistema de chat.*
 
 * ✅ **DOC-SEARCH: Pesquisar Documentação (React, Zustand, Frontend API)** (TASK-036)
+* ✅ **DOC-SUMMARIZE: Resumir Documentação (Frontend para Analisador)** (TASK-037)
 
 ---
 
