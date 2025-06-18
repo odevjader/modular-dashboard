@@ -1,168 +1,160 @@
 # -*- coding: utf-8 -*-
 """
 Core PDF processing pipeline logic.
-Moved here to avoid circular imports between main.py and tasks.py.
 """
 import logging
+import uuid
 from typing import List, Dict, Any
 
-# Placeholder for future actual logging if needed within this module
-logger = logging.getLogger(__name__) # Consider configuring this logger if it's to be used actively
+import pypdfium2 as pdfium
 
-# --- Placeholder Helper Functions (Simulating PDF Processing Logic) ---
-# These were originally in main.py
+# Assuming these modules are in the same src directory or PYTHONPATH is set up correctly
+from src.vectorizer import embedding_generator
+from src.vectorizer import vector_store_handler
+# from src.db_config import EMBEDDING_DIMENSIONS # Not directly used here, but good to be aware of
 
-async def split_pdf_to_pages(file_content: bytes) -> List[bytes]:
+logger = logging.getLogger(__name__)
+
+# --- Constants for Chunking ---
+DEFAULT_CHUNK_SIZE = 1000  # Characters
+DEFAULT_CHUNK_OVERLAP = 100 # Characters
+
+# --- Text Chunking Helper Function ---
+def chunk_text(text: str, chunk_size: int = DEFAULT_CHUNK_SIZE, chunk_overlap: int = DEFAULT_CHUNK_OVERLAP) -> List[str]:
     """
-    Placeholder: Simulates splitting PDF content into page images (bytes).
-    In reality, this would use pypdfium2 or similar to render pages.
+    Splits a long text into smaller overlapping chunks.
+    A simple implementation. For more advanced chunking, consider Langchain's text_splitters.
     """
-    logger.info(f"Simulating PDF split for content of length: {len(file_content)}")
-    # Simulate 2 pages for any PDF
-    dummy_page_image_bytes_1 = b"dummy_image_page_1_content"
-    dummy_page_image_bytes_2 = b"dummy_image_page_2_content"
-    return [dummy_page_image_bytes_1, dummy_page_image_bytes_2]
+    if not text:
+        return []
 
-async def load_page_image(image_bytes: bytes) -> Any:
-    """Placeholder: Simulates loading image bytes into an image object."""
-    logger.info(f"Simulating image load for bytes of length: {len(image_bytes)}")
-    return {"image_data": image_bytes, "format": "dummy_format"} # Simulate an image object
+    chunks = []
+    start_index = 0
+    text_len = len(text)
+    while start_index < text_len:
+        end_index = start_index + chunk_size
+        chunks.append(text[start_index:end_index])
 
-async def preprocess_image(image_data: Any) -> Any:
-    """Placeholder: Simulates preprocessing an image."""
-    logger.info(f"Simulating preprocessing for image: {image_data.get('format')}")
-    return {"processed_image_data": image_data.get("image_data"), "filters_applied": ["dummy_filter"]}
+        next_start_index = start_index + chunk_size - chunk_overlap
+        if next_start_index >= text_len: # If the next step would go past the end
+            break
+        if next_start_index <= start_index : # Avoid infinite loop if chunk_overlap >= chunk_size
+            logger.warning("Chunk overlap is too large compared to chunk size, stopping chunking to prevent infinite loop.")
+            break
+        start_index = next_start_index
 
-async def extract_text_from_image(image_data: Any) -> str:
-    """Placeholder: Simulates extracting text from an image."""
-    logger.info("Simulating text extraction.")
-    # Return different text for different "pages" if possible, based on dummy data
-    if image_data.get("processed_image_data") == b"dummy_image_page_1_content":
-        return "This is the simulated text for page 1. Client: John Doe. Date: 2023-01-15."
-    elif image_data.get("processed_image_data") == b"dummy_image_page_2_content":
-        return "Simulated text for page 2. Invoice: #123. Amount: $500."
-    return "Simulated generic extracted text."
-
-async def parse_extracted_info(text: str) -> Dict[str, Any]:
-    """Placeholder: Simulates parsing structured info from text."""
-    logger.info("Simulating info parsing from text.")
-    if "John Doe" in text:
-        return {"client_name": "John Doe", "document_date": "2023-01-15", "doc_type": "report"}
-    elif "Invoice #123" in text:
-        return {"invoice_number": "123", "amount": 500, "doc_type": "invoice"}
-    return {"parsed_field_1": "dummy_value_1", "parsed_field_2": "dummy_value_2"}
-
-async def format_output_for_rag(all_pages_parsed_info: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Placeholder: Simulates formatting data into RAG chunks."""
-    logger.info(f"Simulating RAG formatting for {len(all_pages_parsed_info)} pages.")
-    rag_chunks = []
-    for i, page_info in enumerate(all_pages_parsed_info):
-        rag_chunks.append({
-            "chunk_id": f"page_{i+1}_chunk_1",
-            "text_content": f"Content from page {i+1}: {page_info.get('client_name', page_info.get('invoice_number', 'N/A'))}",
-            "metadata": page_info
-        })
-    return rag_chunks
-
-async def generate_embeddings_for_chunks(chunks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Placeholder: Simulates generating embeddings for RAG chunks."""
-    logger.info(f"Simulating embedding generation for {len(chunks)} chunks.")
-    for chunk in chunks:
-        chunk["embedding"] = [0.1, 0.2, 0.3] # Dummy embedding
     return chunks
 
-async def add_chunks_to_vector_store(chunks_with_embeddings: List[Dict[str, Any]]):
-    """Placeholder: Simulates adding chunks to a vector store."""
-    logger.info(f"Simulating adding {len(chunks_with_embeddings)} chunks to vector store.")
-    # In a real scenario, this would interact with a database.
-    return {"items_added": len(chunks_with_embeddings), "status": "simulated_success"}
-
-
 # --- Main PDF Processing Pipeline Function ---
-# This was originally in main.py
 async def process_pdf_pipeline(file_content: bytes, filename: str) -> Dict[str, Any]:
     """
-    Orchestrates the PDF processing pipeline using placeholder functions.
-    This function will be called by API endpoints or tasks.
+    Orchestrates the PDF processing pipeline:
+    1. Loads PDF from bytes.
+    2. Extracts text content page by page.
+    3. Chunks the extracted text.
+    4. Generates embeddings for the chunks.
+    5. Stores the chunks and their embeddings in the vector store.
     """
-    # Ensure logger is available if not configured globally, or remove logging from here
-    # For now, assuming logger is accessible or these logs are for dev purposes.
-    # Consider passing logger instance if this module becomes more complex.
-    current_logger = logging.getLogger(__name__) # Use local logger
+    logger.info(f"Starting PDF processing pipeline for file: {filename} (size: {len(file_content)} bytes)")
 
-    current_logger.info(f"Starting PDF processing pipeline for file: {filename} (size: {len(file_content)} bytes)")
-    all_pages_parsed_info: List[Dict[str, Any]] = []
-    text_snippets: List[str] = [] # For the summary
+    all_text_chunks_with_metadata: List[Dict[str, Any]] = []
+    pages_in_pdf = 0
 
     try:
-        # 1. Split PDF into page images (bytes)
-        page_image_bytes_list = await split_pdf_to_pages(file_content)
-        current_logger.info(f"PDF split into {len(page_image_bytes_list)} simulated pages.")
+        # 1. Load PDF from bytes
+        logger.info("Loading PDF document...")
+        pdf = pdfium.PdfDocument(file_content)
+        pages_in_pdf = len(pdf)
+        logger.info(f"PDF loaded successfully. Number of pages: {pages_in_pdf}")
 
-        # 2. Loop through pages
-        for i, page_bytes in enumerate(page_image_bytes_list):
-            page_number = i + 1
-            current_logger.info(f"Processing simulated page {page_number}...")
+        # 2. Iterate through pages, extract text, and chunk
+        for page_idx in range(pages_in_pdf): # Iterate by index to ensure pages are closed
+            page = pdf[page_idx] # Load page
+            page_number = page_idx + 1
+            logger.info(f"Processing page {page_number}/{pages_in_pdf}...")
 
-            # 2a. Load page image (simulated)
-            page_image_obj = await load_page_image(page_bytes)
+            # Extract text per page
+            text_page = page.get_textpage()
+            page_text = text_page.get_text_range()
 
-            # 2b. Preprocess image (simulated)
-            processed_image_obj = await preprocess_image(page_image_obj)
+            # It's important to close these objects as per pypdfium2 documentation
+            text_page.close()
+            page.close()
 
-            # 2c. Extract text (simulated)
-            extracted_text = await extract_text_from_image(processed_image_obj)
-            text_snippets.append(extracted_text[:100] + "..." if extracted_text else "No text extracted.") # For summary
-            current_logger.info(f"  Extracted text (snippet) for page {page_number}: {text_snippets[-1]}")
+            if not page_text or page_text.isspace():
+                logger.warning(f"No text extracted from page {page_number}.")
+                continue
+
+            logger.info(f"Extracted {len(page_text)} characters from page {page_number}.")
+
+            # Chunk extracted page text
+            text_chunks_on_page = chunk_text(page_text, DEFAULT_CHUNK_SIZE, DEFAULT_CHUNK_OVERLAP)
+            logger.info(f"Split page {page_number} text into {len(text_chunks_on_page)} chunks.")
+
+            for chunk_idx, chunk_content in enumerate(text_chunks_on_page):
+                chunk_id = str(uuid.uuid4()) # Globally unique ID for each chunk
+
+                chunk_data = {
+                    "chunk_id": chunk_id,
+                    "text_content": chunk_content,
+                    "metadata": {
+                        "filename": filename,
+                        "page_number": page_number,
+                        "original_chunk_index_on_page": chunk_idx
+                    }
+                }
+                all_text_chunks_with_metadata.append(chunk_data)
+
+        pdf.close() # Close the PDF document after iterating all pages
+
+        if not all_text_chunks_with_metadata:
+            logger.warning(f"No text chunks were generated from the PDF: {filename}")
+            return {
+                "status": "completed_with_no_chunks",
+                "filename": filename,
+                "pages_in_pdf": pages_in_pdf,
+                "total_chunks_processed": 0,
+                "message": "No text content could be extracted or chunked from the PDF."
+            }
+
+        logger.info(f"Total text chunks generated from all pages: {len(all_text_chunks_with_metadata)}")
+
+        # 3. Generate Embeddings
+        logger.info("Generating embeddings for text chunks...")
+        try:
+            chunks_with_embeddings = embedding_generator.generate_embeddings_for_chunks(all_text_chunks_with_metadata)
+            # Verify embeddings were added (simple check on the first chunk if it exists)
+            if not chunks_with_embeddings or (chunks_with_embeddings and not chunks_with_embeddings[0].get("embedding")):
+                 logger.warning("Embeddings might not have been generated for all chunks or list is empty.")
+            logger.info("Embeddings generation step completed.")
+        except Exception as emb_exc:
+            logger.error(f"Error during embedding generation for {filename}: {emb_exc}", exc_info=True)
+            return {"status": "error_embedding", "message": str(emb_exc), "filename": filename, "error_details": type(emb_exc).__name__}
 
 
-            # 2d. Parse structured info (simulated)
-            if extracted_text:
-                parsed_info = await parse_extracted_info(extracted_text)
-                parsed_info["page_number"] = page_number # Add page number for context
-                all_pages_parsed_info.append(parsed_info)
-                current_logger.info(f"  Parsed info for page {page_number}: {parsed_info}")
-            else:
-                current_logger.warning(f"  Skipping parsing for page {page_number} due to no extracted text.")
-                all_pages_parsed_info.append({"page_number": page_number, "error": "No text extracted"})
+        # 4. Store Chunks in Database (Vector Store)
+        logger.info("Adding chunks with embeddings to the vector store...")
+        try:
+            await vector_store_handler.add_chunks_to_vector_store(chunks_with_embeddings)
+            logger.info("Successfully added/updated chunks in the vector store.")
+        except Exception as store_exc:
+            logger.error(f"Error adding chunks to vector store for {filename}: {store_exc}", exc_info=True)
+            return {"status": "error_storing", "message": str(store_exc), "filename": filename, "error_details": type(store_exc).__name__}
 
-
-        # 3. Aggregate results and format for RAG (simulated)
-        if not all_pages_parsed_info:
-            current_logger.warning("No information was parsed from any page.")
-            return {"status": "failed", "message": "No information could be processed from the PDF.", "filename": filename}
-
-        rag_chunks = await format_output_for_rag(all_pages_parsed_info)
-        current_logger.info(f"Formatted {len(rag_chunks)} RAG chunks.")
-
-        # 4. Generate embeddings (simulated)
-        chunks_with_embeddings = await generate_embeddings_for_chunks(rag_chunks)
-        current_logger.info(f"Generated embeddings for {len(chunks_with_embeddings)} chunks.")
-
-        # 5. Add to vector store (simulated)
-        storage_result = await add_chunks_to_vector_store(chunks_with_embeddings)
-        current_logger.info(f"Vector store result: {storage_result}")
-
-        final_status = "processing_simulated_complete"
-        if storage_result.get("status") != "simulated_success":
-            final_status = "processing_simulated_with_storage_issues"
-
+        # 5. Return Summary
         return {
-            "status": final_status,
+            "status": "success",
             "filename": filename,
-            "pages_processed": len(page_image_bytes_list),
-            "total_chunks_generated": len(rag_chunks),
-            "text_snippets": text_snippets,
-            "vector_db_status": storage_result
+            "pages_in_pdf": pages_in_pdf,
+            "total_chunks_processed": len(chunks_with_embeddings),
+            "message": "PDF processed and chunks stored successfully."
         }
 
+    except pdfium.PdfiumError as pdf_err: # Specific pypdfium2 error
+        logger.error(f"A pypdfium2 error occurred while processing {filename}: {pdf_err}", exc_info=True)
+        if 'pdf' in locals() and pdf is not None: pdf.close() # Ensure PDF is closed on error
+        return {"status": "error_pdf_processing", "message": f"PDF library error: {pdf_err}", "filename": filename, "error_details": type(pdf_err).__name__}
     except Exception as e:
-        current_logger.error(f"Error in PDF processing pipeline for {filename}: {e}", exc_info=True)
-        # It's good to return a structured error that the calling task/API can understand
-        return {"status": "error", "message": str(e), "filename": filename, "error_details": type(e).__name__}
-
-# It's important that this file does NOT import from src.main or src.tasks
-# to prevent re-introducing circular dependencies.
-# If any types from main (like FastAPI specific types) were used here,
-# they'd need to be handled carefully (e.g. passed as arguments or generic types used).
-# In this case, the functions moved are fairly self-contained or use standard Python types.
+        logger.error(f"An unexpected error occurred in PDF processing pipeline for {filename}: {e}", exc_info=True)
+        if 'pdf' in locals() and pdf is not None: pdf.close() # Ensure PDF is closed on error
+        return {"status": "error_unexpected", "message": str(e), "filename": filename, "error_details": type(e).__name__}

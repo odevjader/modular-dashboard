@@ -2,7 +2,8 @@
 
 import io
 from fastapi.testclient import TestClient
-from unittest.mock import patch
+from fastapi import UploadFile # Added for UploadFile spec in mock
+from unittest.mock import patch, MagicMock # Added MagicMock
 from src.main import app # FastAPI app instance
 from src.celery_app import celery_app # Celery app instance for mocking AsyncResult
 
@@ -253,3 +254,36 @@ def test_get_task_status_invalid_or_unknown_task_id(mock_async_result):
 # The current API tests focus on the API interaction with the queue.
 # The task description's criteria are met by the current set of API tests
 # for enqueuing and status checking.
+
+def test_process_pdf_corrupted_file_read_error():
+    """
+    Tests the /process-pdf/ endpoint when file.read() raises an exception.
+    This simulates a corrupted file or an I/O issue during file reading.
+    The endpoint should return a 500 Internal Server Error.
+    """
+    file_name = "corrupted_file.pdf"
+
+    # Create a MagicMock for the UploadFile object
+    mock_file = MagicMock(spec=UploadFile)
+    mock_file.filename = file_name
+    mock_file.content_type = "application/pdf"
+    # Configure the read method to raise an exception
+    mock_file.read = MagicMock(side_effect=IOError("Simulated file read error"))
+    mock_file.close = MagicMock() # Ensure close can be called
+
+    # Patch 'src.tasks.process_pdf_task.delay' as it might be imported, though not expected to be called
+    with patch('src.tasks.process_pdf_task.delay') as mock_task_delay:
+        response = client.post(
+            "/process-pdf/",
+            files={"file": (mock_file.filename, mock_file, mock_file.content_type)} # Pass the mock_file directly
+        )
+
+        assert response.status_code == 500
+        response_data = response.json()
+        assert "detail" in response_data
+        # The exact message comes from the generic exception handler in main.py
+        assert f"An internal server error occurred while processing the PDF: {file_name}" in response_data["detail"]
+        # Ensure the Celery task was NOT called
+        mock_task_delay.assert_not_called()
+        # Ensure file.close() was called by the endpoint's finally block
+        mock_file.close.assert_called_once()

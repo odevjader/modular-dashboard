@@ -19,15 +19,15 @@
 | TASK-016 | TEST-IMPL: Implementar Testes para Endpoint de Upload | done     | Fase 2: Implementação do Gateway de Comunicação na API Principal |
 | TASK-017 | TEST-EXEC: Executar Testes do Módulo `documents` (Gateway Upload) | backlog  | Fase 2: Implementação do Gateway de Comunicação na API Principal |
 | TASK-018 | DOC-SEARCH: Pesquisar Documentação (pgvector, LLM Client) | done     | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
-| TASK-019 | DOC-SUMMARIZE: Resumir Documentação (pgvector, LLM Client) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
-| TASK-020 | DEV: Implementar Endpoint de Processamento de PDF no Transcritor-PDF | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
-| TASK-021 | TEST-PLAN: Planejar Testes para Endpoint `process-pdf` (Transcritor) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
-| TASK-022 | TEST-IMPL: Implementar Testes para Endpoint `process-pdf` (Transcritor) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
-| TASK-023 | DEV: Desenvolver Inteligência de Busca Vetorial (Transcritor-PDF) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
-| TASK-024 | TEST-PLAN: Planejar Testes para Busca Vetorial (Transcritor-PDF) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
-| TASK-025 | TEST-IMPL: Implementar Testes para Busca Vetorial (Transcritor-PDF) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
-| TASK-026 | DEV: Construir Orquestrador de Respostas com LLM (Transcritor-PDF) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
-| TASK-027 | TEST-PLAN: Planejar Testes para Orquestrador de Respostas (Transcritor-PDF) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
+| TASK-019 | DOC-SUMMARIZE: Resumir Documentação (pgvector, LLM Client) | done     | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
+| TASK-020 | DEV: Implementar Endpoint de Processamento de PDF no Transcritor-PDF | done     | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
+| TASK-021 | TEST-PLAN: Planejar Testes para Endpoint `process-pdf` (Transcritor) | done     | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
+| TASK-022 | TEST-IMPL: Implementar Testes para Endpoint `process-pdf` (Transcritor) | done     | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
+| TASK-023 | DEV: Desenvolver Inteligência de Busca Vetorial (Transcritor-PDF) | done     | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
+| TASK-024 | TEST-PLAN: Planejar Testes para Busca Vetorial (Transcritor-PDF) | done     | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
+| TASK-025 | TEST-IMPL: Implementar Testes para Busca Vetorial (Transcritor-PDF) | done     | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
+| TASK-026 | DEV: Construir Orquestrador de Respostas com LLM (Transcritor-PDF) | done     | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
+| TASK-027 | TEST-PLAN: Planejar Testes para Orquestrador de Respostas (Transcritor-PDF) | done     | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-028 | TEST-IMPL: Implementar Testes para Orquestrador de Respostas (Transcritor-PDF) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-029 | DEV: Criar Endpoint de Diálogo no Transcritor-PDF | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-030 | TEST-PLAN: Planejar Testes para Endpoint de Diálogo (Transcritor) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
