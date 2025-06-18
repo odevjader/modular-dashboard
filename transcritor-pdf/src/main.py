@@ -8,10 +8,12 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY, HTTP_500_INTERNAL_SERVER_ERROR
 from typing import List, Dict, Any, Optional
+from pydantic import BaseModel # Added for Pydantic model
 
 from src.tasks import process_pdf_task # Added for Celery task dispatch
 from src.celery_app import celery_app # Added for task status check
 from celery.result import AsyncResult # Added for task status check
+from src.query_processor import get_llm_answer_with_context # Added for query endpoint
 
 # --- FastAPI App Initialization ---
 app = FastAPI(
@@ -19,6 +21,10 @@ app = FastAPI(
     description="API para processar arquivos PDF, extrair texto e informações estruturadas, e preparar dados para RAG.",
     version="0.1.0"
 )
+
+# --- Pydantic Models ---
+class UserQueryRequest(BaseModel):
+    user_query: str
 
 # --- Exception Handlers ---
 
@@ -197,7 +203,7 @@ async def process_pdf_endpoint(file: UploadFile = File(...)):
         task = process_pdf_task.delay(file_content_bytes=file_bytes, filename=file.filename)
         logger.info(f"File '{file.filename}' queued for processing with Task ID: {task.id}")
 
-        return {"task_id": task.id, "message": "PDF processing has been queued. You can check the status using the /process-pdf/status/{task_id} endpoint (not yet implemented)."}
+        return {"task_id": task.id, "message": "PDF processing has been queued. You can check the status using the /process-pdf/status/{task_id} endpoint."}
 
     except HTTPException as http_exc:
         # Re-raise HTTPException so it's caught by its specific handler or FastAPI default
@@ -247,6 +253,38 @@ async def get_task_status(task_id: str):
         logger.warning(f"Task {task_id} in unhandled state: {task_result.status}")
 
     return response_data
+
+# --- Document Query Endpoint ---
+@app.post("/query-document/{document_id}",
+          summary="Query a specific document",
+          tags=["Document Query"])
+async def query_document_endpoint(document_id: str, request_data: UserQueryRequest):
+    """
+    Allows querying a specific document by its ID (filename) using a user-provided query.
+    The query is processed by an LLM which uses context retrieved from the specified document.
+
+    - **document_id**: The filename of the document to query. This is used to filter context chunks from the database.
+    - **request_data**: The user's query string.
+    """
+    logger.info(f"Querying document_id: {document_id} with query: '{request_data.user_query}'")
+    try:
+        answer = await get_llm_answer_with_context(
+            query_text=request_data.user_query,
+            document_filename=document_id
+        )
+        if answer is None: # Or some other condition indicating no answer found or error
+            logger.warning(f"No answer found or error in get_llm_answer_with_context for document_id: {document_id}, query: '{request_data.user_query}'")
+            raise HTTPException(status_code=404, detail="Could not retrieve an answer for the given query and document.")
+
+        logger.info(f"Answer for document_id: {document_id}, query: '{request_data.user_query}' -> '{answer}'")
+        return {"document_id": document_id, "query": request_data.user_query, "answer": answer}
+    except HTTPException as http_exc:
+        # Re-raise HTTPException so it's caught by its specific handler
+        raise http_exc
+    except Exception as e:
+        logger.error(f"Unexpected error in query_document_endpoint for document_id: {document_id}, query: '{request_data.user_query}': {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="An internal server error occurred while querying the document.")
+
 
 # --- Placeholder for future imports and pipeline logic ---
 # These would eventually be real imports if logic is moved to other files/modules
