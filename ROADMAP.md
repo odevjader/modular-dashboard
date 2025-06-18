@@ -1,4 +1,4 @@
-# Roadmap Detalhado: Modular Dashboard
+# Roadmap de Desenvolvimento - dashboard-adv
 
 Este documento detalha o plano de desenvolvimento do projeto, com tarefas organizadas por fases e prioridades.
 
@@ -31,7 +31,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 
 ---
 
-## Fase 1.5: Implementação do Sistema Jules-Flow ✅
+## Fase 1.2: Implementação do Sistema Jules-Flow ✅
 
 **Épico:** Configurar o sistema de gerenciamento de tarefas Jules-Flow.
 *Objetivo: Estabelecer a estrutura e os processos para que Jules (AI Agent) possa gerenciar suas próprias tarefas de desenvolvimento de forma organizada e rastreável.*
@@ -40,6 +40,36 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **Centralização de Documentos de Referência:** Documentos de referência do `transcritor-pdf` movidos para `docs/reference` (TASK-001).
 * ✅ **Revisão de .env.example Pós-Fase 1:** Arquivos `.env.example` verificados e considerados adequados (TASK-002).
 * 📝 **Definição do Processo de Criação de Tarefas On-Demand:** Documentação atualizada para permitir que o Desenvolvedor solicite tarefas diretamente, além daquelas geradas pelo Roadmap. (Referência: Commit de atualização de documentação do Jules-Flow)
+
+---
+
+## Fase 1.4: Melhorias do Frontend Core ✅
+
+**Épico:** Aprimorar a usabilidade, consistência e performance da interface principal da aplicação.
+*Objetivo: Refinar a experiência do usuário no 'core' da aplicação, estabelecendo uma base sólida para todos os módulos.*
+
+* ✅ **Implementar Notificações Globais (Toasts/Snackbars) no Core:** Implementar um mecanismo de notificação global (toasts/snackbars) no layout principal para dar feedback claro ao usuário sobre ações, erros ou informações importantes em pt-BR. Este sistema deverá ser utilizável por qualquer módulo.
+* ✅ **Revisão da Responsividade e Layout do Core:** Realizar uma auditoria e otimizar o layout do `MainLayout` e componentes centrais (como navegação, cabeçalho, rodapé, se houver) para garantir uma experiência de usuário consistente e agradável em dispositivos móveis e tablets. Manter o idioma pt-BR.
+* ✅ **Padronização de Componentes Visuais do Core:** Revisar os componentes visuais utilizados na interface principal (core) e criar/documentar um guia de estilo ou componentes reutilizáveis (ex: botões padrão, modais, cards) para garantir consistência visual. Todo o conteúdo em pt-BR.
+* ✅ **Melhoria na Navegação Principal e Feedback Visual do Core:** Avaliar a usabilidade da navegação principal (menu lateral, cabeçalho) e implementar melhorias no feedback visual de interações (ex: estados de hover, active, focus) para tornar a experiência mais intuitiva. Manter o idioma pt-BR.
+* ✅ **Otimização de Performance do Carregamento Inicial (Core):** Analisar e otimizar o tempo de carregamento inicial da aplicação principal, investigando o tamanho dos bundles, a estratégia de code splitting para o core e o carregamento de assets essenciais.
+
+---
+
+## Fase 1.6: Criação da Base dos Módulos Jurídicos 📝
+
+**Épico:** Desenvolver a estrutura base dos módulos jurídicos no frontend.
+*Criação da base dos módulos jurídicos no frontend, sem o processamento de pdfs e interação com IA (não crie detalhes para os módulos, eles ainda serão definidos no momento do desenvolvimento)*
+
+* **📝** Gerador de Quesitos
+* **📝** Gerador de Impugnação de Laudo Pericial
+* **📝** Análise de PPP e LT-CAT com Redação de Correspondência
+* **📝** Construção da Tabela de Evolução da Enfermidade e da Ocupação vs. Limitações
+* **📝** Analisar e Impugnar Decisão Judicial Previdenciária
+* **📝** Organizador de Documentos Médicos
+* **📝** Detectar e Corrigir Inconsistências em Documentos Gerados por I.A.
+* **📝** Análise e Renovação de Documentação Médica
+* **📝** Pesquisa de Jurisprudências em Direito Previdenciário
 
 ---
 
@@ -69,45 +99,17 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 
 ---
 
-## Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) 📝
+## Fase 3: Integração com IA 🔭
 
-**Épico:** Habilitar a interação e diálogo com documentos através do backend do Transcritor-PDF.
-*Objetivo: Desenvolver o backend do `transcritor-pdf` para suportar busca semântica e interação baseada em LLM com os textos extraídos. Esta fase foca na construção dos componentes de backend que permitem ao sistema 'entender' e responder perguntas sobre os documentos processados.*
-
-* ✅ **DOC-SEARCH: Pesquisar Documentação (pgvector, LLM Client)** (TASK-018)
+**Épico:** Conectar os módulos jurídicos com os serviços de IA.
+*integração dos módulos com a o processador de pdfs e modelos de IA*
 
 ---
 
-## Fase 3: Melhorias do Frontend Core ✅
-
-**Épico:** Aprimorar a usabilidade, consistência e performance da interface principal da aplicação.
-*Objetivo: Refinar a experiência do usuário no 'core' da aplicação, estabelecendo uma base sólida para todos os módulos.*
-
-#### Tarefas Sugeridas:
-
-1.  ✅ **Implementar Notificações Globais (Toasts/Snackbars) no Core:** Implementar um mecanismo de notificação global (toasts/snackbars) no layout principal para dar feedback claro ao usuário sobre ações, erros ou informações importantes em pt-BR. Este sistema deverá ser utilizável por qualquer módulo.
-2.  ✅ **Revisão da Responsividade e Layout do Core:** Realizar uma auditoria e otimizar o layout do `MainLayout` e componentes centrais (como navegação, cabeçalho, rodapé, se houver) para garantir uma experiência de usuário consistente e agradável em dispositivos móveis e tablets. Manter o idioma pt-BR.
-3.  ✅ **Padronização de Componentes Visuais do Core:** Revisar os componentes visuais utilizados na interface principal (core) e criar/documentar um guia de estilo ou componentes reutilizáveis (ex: botões padrão, modais, cards) para garantir consistência visual. Todo o conteúdo em pt-BR.
-4.  ✅ **Melhoria na Navegação Principal e Feedback Visual do Core:** Avaliar a usabilidade da navegação principal (menu lateral, cabeçalho) e implementar melhorias no feedback visual de interações (ex: estados de hover, active, focus) para tornar a experiência mais intuitiva. Manter o idioma pt-BR.
-5.  ✅ **Otimização de Performance do Carregamento Inicial (Core):** Analisar e otimizar o tempo de carregamento inicial da aplicação principal, investigando o tamanho dos bundles, a estratégia de code splitting para o core e o carregamento de assets essenciais.
-
----
-
-## Fase 4: Módulo Piloto e Integração 📝
-
-**Épico:** Refatorar o `gerador_quesitos` para usar a nova arquitetura, servindo como modelo para futuros módulos.
-*Objetivo: Validar o fluxo de ponta a ponta, desde o upload no frontend até a resposta da IA.*
-
-* 📝 **Refatorar Frontend do Módulo:** Adicionar uma interface de upload de arquivo no módulo `gerador_quesitos` que chame o novo endpoint Gateway.
-* 📝 **Refatorar Backend do Módulo:** Modificar o endpoint do `gerador_quesitos` para, em vez de processar o arquivo, usar o `file_hash` para buscar o texto pré-processado no banco de dados e então executar a lógica com LangChain.
-
----
-
-## Fase 5: Governança e Maturidade 🔭
+## Fase 4: Governança e Maturidade 🔭
 
 **Épico:** Amadurecer a plataforma, focando em usabilidade, monitoramento e segurança.
 *Objetivo: Tornar a aplicação mais robusta e fácil de manter a longo prazo.*
 
-* 📝 **Notificações no Frontend:** Implementar um mecanismo de notificação global (toasts/snackbars) para dar feedback claro ao usuário.
-* 📝 **Logging e Monitoramento:** Configurar um sistema de logging estruturado para todos os serviços e avaliar uma ferramenta de Application Performance Monitoring (APM).
-* 📝 **Sistema de Alertas (Backend):** Configurar alertas proativos via e-mail para falhas críticas, notificando a equipe de desenvolvimento.
+* 📝 **Rever sistema RBAC:** Adaptar o sistema de Role-Based Access Control para perfis de um escritório de advocacia.
+* 📝 **Sistema de Logging Robusto:** Implementar um sistema de logging estruturado e centralizado para todos os serviços.
