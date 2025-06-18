@@ -1,8 +1,8 @@
-# adv-ia (Nome de Desenvolvimento)
+# dashboard-adv (Nome de Desenvolvimento)
 
 ## Sobre o Projeto
 
-O **adv-ia** é um projeto em fase inicial de desenvolvimento de uma plataforma para escritórios de advocacia. O objetivo é criar um dashboard que centralize e otimize rotinas jurídicas por meio de ferramentas baseadas em Inteligência Artificial.
+O **dashboard-adv** é um projeto em fase inicial de desenvolvimento de uma plataforma para escritórios de advocacia. O objetivo é criar um dashboard que centralize e otimize rotinas jurídicas por meio de ferramentas baseadas em Inteligência Artificial.
 
 A plataforma está sendo construída com uma arquitetura modular, permitindo que novas funcionalidades sejam desenvolvidas e acopladas de forma independente.
 
@@ -21,7 +21,7 @@ O primeiro módulo em desenvolvimento é um **Gerador de Quesitos**, projetado p
 
 ## Detalhes do Projeto
 
-Para mais informações sobre a direção e o planejamento do adv-ia, consulte os seguintes documentos:
+Para mais informações sobre a direção e o planejamento do dashboard-adv, consulte os seguintes documentos:
 
 * **[Visão Geral do Projeto](docs/00_VISAO_GERAL.md):** Entenda os objetivos e o foco da plataforma.
 * **[Roadmap de Desenvolvimento](ROADMAP.md):** Acompanhe o que já foi feito e os próximos passos planejados.
