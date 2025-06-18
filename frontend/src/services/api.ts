@@ -69,6 +69,17 @@ export interface UserListResponse {
   pages: number;
 }
 
+// Document Analysis Module
+export interface DocumentUploadResponse {
+  message: string; // Gateway message
+  transcriber_data: {
+    task_id: string;
+    message: string; // Transcritor service message
+  };
+  original_filename: string;
+  uploader_user_id: number; // Or string, depending on User model
+}
+
 // --- Generic API Client (for JSON endpoints) ---
 async function apiClient<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
@@ -207,4 +218,35 @@ export const deleteUser = async (userId: number): Promise<void> => {
     return apiClient<void>(`/auth/v1/admin/users/${userId}`, {
         method: 'DELETE',
     });
+};
+
+/** Uploads a document for analysis. */
+export const uploadDocumentForAnalysis = async (file: File): Promise<DocumentUploadResponse> => {
+  const url = `${API_BASE_URL}/documents/upload`; // Path relative to API_BASE_URL
+  const formData = new FormData();
+  formData.append('file', file); // 'file' is the key used in backend by `UploadFile = File(...)`
+
+  const token = localStorage.getItem('token');
+  const headers: HeadersInit = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  // Do NOT set Content-Type for FormData, browser does it with boundary.
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+    if (!response.ok) {
+      let errorData;
+      try { errorData = await response.json(); } catch (e) { /* Ignore */ }
+      throw new Error(`API request failed: ${response.status} ${response.statusText}${errorData ? ` - ${JSON.stringify(errorData)}` : ''}`);
+    }
+    return await response.json() as DocumentUploadResponse;
+  } catch (error) {
+    console.error('Error in uploadDocumentForAnalysis:', error);
+    throw error; // Re-throw to be caught by the calling component
+  }
 };
