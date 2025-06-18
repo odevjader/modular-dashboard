@@ -28,7 +28,7 @@
 | TASK-025 | TEST-IMPL: Implementar Testes para Busca Vetorial (Transcritor-PDF) | done     | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-026 | DEV: Construir Orquestrador de Respostas com LLM (Transcritor-PDF) | done     | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-027 | TEST-PLAN: Planejar Testes para Orquestrador de Respostas (Transcritor-PDF) | done     | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
-| TASK-028 | TEST-IMPL: Implementar Testes para Orquestrador de Respostas (Transcritor-PDF) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
+| TASK-028 | TEST-IMPL: Implementar Testes para Orquestrador de Respostas (Transcritor-PDF) | done     | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-029 | DEV: Criar Endpoint de Diálogo no Transcritor-PDF | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-030 | TEST-PLAN: Planejar Testes para Endpoint de Diálogo (Transcritor) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-031 | TEST-IMPL: Implementar Testes para Endpoint de Diálogo (Transcritor) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |

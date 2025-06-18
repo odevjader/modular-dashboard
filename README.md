@@ -1,27 +1,44 @@
-# dashboard-adv (Nome de Desenvolvimento)
+# Modular Dashboard
 
-## Sobre o Projeto
+> Uma **plataforma base versátil e extensível** projetada para acelerar o desenvolvimento de aplicações web modulares e dashboards interativos, com capacidade de integração com Inteligência Artificial.
 
-O **dashboard-adv** é um projeto em fase inicial de desenvolvimento de uma plataforma para escritórios de advocacia. O objetivo é criar um dashboard que centralize e otimize rotinas jurídicas por meio de ferramentas baseadas em Inteligência Artificial.
+## Visão Geral da Arquitetura
 
-A plataforma está sendo construída com uma arquitetura modular, permitindo que novas funcionalidades sejam desenvolvidas e acopladas de forma independente.
+O projeto segue uma arquitetura com Frontend SPA (React/Vite) e Backend API RESTful (FastAPI), orquestrados via Docker Compose. Foi projetado para ser uma base modular versátil, onde os módulos são carregados dinamicamente com base em configurações centrais, permitindo maior flexibilidade tanto no backend quanto no frontend.
 
-## Componentes Principais
+* **Frontend:** React (TypeScript) com Material UI, Vite e Zustand.
+* **Backend:** API RESTful Assíncrona com FastAPI (Python), SQLAlchemy. Provê os serviços Core (em `core_modules`) e os endpoints para os módulos plugáveis (`modules`).
+* **Banco de Dados:** PostgreSQL com extensão pgvector.
+* **Infraestrutura:** Docker e Docker Compose.
 
-O projeto é estruturado nos seguintes componentes fundamentais:
+*(Consulte [docs/01_ARQUITETURA.md](./docs/01_ARQUITETURA.md) para detalhes arquiteturais e [docs/07_FLUXO_DESENVOLVIMENTO_E_ONBOARDING.md](./docs/07_FLUXO_DESENVOLVIMENTO_E_ONBOARDING.md) para o fluxo de desenvolvimento).*
 
-* **Frontend:** A interface do dashboard, por onde as funcionalidades são acessadas e utilizadas.
-* **Backend:** O servidor que executa a lógica de negócio, processa as requisições e gerencia a comunicação com o banco de dados.
-* **Processador de Documentos:** Um serviço dedicado à análise e extração de informações de arquivos PDF. Esta funcionalidade é a base para a busca inteligente em documentos jurídicos.
-* **Documentação:** Os arquivos que descrevem a arquitetura técnica, o processo de desenvolvimento e o funcionamento dos módulos.
+Para informações detalhadas sobre como desenvolver e integrar novos módulos à plataforma, consulte o **[Guia de Desenvolvimento de Novos Módulos](./docs/modules/00_DEVELOPING_MODULES.md)**.
 
-## Módulos e Funcionalidades
+## Principais Tecnologias
 
-O primeiro módulo em desenvolvimento é um **Gerador de Quesitos**, projetado para auxiliar na criação de peças processuais. O roadmap do projeto prevê a criação de novos módulos para outras tarefas jurídicas.
+- **Frontend:** React, TypeScript, Vite, Material UI (MUI), Zustand, react-router-dom
+- **Backend:** Python, FastAPI, SQLAlchemy (Asyncio), Alembic, Langchain, Pydantic, Uvicorn
+- **Banco de Dados:** PostgreSQL, pgvector
+- **Infraestrutura:** Docker, Docker Compose, Git, GitHub
 
-## Detalhes do Projeto
+## Configuração do Ambiente de Desenvolvimento
 
-Para mais informações sobre a direção e o planejamento do dashboard-adv, consulte os seguintes documentos:
+Consulte o guia detalhado em **[docs/02_CONFIGURACAO_AMBIENTE.md](./docs/02_CONFIGURACAO_AMBIENTE.md)**.
 
-* **[Visão Geral do Projeto](docs/00_VISAO_GERAL.md):** Entenda os objetivos e o foco da plataforma.
-* **[Roadmap de Desenvolvimento](ROADMAP.md):** Acompanhe o que já foi feito e os próximos passos planejados.
+## Estrutura do Projeto (Resumo)
+
+* `/frontend`: Código da aplicação React (SPA).
+* `/backend`: Código da API FastAPI.
+    * `/backend/app/core_modules`: Módulos essenciais (ex: `auth`, `health`).
+    * `/backend/app/modules`: Módulos funcionais plugáveis.
+* `/docs`: Documentação geral do projeto.
+* `docker-compose.yml`: Serviços Docker.
+* `README.md`: Este arquivo.
+* `ROADMAP.md`: Fases de desenvolvimento.
+
+*(Consulte [docs/03_ESTRUTURA_PASTAS.md](./docs/03_ESTRUTURA_PASTAS.md) para mais detalhes).*
+
+## Próximos Passos
+
+Consulte o [ROADMAP.md](./ROADMAP.md) para detalhes sobre as próximas funcionalidades e fases de desenvolvimento do projeto.
