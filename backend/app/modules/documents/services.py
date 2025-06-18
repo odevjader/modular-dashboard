@@ -6,6 +6,7 @@ from fastapi import UploadFile, HTTPException
 # typically in a containerized environment (e.g., Docker Compose).
 TRANSCRIBER_SERVICE_URL = "http://transcritor_pdf_service:8002/process-pdf"
 TRANSCRIBER_QUERY_SERVICE_URL_TEMPLATE = "http://transcritor_pdf_service:8002/query-document/{document_id}"
+TRANSCRIBER_TASK_STATUS_URL_TEMPLATE = "http://transcritor_pdf_service:8002/process-pdf/status/{task_id}"
 
 async def handle_file_upload(file: UploadFile, user_id: int):
     """
@@ -135,3 +136,39 @@ async def handle_document_query(document_id: str, user_query: str, user_id: int)
 
 # To keep the module clean, the example_service_function has been removed.
 # If you need other service functions, define them here.
+
+async def get_document_processing_status(task_id: str):
+    status_url = TRANSCRIBER_TASK_STATUS_URL_TEMPLATE.format(task_id=task_id)
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(status_url, timeout=30.0)
+            response.raise_for_status() # Raises an exception for 4XX/5XX responses
+            return response.json()
+        except httpx.HTTPStatusError as e:
+            # Forward the status code and detail from the downstream service if possible
+            detail_msg = f"Error from transcriber status service: Status {e.response.status_code}."
+            try:
+                # Try to get more specific detail from the transcriber's response body
+                error_content = e.response.json()
+                if isinstance(error_content, dict) and "detail" in error_content:
+                    detail_msg = f"Transcriber status service error: {error_content['detail']}"
+                elif isinstance(error_content, dict) and "error_info" in error_content and error_content["error_info"] and "error" in error_content["error_info"]: # Check nested error
+                    detail_msg = f"Transcriber status service error: {error_content['error_info']['error']}"
+            except Exception:
+                pass # Keep generic detail_msg if parsing fails
+            raise HTTPException(
+                status_code=e.response.status_code,
+                detail=detail_msg
+            )
+        except httpx.RequestError as e:
+            # Network-related errors (e.g., connection refused)
+            raise HTTPException(
+                status_code=503, # Service Unavailable
+                detail=f"Could not connect to transcriber status service: {str(e)}"
+            )
+        except Exception as e:
+            # Other unexpected errors
+            raise HTTPException(
+                status_code=500, # Internal Server Error
+                detail=f"An unexpected error occurred while fetching task status: {str(e)}"
+            )
