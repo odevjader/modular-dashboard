@@ -195,13 +195,13 @@ async def search_similar_chunks(
             # Similarity score = 1 - distance.
             similarity_score = 1 - row['distance']
 
-            # Ensure metadata is loaded as dict if it's stored as JSON string in DB (asyncpg might do this automatically for JSONB)
             metadata_content = row['metadata']
-            if isinstance(metadata_content, str):
+            if isinstance(metadata_content, str): # Check if metadata is a string
                 try:
-                    metadata_content = json.loads(metadata_content)
+                    metadata_content = json.loads(metadata_content) # Try to parse it as JSON
                 except json.JSONDecodeError:
-                    logger.warning(f"Failed to parse metadata JSON for chunk_id {row['chunk_id']}: {metadata_content}")
+                    # If parsing fails, log a warning and keep the original string content
+                    logger.warning(f"Failed to parse metadata JSON for chunk_id {row['chunk_id']}. Content: '{metadata_content[:100]}...'")
 
             results.append({
                 "chunk_id": row['chunk_id'],
