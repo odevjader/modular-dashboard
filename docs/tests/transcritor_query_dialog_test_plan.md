@@ -1,7 +1,7 @@
 # Test Plan: Endpoint de Diálogo (`/query-document/{document_id}`) - Transcritor PDF
 
 **Document Version:** 1.0
-**Date:** 2025-06-18
+**Date:** $(date +%Y-%m-%d)
 **Author:** Jules (AI Agent)
 **Task ID:** TASK-030
 
