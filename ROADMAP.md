@@ -23,11 +23,6 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **Banco de Dados:** Configurado com PostgreSQL e Alembic.
 * ✅ **Módulos de Exemplo:** Criados `gerador_quesitos`, `ai_test`, `info`.
 * ✅ **Documentação Inicial:** Criada a documentação base do projeto.
-* ✅ **Pesquisa de Documentação (Docker, Redis, Celery):** Documentação oficial e melhores práticas pesquisadas (TASK-003).
-* ✅ **Resumo de Documentação (Docker, Redis, Celery):** Sumários criados em `docs/reference/` (TASK-004).
-* ✅ **Planejamento de Testes (Fase 1 Infra):** Plano de teste para a configuração da infraestrutura da Fase 1 criado (TASK-005).
-* ✅ **Implementação de Testes (Fase 1 Infra):** Scripts de teste de integração para configuração da infraestrutura criados (TASK-006).
-* ⚠️ **Execução de Testes (Fase 1 Infra):** BLOCKED - Pending manual execution due to environment limitations (TASK-007).
 
 ---
 
@@ -37,8 +32,6 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 *Objetivo: Estabelecer a estrutura e os processos para que Jules (AI Agent) possa gerenciar suas próprias tarefas de desenvolvimento de forma organizada e rastreável.*
 
 * ✅ **Criação da Estrutura Inicial do Jules-Flow:** Diretórios, arquivos base (`README.md`, `INSTRUCTIONS_FOR_JULES.md`, `TASK_INDEX.md`), e o template de tarefas (`task_template.md`) foram configurados.
-* ✅ **Centralização de Documentos de Referência:** Documentos de referência do `transcritor-pdf` movidos para `docs/reference` (TASK-001).
-* ✅ **Revisão de .env.example Pós-Fase 1:** Arquivos `.env.example` verificados e considerados adequados (TASK-002).
 * 📝 **Definição do Processo de Criação de Tarefas On-Demand:** Documentação atualizada para permitir que o Desenvolvedor solicite tarefas diretamente, além daquelas geradas pelo Roadmap. (Referência: Commit de atualização de documentação do Jules-Flow)
 
 ---
@@ -50,11 +43,6 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 
 #### Tarefas Priorizadas:
 
-* ✅ **DOC-SEARCH: Pesquisar Documentação (FastAPI)** (TASK-008)
-* ✅ **DOC-SUMMARIZE: Resumir Documentação (FastAPI para Gateway)** (TASK-009)
-* ✅ **DEV: Criar Módulo `documents` na API Principal** (TASK-010)
-* ✅ **TEST-PLAN: Planejar Testes para Módulo `documents` (Estrutura)** (TASK-011)
-* ✅ **TEST-IMPL: Implementar Testes para Módulo `documents` (Estrutura)** (TASK-012)
 1. 📝 **DB Schema:** Definir e criar a migração (Alembic) para a nova tabela `pdf_processed_chunks`.
 2. 📝 **Orquestração:** Atualizar o `docker-compose.yml` para incluir o novo `pdf_processor_service` e garantir a comunicação entre os containers.
 3. 📝 **Estrutura do Microserviço:** Criar a estrutura de pastas e arquivos (`Dockerfile`, `requirements.txt`, etc.) para o `pdf_processor_service`.
@@ -63,27 +51,6 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 6. 📝 **Endpoint Gateway na API Principal:** Implementar o endpoint `POST /api/v1/documents/upload-and-process`. Este endpoint será o único ponto de entrada público, responsável por:
    * Validar a autenticação e autorização do usuário.
    * Atuar como um proxy seguro, chamando o endpoint do microserviço.
-   * ✅ Implementado endpoint `/api/documents/upload` (TASK-013) para upload e encaminhamento ao `transcritor_pdf_service`.
-   * ✅ Criado plano de testes para o endpoint de upload `/api/documents/upload` (TASK-015).
-   * ✅ Implementados testes de integração para `/api/documents/upload` (TASK-016, com ressalvas sobre execução ambiental).
-
----
-
-## Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) 📝
-
-**Épico:** Habilitar a interação e diálogo com documentos através do backend do Transcritor-PDF.
-*Objetivo: Desenvolver o backend do `transcritor-pdf` para suportar busca semântica e interação baseada em LLM com os textos extraídos. Esta fase foca na construção dos componentes de backend que permitem ao sistema 'entender' e responder perguntas sobre os documentos processados.*
-
-* ✅ **DOC-SEARCH: Pesquisar Documentação (pgvector, LLM Client)** (TASK-018)
-* ✅ **DOC-SUMMARIZE: Resumir Documentação (pgvector, LLM Client)** (TASK-019)
-* ✅ **DEV: Implementar Endpoint de Processamento de PDF no Transcritor-PDF** (TASK-020)
-* ✅ **TEST-PLAN: Planejar Testes para Endpoint \`process-pdf\` (Transcritor)** (TASK-021)
-* ✅ **TEST-IMPL: Implementar Testes para Endpoint \`process-pdf\` (Transcritor)** (TASK-022)
-* ✅ **DEV: Desenvolver Inteligência de Busca Vetorial (Transcritor-PDF)** (TASK-023)
-* ✅ **TEST-PLAN: Planejar Testes para Busca Vetorial (Transcritor-PDF)** (TASK-024)
-* ✅ **TEST-IMPL: Implementar Testes para Busca Vetorial (Transcritor-PDF)** (TASK-025)
-* ✅ **DEV: Construir Orquestrador de Respostas com LLM (Transcritor-PDF)** (TASK-026)
-* ✅ **TEST-PLAN: Planejar Testes para Orquestrador de Respostas (Transcritor-PDF)** (TASK-027)
 
 ---
 

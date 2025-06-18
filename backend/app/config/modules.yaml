@@ -62,14 +62,6 @@ modules:
     prefix: "/gerador_quesitos/v1" # Keep consistent
     tags: ["Gerador Quesitos"]
 
-  - name: "documents"
-    path: "modules.documents"  # Path relative to 'app' directory
-    router_variable_name: "api_router" # As defined in documents/router.py
-    version: "v1" # Or appropriate version
-    prefix: "/documents" # This will be prefixed by the global /api
-    tags: ["Documents"]
-    enabled: true
-
   # Example of a disabled module:
   # - name: "experimental_feature"
   #   path: "modules.experimental.v1"
