@@ -106,7 +106,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **DEV: Desenvolver Interface de Upload na Página (Frontend)** (TASK-039)
 * ✅ **DEV: Implementar Feedback de Processamento no Frontend** (TASK-040)
 * ✅ **DEV: Construir Interface de Chat no Frontend** (TASK-041)
-* 📝 **DEV: Integrar ao Menu de Navegação Principal (Frontend)** (TASK-042)
+* ✅ **DEV: Integrar ao Menu de Navegação Principal (Frontend)** (TASK-042)
 * 📝 **TEST-PLAN: Planejar Testes para Frontend do Analisador de Documentos** (TASK-043)
 * 📝 **TEST-IMPL: Implementar Testes para Frontend (Analisador)** (TASK-044)
 * 📝 **TEST-EXEC: Executar Testes da Fase 4 (Frontend Analisador)** (TASK-045)
