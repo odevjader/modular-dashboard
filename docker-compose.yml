@@ -1,19 +1,20 @@
 # docker-compose.yml
-# Orquestra os serviços do Modular Dashboard e microsserviços integrados.
+# Orquestra os serviços do dashboard-adv e microsserviços integrados.
 
 services:
-  # API principal do Modular Dashboard.
+  # API principal do dashboard-adv.
   api:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: modular_dashboard_api
+    container_name: dashboard-adv-api
     env_file:
       - ./backend/.env
     environment:
       - PYTHONPATH=/app
     ports:
-      - "8000:8000"
+      # Porta externa 8001 para não conflitar com a API de outros projetos.
+      - "8001:8000"
     volumes:
       - ./backend:/app
     depends_on:
@@ -26,11 +27,10 @@ services:
 
   # Microsserviço para processamento e vetorização de PDFs.
   transcritor_pdf:
-    # O contexto aponta para um diretório irmão, onde o Dockerfile do serviço deve residir.
     build:
       context: ../transcritor-pdf
       dockerfile: Dockerfile
-    container_name: transcritor_pdf_service
+    container_name: dashboard-adv-transcritor-pdf-service
     env_file:
       - ./backend/.env # Reutiliza o .env para acesso unificado ao banco de dados.
     environment:
@@ -38,13 +38,13 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      redis: # Corrected indentation
+      redis:
         condition: service_healthy
     ports:
-      - "8002:8002"
+      # Porta externa 8003 para não conflitar.
+      - "8003:8002"
     volumes:
       - ../transcritor-pdf:/app # Monta o código fonte para desenvolvimento com live-reload.
-    # O comando assume que o serviço expõe uma API FastAPI, alinhado com a arquitetura.
     command: uvicorn src.main:app --host 0.0.0.0 --port 8002 --reload
     networks:
       - app-network
@@ -52,18 +52,18 @@ services:
   # Worker Celery para o Transcritor PDF.
   transcritor_pdf_worker:
     build:
-      context: ../transcritor-pdf # Mesmo contexto e Dockerfile do serviço principal do transcritor
+      context: ../transcritor-pdf
       dockerfile: Dockerfile
-    container_name: transcritor_pdf_worker
+    container_name: dashboard-adv-transcritor-pdf-worker
     env_file:
-      - ./backend/.env # Reutiliza o .env para variáveis de DB, etc.
+      - ./backend/.env
     environment:
-      - PYTHONPATH=/app # Garante que 'src' seja importável
+      - PYTHONPATH=/app
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_BACKEND_URL=redis://redis:6379/1
     command: celery -A src.celery_app worker -l info
     volumes:
-      - ../transcritor-pdf:/app # Monta o código fonte para desenvolvimento
+      - ../transcritor-pdf:/app
     depends_on:
       db:
         condition: service_healthy
@@ -75,14 +75,11 @@ services:
   # Serviço de Fila de Mensagens (Cache e Broker para Celery).
   redis:
     image: redis:alpine
-    container_name: modular_dashboard_redis
-    # ports: # Não expor externamente por padrão, apenas à rede interna.
-    #   - "6379:6379"
+    container_name: dashboard-adv-redis
     volumes:
       - redis_data:/data
     networks:
       - app-network
-    # Healthcheck opcional, mas bom para depends_on: condition: service_healthy
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -91,14 +88,14 @@ services:
 
   # Serviço de banco de dados compartilhado.
   db:
-    # Imagem PostgreSQL com a extensão pgvector pré-instalada.
     image: pgvector/pgvector:pg16
-    container_name: modular_dashboard_db
+    container_name: dashboard-adv-db
     env_file:
       - ./backend/.env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
+      # A porta 5433 já é uma boa prática para evitar conflito com a porta padrão 5432. Mantida.
       - "5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-appuser} -d $${POSTGRES_DB:-appdb}"]
@@ -110,7 +107,7 @@ services:
 
 volumes:
   postgres_data:
-  redis_data: # Definição do volume para persistência do Redis.
+  redis_data:
 
 networks:
   app-network:
