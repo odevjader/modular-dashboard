@@ -39,7 +39,7 @@
 | TASK-036 | DOC-SEARCH: Pesquisar Documentação (React, Zustand, Frontend API) | done | Fase 4: Construção da Experiência do Usuário (Frontend) |
 | TASK-037 | DOC-SUMMARIZE: Resumir Documentação (Frontend para Analisador) | done | Fase 4: Construção da Experiência do Usuário (Frontend) |
 | TASK-038 | DEV: Criar Página 'Analisador de Documentos' (Frontend) | done | Fase 4: Construção da Experiência do Usuário (Frontend) |
-| TASK-039 | DEV: Desenvolver Interface de Upload na Página (Frontend) | backlog | Fase 4: Construção da Experiência do Usuário (Frontend) |
+| TASK-039 | DEV: Desenvolver Interface de Upload na Página (Frontend) | done | Fase 4: Construção da Experiência do Usuário (Frontend) |
 | TASK-040 | DEV: Implementar Feedback de Processamento no Frontend | backlog | Fase 4: Construção da Experiência do Usuário (Frontend) |
 | TASK-041 | DEV: Construir Interface de Chat no Frontend | backlog | Fase 4: Construção da Experiência do Usuário (Frontend) |
 | TASK-042 | DEV: Integrar ao Menu de Navegação Principal (Frontend) | backlog | Fase 4: Construção da Experiência do Usuário (Frontend) |

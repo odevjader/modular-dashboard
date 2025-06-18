@@ -1,5 +1,6 @@
 import React from 'react';
 import { Container, Typography, Box } from '@mui/material';
+import DocumentUploadForm from '../../modules/analisador_documentos/components/DocumentUploadForm';
 
 const AnalisadorDocumentosPage: React.FC = () => {
   return (
@@ -8,10 +9,8 @@ const AnalisadorDocumentosPage: React.FC = () => {
         Analisador de Documentos
       </Typography>
       <Box sx={{ mt: 2, p: 2, border: '1px dashed grey' }}>
-        <Typography variant="h6">Upload de Documento</Typography>
-        <Typography variant="body2" color="text.secondary">
-          (Placeholder para formulário de upload)
-        </Typography>
+        <Typography variant="h6" gutterBottom>Upload de Documento</Typography>
+        <DocumentUploadForm />
       </Box>
       <Box sx={{ mt: 2, p: 2, border: '1px dashed grey' }}>
         <Typography variant="h6">Status do Processamento</Typography>

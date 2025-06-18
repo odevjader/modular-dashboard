@@ -103,6 +103,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **DOC-SEARCH: Pesquisar Documentação (React, Zustand, Frontend API)** (TASK-036)
 * ✅ **DOC-SUMMARIZE: Resumir Documentação (Frontend para Analisador)** (TASK-037)
 * ✅ **DEV: Criar Página 'Analisador de Documentos' (Frontend)** (TASK-038)
+* ✅ **DEV: Desenvolver Interface de Upload na Página (Frontend)** (TASK-039)
 
 ---
 
