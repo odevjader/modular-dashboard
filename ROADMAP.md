@@ -91,6 +91,18 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **DEV: Expandir Gateway na API Principal para Diálogo** (TASK-032)
 * ✅ **TEST-PLAN: Planejar Testes para Gateway de Diálogo (API Principal)** (TASK-033)
 * ✅ **TEST-IMPL: Implementar Testes para Gateway de Diálogo (API Principal)** (TASK-034)
+* ⚠️ **TEST-EXEC: Executar Testes da Fase 3 (Transcritor-PDF e Gateway Diálogo)** (TASK-035) - Bloqueado: Falha na execução automática de testes.
+
+---
+
+## Fase 4: Construção da Experiência do Usuário (Frontend) 📝
+
+**Épico:** Desenvolver a interface do usuário para o novo módulo de análise e diálogo de documentos.
+*Objetivo: Criar uma interface intuitiva no frontend que permita aos usuários fazer upload de documentos, visualizar o status do processamento, e interagir com os documentos processados através de um sistema de chat.*
+
+* ✅ **DOC-SEARCH: Pesquisar Documentação (React, Zustand, Frontend API)** (TASK-036)
+* ✅ **DOC-SUMMARIZE: Resumir Documentação (Frontend para Analisador)** (TASK-037)
+* ✅ **DEV: Criar Página 'Analisador de Documentos' (Frontend)** (TASK-038)
 
 ---
 
