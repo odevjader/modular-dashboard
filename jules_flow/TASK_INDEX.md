@@ -30,7 +30,7 @@
 | TASK-027 | TEST-PLAN: Planejar Testes para Orquestrador de Respostas (Transcritor-PDF) | done     | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-028 | TEST-IMPL: Implementar Testes para Orquestrador de Respostas (Transcritor-PDF) | done     | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-029 | DEV: Criar Endpoint de Diálogo no Transcritor-PDF | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
-| TASK-030 | TEST-PLAN: Planejar Testes para Endpoint de Diálogo (Transcritor) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
+| TASK-030 | TEST-PLAN: Planejar Testes para Endpoint de Diálogo (Transcritor) | done    | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-031 | TEST-IMPL: Implementar Testes para Endpoint de Diálogo (Transcritor) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-032 | DEV: Expandir Gateway na API Principal para Diálogo | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-033 | TEST-PLAN: Planejar Testes para Gateway de Diálogo (API Principal) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
