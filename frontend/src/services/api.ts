@@ -80,6 +80,18 @@ export interface DocumentUploadResponse {
   uploader_user_id: number; // Or string, depending on User model
 }
 
+export interface TaskStatusErrorInfo {
+  error?: string | null;
+  traceback?: string | null;
+}
+
+export interface TaskStatusResponse {
+  task_id: string;
+  status: string; // e.g., "PENDING", "STARTED", "SUCCESS", "FAILURE", "RETRY" (Celery statuses)
+  result?: any | null;
+  error_info?: TaskStatusErrorInfo | null;
+}
+
 // --- Generic API Client (for JSON endpoints) ---
 async function apiClient<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
