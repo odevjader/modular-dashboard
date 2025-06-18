@@ -36,7 +36,7 @@
 | TASK-033 | TEST-PLAN: Planejar Testes para Gateway de Diálogo (API Principal) | done | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-034 | TEST-IMPL: Implementar Testes para Gateway de Diálogo (API Principal) | done | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-035 | TEST-EXEC: Executar Testes da Fase 3 (Transcritor-PDF e Gateway Diálogo) | blocked | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
-| TASK-036 | DOC-SEARCH: Pesquisar Documentação (React, Zustand, Frontend API) | backlog | Fase 4: Construção da Experiência do Usuário (Frontend) |
+| TASK-036 | DOC-SEARCH: Pesquisar Documentação (React, Zustand, Frontend API) | done | Fase 4: Construção da Experiência do Usuário (Frontend) |
 | TASK-037 | DOC-SUMMARIZE: Resumir Documentação (Frontend para Analisador) | backlog | Fase 4: Construção da Experiência do Usuário (Frontend) |
 | TASK-038 | DEV: Criar Página 'Analisador de Documentos' (Frontend) | backlog | Fase 4: Construção da Experiência do Usuário (Frontend) |
 | TASK-039 | DEV: Desenvolver Interface de Upload na Página (Frontend) | backlog | Fase 4: Construção da Experiência do Usuário (Frontend) |

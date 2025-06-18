@@ -95,6 +95,15 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 
 ---
 
+## Fase 4: Construção da Experiência do Usuário (Frontend) 📝
+
+**Épico:** Desenvolver a interface do usuário para o novo módulo de análise e diálogo de documentos.
+*Objetivo: Criar uma interface intuitiva no frontend que permita aos usuários fazer upload de documentos, visualizar o status do processamento, e interagir com os documentos processados através de um sistema de chat.*
+
+* ✅ **DOC-SEARCH: Pesquisar Documentação (React, Zustand, Frontend API)** (TASK-036)
+
+---
+
 ## Fase 3: Melhorias do Frontend Core ✅
 
 **Épico:** Aprimorar a usabilidade, consistência e performance da interface principal da aplicação.
