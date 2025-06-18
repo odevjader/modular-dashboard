@@ -83,6 +83,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **TEST-PLAN: Planejar Testes para Busca Vetorial (Transcritor-PDF)** (TASK-024)
 * ✅ **TEST-IMPL: Implementar Testes para Busca Vetorial (Transcritor-PDF)** (TASK-025)
 * ✅ **DEV: Construir Orquestrador de Respostas com LLM (Transcritor-PDF)** (TASK-026)
+* ✅ **TEST-PLAN: Planejar Testes para Orquestrador de Respostas (Transcritor-PDF)** (TASK-027)
 
 ---
 
