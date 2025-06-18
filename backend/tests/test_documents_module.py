@@ -219,3 +219,175 @@ def test_upload_document_missing_file(mock_get_user):
             file_error_found = True
             break
     assert file_error_found, "Specific error for missing 'file' field not found in details."
+
+# --- Tests for API Dialogue Gateway Endpoint (POST /api/documents/query/{document_id}) ---
+# Based on TASK-034 and docs/tests/api_gateway_dialog_test_plan.md
+
+# TC_AGD_001
+def test_query_document_no_auth_token():
+    doc_id = "test_doc_id"
+    response = client.post(f"/api/documents/query/{doc_id}", json={"user_query": "test query"})
+    assert response.status_code == 401
+    assert response.json() == {"detail": "Not authenticated"}
+
+# TC_AGD_002
+def test_query_document_invalid_auth_token():
+    doc_id = "test_doc_id"
+    headers = {"Authorization": "Bearer invalidtokenstring"}
+    response = client.post(f"/api/documents/query/{doc_id}", json={"user_query": "test query"}, headers=headers)
+    assert response.status_code == 401
+    assert response.json().get("detail") == "Could not validate credentials"
+
+# TC_AGD_003
+@patch('app.modules.documents.router.get_current_active_user')
+def test_query_document_empty_json_body(mock_get_user):
+    mock_get_user.return_value = get_mock_active_user()
+    doc_id = "test_doc_id"
+    headers = {"Authorization": "Bearer validtoken"} # Actual token not strictly needed due to mock
+
+    response = client.post(f"/api/documents/query/{doc_id}", json={}, headers=headers)
+    assert response.status_code == 422
+    # Further assertions on error details can be added if needed
+    # e.g., checking if "user_query" is marked as missing in response.json()["detail"]
+
+# TC_AGD_004
+@patch('app.modules.documents.router.get_current_active_user')
+def test_query_document_empty_user_query(mock_get_user):
+    mock_get_user.return_value = get_mock_active_user()
+    doc_id = "test_doc_id"
+    headers = {"Authorization": "Bearer validtoken"}
+
+    response = client.post(f"/api/documents/query/{doc_id}", json={"user_query": ""}, headers=headers)
+    assert response.status_code == 400
+    assert response.json() == {"detail": "User query cannot be empty."}
+
+# TC_AGD_005
+@patch('app.modules.documents.router.get_current_active_user')
+@patch('backend.app.modules.documents.services.httpx.AsyncClient.post', new_callable=AsyncMock)
+async def test_query_document_success(mock_httpx_post, mock_get_user):
+    mock_get_user.return_value = get_mock_active_user() # User ID will be 1
+
+    mock_transcritor_response_data = {"document_id": "doc123", "query": "Qual a resposta?", "answer": "Resposta do transcritor"}
+    mock_response = httpx.Response(200, json=mock_transcritor_response_data)
+    # mock_response.raise_for_status = MagicMock() # Not needed if status is 200
+    mock_httpx_post.return_value = mock_response
+
+    doc_id = "doc123"
+    user_query = "Qual a resposta?"
+    headers = {"Authorization": "Bearer validtoken"}
+
+    response = client.post(
+        f"/api/documents/query/{doc_id}",
+        json={"user_query": user_query},
+        headers=headers
+    )
+
+    assert response.status_code == 200
+    response_data = response.json()
+    assert response_data["message"] == "Query successfully processed by transcriber."
+    assert response_data["transcriber_data"] == mock_transcritor_response_data
+    assert response_data["original_document_id"] == doc_id
+    assert response_data["queried_by_user_id"] == 1 # From MockUser
+
+    mock_httpx_post.assert_called_once()
+    called_args, called_kwargs = mock_httpx_post.call_args
+    assert called_args[0] == f"http://transcritor_pdf_service:8002/query-document/{doc_id}"
+    assert called_kwargs["json"] == {"user_query": user_query}
+
+# TC_AGD_006
+@patch('app.modules.documents.router.get_current_active_user')
+@patch('backend.app.modules.documents.services.httpx.AsyncClient.post', new_callable=AsyncMock)
+async def test_query_document_transcriber_returns_404(mock_httpx_post, mock_get_user):
+    mock_get_user.return_value = get_mock_active_user()
+
+    mock_response = httpx.Response(404, json={"detail": "Document not found in transcriber"})
+    # Simulate raise_for_status behavior for error codes
+    mock_response.raise_for_status = MagicMock(side_effect=httpx.HTTPStatusError(
+        "Not Found", request=MagicMock(url="http://transcritor/query"), response=mock_response
+    ))
+    mock_httpx_post.return_value = mock_response
+
+    doc_id = "non_existent_doc"
+    user_query = "Any query"
+    headers = {"Authorization": "Bearer validtoken"}
+
+    response = client.post(
+        f"/api/documents/query/{doc_id}",
+        json={"user_query": user_query},
+        headers=headers
+    )
+
+    assert response.status_code == 404 # Gateway should reflect the error status
+    assert response.json() == {"detail": "Error from transcriber query service: Status 404."}
+    mock_httpx_post.assert_called_once()
+
+# TC_AGD_007
+@patch('app.modules.documents.router.get_current_active_user')
+@patch('backend.app.modules.documents.services.httpx.AsyncClient.post', new_callable=AsyncMock)
+async def test_query_document_transcriber_returns_500(mock_httpx_post, mock_get_user):
+    mock_get_user.return_value = get_mock_active_user()
+
+    mock_response = httpx.Response(500, json={"detail": "Transcriber internal server error"})
+    mock_response.raise_for_status = MagicMock(side_effect=httpx.HTTPStatusError(
+        "Internal Error", request=MagicMock(url="http://transcritor/query"), response=mock_response
+    ))
+    mock_httpx_post.return_value = mock_response
+
+    doc_id = "any_doc_id"
+    user_query = "Query causing trouble"
+    headers = {"Authorization": "Bearer validtoken"}
+
+    response = client.post(
+        f"/api/documents/query/{doc_id}",
+        json={"user_query": user_query},
+        headers=headers
+    )
+
+    assert response.status_code == 500 # Gateway should reflect the error status
+    assert response.json() == {"detail": "Error from transcriber query service: Status 500."}
+    mock_httpx_post.assert_called_once()
+
+# TC_AGD_008
+@patch('app.modules.documents.router.get_current_active_user')
+@patch('backend.app.modules.documents.services.httpx.AsyncClient.post', new_callable=AsyncMock)
+async def test_query_document_transcriber_connection_error(mock_httpx_post, mock_get_user):
+    mock_get_user.return_value = get_mock_active_user()
+
+    mock_httpx_post.side_effect = httpx.RequestError("Connection refused", request=MagicMock(url="http://transcritor/query"))
+
+    doc_id = "any_doc_id"
+    user_query = "A query"
+    headers = {"Authorization": "Bearer validtoken"}
+
+    response = client.post(
+        f"/api/documents/query/{doc_id}",
+        json={"user_query": user_query},
+        headers=headers
+    )
+
+    assert response.status_code == 503
+    assert response.json() == {"detail": "Could not connect to transcriber query service."}
+    mock_httpx_post.assert_called_once()
+
+# TC_AGD_009
+@patch('app.modules.documents.router.get_current_active_user')
+@patch('backend.app.modules.documents.services.httpx.AsyncClient.post', new_callable=AsyncMock)
+async def test_query_document_transcriber_timeout_error(mock_httpx_post, mock_get_user):
+    mock_get_user.return_value = get_mock_active_user()
+
+    # TimeoutException is a subclass of RequestError, so the existing handler should catch it.
+    mock_httpx_post.side_effect = httpx.TimeoutException("Request timed out", request=MagicMock(url="http://transcritor/query"))
+
+    doc_id = "any_doc_id"
+    user_query = "A very slow query"
+    headers = {"Authorization": "Bearer validtoken"}
+
+    response = client.post(
+        f"/api/documents/query/{doc_id}",
+        json={"user_query": user_query},
+        headers=headers
+    )
+
+    assert response.status_code == 503 # Or 504 if specific handling for TimeoutException was added
+    assert response.json() == {"detail": "Could not connect to transcriber query service."} # This matches current generic RequestError handling
+    mock_httpx_post.assert_called_once()

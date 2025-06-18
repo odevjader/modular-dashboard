@@ -2,7 +2,7 @@
 id: TASK-017
 title: "TEST-EXEC: Executar Testes do Módulo `documents` (Gateway Upload)"
 epic: "Fase 2: Implementação do Gateway de Comunicação na API Principal"
-status: backlog
+status: blocked
 priority: medium
 dependencies: ["TASK-016"]
 assignee: Jules
@@ -24,4 +24,4 @@ Executar os testes implementados para o endpoint de upload e registrar resultado
 
 ### Relatório de Execução
 
-User has indicated they will handle the test execution for this task manually at a later stage. Task status reverted to backlog pending manual execution and reporting.
+User has indicated they will handle the test execution for this task manually at a later stage. Task status reverted to backlog pending manual execution and reporting. Status changed to blocked on 2024-07-14 as per this note.

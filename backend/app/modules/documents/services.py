@@ -5,6 +5,7 @@ from fastapi import UploadFile, HTTPException
 # The hostname "transcritor_pdf_service" should be resolvable by this service,
 # typically in a containerized environment (e.g., Docker Compose).
 TRANSCRIBER_SERVICE_URL = "http://transcritor_pdf_service:8002/process-pdf"
+TRANSCRIBER_QUERY_SERVICE_URL_TEMPLATE = "http://transcritor_pdf_service:8002/query-document/{document_id}"
 
 async def handle_file_upload(file: UploadFile, user_id: int):
     """
@@ -90,6 +91,47 @@ async def handle_file_upload(file: UploadFile, user_id: int):
         finally:
             # It's crucial to close the uploaded file to free up resources.
             await file.close()
+
+async def handle_document_query(document_id: str, user_query: str, user_id: int):
+    # Ensure httpx is imported: import httpx # Already imported
+    # Ensure HTTPException is imported: from fastapi import HTTPException # Already imported
+    query_url = TRANSCRIBER_QUERY_SERVICE_URL_TEMPLATE.format(document_id=document_id)
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.post(
+                query_url,
+                json={"user_query": user_query}, # Ensure this matches transcritor's expected input
+                timeout=60.0
+            )
+            response.raise_for_status()
+            query_response_data = response.json()
+            return {
+                "message": "Query successfully processed by transcriber.",
+                "transcriber_data": query_response_data,
+                "original_document_id": document_id,
+                "queried_by_user_id": user_id
+            }
+        except httpx.HTTPStatusError as e:
+            # Log e.response.text for server-side debugging
+            # print(f"Transcriber query service error: {e.response.text}") # Example logging
+            raise HTTPException(
+                status_code=e.response.status_code, # Or a generic 502/503
+                detail=f"Error from transcriber query service: Status {e.response.status_code}."
+            )
+        except httpx.RequestError as e:
+            # Log str(e) for server-side debugging
+            # print(f"RequestError connecting to transcriber query service: {str(e)}") # Example logging
+            raise HTTPException(
+                status_code=503, # Service Unavailable
+                detail="Could not connect to transcriber query service."
+            )
+        except Exception as e:
+            # Log str(e) for server-side debugging
+            # print(f"Unexpected error in handle_document_query: {str(e)}") # Example logging
+            raise HTTPException(
+                status_code=500, # Internal Server Error
+                detail="An unexpected error occurred while querying the document."
+            )
 
 # To keep the module clean, the example_service_function has been removed.
 # If you need other service functions, define them here.
