@@ -287,3 +287,114 @@ def test_process_pdf_corrupted_file_read_error():
         mock_task_delay.assert_not_called()
         # Ensure file.close() was called by the endpoint's finally block
         mock_file.close.assert_called_once()
+
+
+# --- Tests for POST /query-document/{document_id} ---
+# Based on TASK-031 and docs/tests/transcritor_query_dialog_test_plan.md
+
+# Use patch.AsyncMock if available (Python 3.8+), otherwise MagicMock for broader compatibility
+# and assume the test runner or environment handles the async nature appropriately
+# For FastAPI TestClient with async endpoints, the client handles the event loop.
+# The mock itself needs to behave like an async function.
+AsyncMockType = getattr(patch, 'AsyncMock', MagicMock)
+
+@patch('src.main.get_llm_answer_with_context', new_callable=AsyncMockType)
+async def test_query_document_success(mock_get_llm_answer_with_context):
+    """
+    TC_TDQ_001: Tests successful query to /query-document/{document_id}.
+    Mocks get_llm_answer_with_context to return a valid answer.
+    """
+    document_id = "test_doc_id"
+    user_query = "What is this?"
+    expected_answer = "This is a test answer."
+    mock_get_llm_answer_with_context.return_value = expected_answer
+
+    response = client.post(
+        f"/query-document/{document_id}",
+        json={"user_query": user_query}
+    )
+
+    assert response.status_code == 200
+    response_data = response.json()
+    assert response_data["document_id"] == document_id
+    assert response_data["query"] == user_query
+    assert response_data["answer"] == expected_answer
+
+    mock_get_llm_answer_with_context.assert_called_once_with(
+        query_text=user_query,
+        document_filename=document_id
+    )
+
+@patch('src.main.get_llm_answer_with_context', new_callable=AsyncMockType)
+async def test_query_document_not_found_or_no_answer(mock_get_llm_answer_with_context):
+    """
+    TC_TDQ_002: Tests /query-document when no answer is found (mock returns None).
+    """
+    document_id = "doc_with_no_answer"
+    user_query = "A question with no answer"
+    mock_get_llm_answer_with_context.return_value = None
+
+    response = client.post(
+        f"/query-document/{document_id}",
+        json={"user_query": user_query}
+    )
+
+    assert response.status_code == 404
+    response_data = response.json()
+    assert "detail" in response_data
+    assert response_data["detail"] == "Could not retrieve an answer for the given query and document."
+    mock_get_llm_answer_with_context.assert_called_once_with(
+        query_text=user_query,
+        document_filename=document_id
+    )
+
+
+@patch('src.main.get_llm_answer_with_context', new_callable=AsyncMockType)
+async def test_query_document_invalid_request_body(mock_get_llm_answer_with_context):
+    """
+    TC_TDQ_003: Tests /query-document with an invalid request body.
+    """
+    document_id = "any_doc_id"
+
+    # Test with missing 'user_query'
+    response_missing_field = client.post(
+        f"/query-document/{document_id}",
+        json={"wrong_field": "some_value"}
+    )
+    assert response_missing_field.status_code == 422 # Unprocessable Entity
+
+    # Test with wrong data type for 'user_query'
+    response_wrong_type = client.post(
+        f"/query-document/{document_id}",
+        json={"user_query": 12345} # Should be a string
+    )
+    assert response_wrong_type.status_code == 422
+
+    mock_get_llm_answer_with_context.assert_not_called()
+
+
+@patch('src.main.get_llm_answer_with_context', new_callable=AsyncMockType)
+async def test_query_document_orchestrator_error(mock_get_llm_answer_with_context):
+    """
+    TC_TDQ_004: Tests /query-document when get_llm_answer_with_context raises an unexpected error.
+    """
+    document_id = "doc_causing_error"
+    user_query = "A question that causes an error"
+    error_message = "LLM provider error"
+    mock_get_llm_answer_with_context.side_effect = Exception(error_message)
+
+    response = client.post(
+        f"/query-document/{document_id}",
+        json={"user_query": user_query}
+    )
+
+    assert response.status_code == 500 # Internal Server Error
+    response_data = response.json()
+    assert "detail" in response_data
+    # The generic exception handler in main.py returns a standard message
+    assert response_data["detail"] == "An internal server error occurred while querying the document."
+
+    mock_get_llm_answer_with_context.assert_called_once_with(
+        query_text=user_query,
+        document_filename=document_id
+    )

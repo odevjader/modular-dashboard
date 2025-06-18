@@ -2,7 +2,7 @@
 id: TASK-029
 title: "DEV: Criar Endpoint de Diálogo no Transcritor-PDF"
 epic: "Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF)"
-status: backlog
+status: done
 priority: medium
 dependencies: ["TASK-026"] # Depende do orquestrador de respostas
 assignee: Jules
@@ -25,4 +25,4 @@ Rota `POST /query-document/{document_id}` em `transcritor-pdf/src/main.py`. (Ori
 
 ### Relatório de Execução
 
-(Esta seção deve ser deixada em branco no template)
+O endpoint `POST /query-document/{document_id}` foi implementado em `transcritor-pdf/src/main.py` conforme os critérios de aceitação. A rota recebe um `document_id` e uma `UserQueryRequest` (contendo `user_query`), chama a função `get_llm_answer_with_context` para obter uma resposta e retorna a resposta formatada. A implementação foi verificada pela leitura direta do código em `transcritor-pdf/src/main.py`.

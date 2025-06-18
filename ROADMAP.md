@@ -86,6 +86,8 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **TEST-PLAN: Planejar Testes para Orquestrador de Respostas (Transcritor-PDF)** (TASK-027)
 * ✅ **TEST-IMPL: Implementar Testes para Orquestrador de Respostas (Transcritor-PDF)** (TASK-028)
 * ✅ **DEV: Criar Endpoint de Diálogo no Transcritor-PDF** (TASK-029)
+* ✅ **TEST-PLAN: Planejar Testes para Endpoint de Diálogo (Transcritor-PDF)** (TASK-030)
+* ✅ **TEST-IMPL: Implementar Testes para Endpoint de Diálogo (Transcritor-PDF)** (TASK-031)
 
 ---
 
