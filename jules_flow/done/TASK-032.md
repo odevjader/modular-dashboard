@@ -2,7 +2,7 @@
 id: TASK-032
 title: "DEV: Expandir Gateway na API Principal para Diálogo"
 epic: "Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF)"
-status: backlog
+status: done
 priority: medium
 dependencies: ["TASK-029", "TASK-014"] # Depends on transcritor dialog endpoint and API documents module
 assignee: Jules
@@ -26,4 +26,10 @@ Rota `POST /api/documents/query/{document_id}` na API principal, chamando endpoi
 
 ### Relatório de Execução
 
-(Esta seção deve ser deixada em branco no template)
+Implementada a rota `POST /api/documents/query/{document_id}` em `backend/app/modules/documents/router.py`.
+    - A rota utiliza o Pydantic model `DocumentQueryRequest` para aceitar `user_query` no corpo da requisição.
+    - A autenticação de usuário é verificada através de `get_current_active_user`.
+    - Uma nova função `handle_document_query` foi adicionada em `backend/app/modules/documents/services.py`.
+    - Esta função `handle_document_query` chama o endpoint `POST http://transcritor_pdf_service:8002/query-document/{document_id}` do serviço `transcritor-pdf`, encaminhando a `user_query`.
+    - Foram incluídos tratamentos de erro para chamadas ao serviço externo e validação básica da query.
+    Os critérios de aceitação foram atendidos.

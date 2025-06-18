@@ -17,7 +17,7 @@
 | TASK-014 | DEV: Registrar Módulo `documents` na API Principal | done     | Fase 2: Implementação do Gateway de Comunicação na API Principal |
 | TASK-015 | TEST-PLAN: Planejar Testes para Endpoint de Upload | done     | Fase 2: Implementação do Gateway de Comunicação na API Principal |
 | TASK-016 | TEST-IMPL: Implementar Testes para Endpoint de Upload | done     | Fase 2: Implementação do Gateway de Comunicação na API Principal |
-| TASK-017 | TEST-EXEC: Executar Testes do Módulo `documents` (Gateway Upload) | backlog  | Fase 2: Implementação do Gateway de Comunicação na API Principal |
+| TASK-017 | TEST-EXEC: Executar Testes do Módulo `documents` (Gateway Upload) | blocked  | Fase 2: Implementação do Gateway de Comunicação na API Principal |
 | TASK-018 | DOC-SEARCH: Pesquisar Documentação (pgvector, LLM Client) | done     | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-019 | DOC-SUMMARIZE: Resumir Documentação (pgvector, LLM Client) | done     | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-020 | DEV: Implementar Endpoint de Processamento de PDF no Transcritor-PDF | done     | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
@@ -32,9 +32,9 @@
 | TASK-029 | DEV: Criar Endpoint de Diálogo no Transcritor-PDF | done | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-030 | TEST-PLAN: Planejar Testes para Endpoint de Diálogo (Transcritor) | done    | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-031 | TEST-IMPL: Implementar Testes para Endpoint de Diálogo (Transcritor) | done | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
-| TASK-032 | DEV: Expandir Gateway na API Principal para Diálogo | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
-| TASK-033 | TEST-PLAN: Planejar Testes para Gateway de Diálogo (API Principal) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
-| TASK-034 | TEST-IMPL: Implementar Testes para Gateway de Diálogo (API Principal) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
+| TASK-032 | DEV: Expandir Gateway na API Principal para Diálogo | done | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
+| TASK-033 | TEST-PLAN: Planejar Testes para Gateway de Diálogo (API Principal) | done | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
+| TASK-034 | TEST-IMPL: Implementar Testes para Gateway de Diálogo (API Principal) | done | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-035 | TEST-EXEC: Executar Testes da Fase 3 (Transcritor-PDF e Gateway Diálogo) | backlog | Fase 3: Habilitando a Interação e Diálogo com Documentos (Backend do Transcritor-PDF) |
 | TASK-036 | DOC-SEARCH: Pesquisar Documentação (React, Zustand, Frontend API) | backlog | Fase 4: Construção da Experiência do Usuário (Frontend) |
 | TASK-037 | DOC-SUMMARIZE: Resumir Documentação (Frontend para Analisador) | backlog | Fase 4: Construção da Experiência do Usuário (Frontend) |
