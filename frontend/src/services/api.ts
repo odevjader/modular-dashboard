@@ -92,6 +92,17 @@ export interface TaskStatusResponse {
   error_info?: TaskStatusErrorInfo | null;
 }
 
+// Document Query
+export interface DocumentQueryPayload {
+  query_text: string;
+}
+
+export interface DocumentQueryResponse {
+  answer: string;
+  query_id: string; // Assuming the backend returns a query_id
+}
+
+
 // --- Generic API Client (for JSON endpoints) ---
 async function apiClient<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
@@ -261,4 +272,15 @@ export const uploadDocumentForAnalysis = async (file: File): Promise<DocumentUpl
     console.error('Error in uploadDocumentForAnalysis:', error);
     throw error; // Re-throw to be caught by the calling component
   }
+};
+
+/** Posts a query against a processed document. */
+export const postDocumentQuery = async (
+  documentId: string,
+  payload: DocumentQueryPayload
+): Promise<DocumentQueryResponse> => {
+  return apiClient<DocumentQueryResponse>(`/documents/query/${documentId}`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
 };

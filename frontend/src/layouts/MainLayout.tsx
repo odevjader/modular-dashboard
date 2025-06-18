@@ -11,6 +11,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 // import ChevronRightIcon from '@mui/icons-material/ChevronRight'; // Not used in provided example if drawer closes only to left
 import HomeIcon from '@mui/icons-material/Home';
+import DescriptionIcon from '@mui/icons-material/Description';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import LogoutIcon from '@mui/icons-material/Logout';
 
@@ -237,6 +238,14 @@ const MainLayout: React.FC = () => {
               isSmallScreen={isSmallScreen}
               onClick={handleDrawerClose}
               exact={true}
+            />
+            <NavListItem
+              to="/analisador-documentos"
+              primary="Analisador de Documentos"
+              icon={<DescriptionIcon />}
+              open={open}
+              isSmallScreen={isSmallScreen}
+              onClick={handleDrawerClose}
             />
 
             {Object.values(moduleRegistry).filter(module => !module.adminOnly || (module.adminOnly && isAdmin)).map((module: ModuleConfig) => {
