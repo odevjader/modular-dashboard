@@ -1,12 +1,12 @@
-# Visão Geral do Projeto (adv-ia)
+# Visão Geral do Projeto (dashboard-adv)
 
 ## 1. Status do Projeto
 
-Este documento descreve a visão e os objetivos do projeto **adv-ia** (nome de desenvolvimento), que se encontra em sua fase inicial de desenvolvimento.
+Este documento descreve a visão e os objetivos do projeto **dashboard-adv** (nome de desenvolvimento), que se encontra em sua fase inicial de desenvolvimento.
 
 ## 2. Visão do Projeto
 
-A visão para o **adv-ia** é estabelecer uma plataforma tecnológica para o setor jurídico (Legal Tech). O projeto busca criar um ecossistema onde ferramentas de software possam ser desenvolvidas e integradas de forma modular para auxiliar em tarefas jurídicas. A aplicação de Inteligência Artificial é um pilar central para viabilizar funcionalidades avançadas de automação e análise.
+A visão para o **dashboard-adv** é estabelecer uma plataforma tecnológica para o setor jurídico (Legal Tech). O projeto busca criar um ecossistema onde ferramentas de software possam ser desenvolvidas e integradas de forma modular para auxiliar em tarefas jurídicas. A aplicação de Inteligência Artificial é um pilar central para viabilizar funcionalidades avançadas de automação e análise.
 
 ## 3. Foco e Funcionalidades Planejadas
 
