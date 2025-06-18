@@ -91,6 +91,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **DEV: Expandir Gateway na API Principal para Diálogo** (TASK-032)
 * ✅ **TEST-PLAN: Planejar Testes para Gateway de Diálogo (API Principal)** (TASK-033)
 * ✅ **TEST-IMPL: Implementar Testes para Gateway de Diálogo (API Principal)** (TASK-034)
+* ⚠️ **TEST-EXEC: Executar Testes da Fase 3 (Transcritor-PDF e Gateway Diálogo)** (TASK-035) - Bloqueado: Falha na execução automática de testes.
 
 ---
 
