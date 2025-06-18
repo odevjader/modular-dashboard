@@ -3,7 +3,8 @@ from app.core.dependencies import get_current_active_user
 from app.models.user import User
 from . import services
 from .v1 import endpoints as v1_endpoints
-from pydantic import BaseModel # Add this import
+from pydantic import BaseModel
+from .schemas import TaskStatusResponse # Import the new response model
 
 api_router = APIRouter()
 
@@ -38,3 +39,16 @@ async def query_document_gateway(
     if not request_data.user_query:
         raise HTTPException(status_code=400, detail="User query cannot be empty.")
     return await services.handle_document_query(document_id, request_data.user_query, current_user.id)
+
+@api_router.get(
+    "/upload/status/{task_id}",
+    response_model=TaskStatusResponse,
+    summary="Get document processing status from gateway",
+    tags=["Documents Module"]
+)
+async def get_document_upload_status_gateway(
+    task_id: str,
+    current_user: User = Depends(get_current_active_user) # Protect endpoint
+):
+    # current_user is not explicitly passed to the service now, but good for auth.
+    return await services.get_document_processing_status(task_id)
