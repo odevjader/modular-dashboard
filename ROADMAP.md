@@ -108,8 +108,8 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **DEV: Construir Interface de Chat no Frontend** (TASK-041)
 * ✅ **DEV: Integrar ao Menu de Navegação Principal (Frontend)** (TASK-042)
 * ✅ **TEST-PLAN: Planejar Testes para Frontend do Analisador de Documentos** (TASK-043)
-* 📝 **TEST-IMPL: Implementar Testes para Frontend (Analisador)** (TASK-044)
-* 📝 **TEST-EXEC: Executar Testes da Fase 4 (Frontend Analisador)** (TASK-045)
+* ⚠️ **TEST-IMPL: Implementar Testes para Frontend (Analisador)** (TASK-044) - BLOQUEADO: Instalação de dependências pendente
+* ⚠️ **TEST-EXEC: Executar Testes da Fase 4 (Frontend Analisador)** (TASK-045) - BLOQUEADO: TASK-044 pendente
 
 
 ---

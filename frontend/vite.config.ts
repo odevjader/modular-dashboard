@@ -1,4 +1,5 @@
-import { defineConfig } from 'vite'
+/// <reference types="vitest" />
+import { defineConfig } from 'vite' // Keep this for Vite's own config
 import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'; // Import
 
@@ -13,6 +14,12 @@ export default defineConfig({
       brotliSize: true,
     }),
   ],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/setupTests.ts',
+    css: true,
+  },
   server: {
     proxy: {
       // Redireciona qualquer requisição que comece com /api
