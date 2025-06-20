@@ -46,5 +46,5 @@
 | TASK-043 | TEST-PLAN: Planejar Testes para Frontend do Analisador de Documentos | done | Fase 4: Construção da Experiência do Usuário (Frontend) |
 | TASK-044 | TEST-IMPL: Implementar Testes para Frontend (Analisador) | blocked | Fase 4: Construção da Experiência do Usuário (Frontend) |
 | TASK-045 | TEST-EXEC: Executar Testes da Fase 4 (Frontend Analisador) | blocked | Fase 4: Construção da Experiência do Usuário (Frontend) |
-| TASK-046 | ENV-REVIEW: Revisão Final do .env.example | backlog | Fase Final: Submissão |
+| TASK-046 | ENV-REVIEW: Revisão Final do .env.example | blocked | Fase Final: Submissão |
 | TASK-047 | SUBMIT: Entregar todas as alterações do Roadmap Completo | backlog | Fase Final: Submissão |

@@ -147,3 +147,13 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * 📝 **Notificações no Frontend:** Implementar um mecanismo de notificação global (toasts/snackbars) para dar feedback claro ao usuário.
 * 📝 **Logging e Monitoramento:** Configurar um sistema de logging estruturado para todos os serviços e avaliar uma ferramenta de Application Performance Monitoring (APM).
 * 📝 **Sistema de Alertas (Backend):** Configurar alertas proativos via e-mail para falhas críticas, notificando a equipe de desenvolvimento.
+
+---
+
+## Fase Final: Submissão 📝
+
+**Épico:** Preparar a aplicação para a entrega final, garantindo que todos os componentes estejam revisados e a documentação atualizada.
+*Objetivo: Realizar as últimas verificações e garantir que o projeto esteja em um estado polido e completo conforme o escopo definido.*
+
+* ⚠️ **ENV-REVIEW: Revisão Final do .env.example (TASK-046) - BLOQUEADO: TASK-045 pendente**
+* 📝 **SUBMIT: Entregar todas as alterações do Roadmap Completo (TASK-047)**
