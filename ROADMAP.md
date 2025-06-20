@@ -156,4 +156,4 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 *Objetivo: Realizar as últimas verificações e garantir que o projeto esteja em um estado polido e completo conforme o escopo definido.*
 
 * ⚠️ **ENV-REVIEW: Revisão Final do .env.example (TASK-046) - BLOQUEADO: TASK-045 pendente**
-* 📝 **SUBMIT: Entregar todas as alterações do Roadmap Completo (TASK-047)**
+* ⚠️ **SUBMIT: Entregar todas as alterações do Roadmap Completo (TASK-047) - BLOQUEADO: TASK-046 pendente**
