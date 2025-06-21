@@ -65,7 +65,7 @@ const DocumentUploadForm: React.FC = () => {
         fullWidth
         variant="outlined"
         margin="normal"
-        inputProps={{ accept: '.pdf' }}
+        inputProps={{ accept: '.pdf', 'data-testid': 'file-input' }}
       />
       {selectedFile && (
         <Typography variant="body2" sx={{ mb: 2 }}>
