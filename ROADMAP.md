@@ -66,6 +66,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
    * ✅ Implementado endpoint `/api/documents/upload` (TASK-013) para upload e encaminhamento ao `transcritor_pdf_service`.
    * ✅ Criado plano de testes para o endpoint de upload `/api/documents/upload` (TASK-015).
    * ✅ Implementados testes de integração para `/api/documents/upload` (TASK-016, com ressalvas sobre execução ambiental).
+7. ✅ **TEST-PLAN (Fase 2):** Planejar Testes para `pdf_processor_service` e Novo Gateway (TASK-054).
 
 ---
 
