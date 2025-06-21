@@ -64,3 +64,6 @@
 | TASK-061 | TEST-EXEC (Fase 4 Piloto): Executar Testes do `gerador_quesitos` Refatorado | backlog | Fase 4: Módulo Piloto e Integração |
 | TASK-062 | DEV (Fase 5): Configurar Logging Estruturado e Avaliar APM | backlog | Fase 5: Governança e Maturidade |
 | TASK-063 | DEV (Fase 5): Configurar Sistema de Alertas (Backend) | backlog | Fase 5: Governança e Maturidade |
+| TASK-064 | TEST-PLAN (Fase 5): Planejar Testes para Logging e Alertas | backlog | Fase 5: Governança e Maturidade |
+| TASK-065 | TEST-IMPL (Fase 5): Implementar Testes para Logging e Alertas | backlog | Fase 5: Governança e Maturidade |
+| TASK-066 | TEST-EXEC (Fase 5): Executar Testes de Logging e Alertas | backlog | Fase 5: Governança e Maturidade |
