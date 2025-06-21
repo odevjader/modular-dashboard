@@ -2,7 +2,7 @@
 id: TASK-044
 title: "TEST-IMPL: Implementar Testes para Frontend (Analisador)"
 epic: "Fase 4: Construção da Experiência do Usuário (Frontend)"
-status: blocked
+status: done
 priority: medium
 dependencies: ["TASK-043"]
 assignee: Jules

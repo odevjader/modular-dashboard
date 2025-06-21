@@ -55,17 +55,18 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **DEV: Criar Módulo `documents` na API Principal** (TASK-010)
 * ✅ **TEST-PLAN: Planejar Testes para Módulo `documents` (Estrutura)** (TASK-011)
 * ✅ **TEST-IMPL: Implementar Testes para Módulo `documents` (Estrutura)** (TASK-012)
-1. 📝 **DB Schema:** Definir e criar a migração (Alembic) para a nova tabela `pdf_processed_chunks`.
-2. 📝 **Orquestração:** Atualizar o `docker-compose.yml` para incluir o novo `pdf_processor_service` e garantir a comunicação entre os containers.
-3. 📝 **Estrutura do Microserviço:** Criar a estrutura de pastas e arquivos (`Dockerfile`, `requirements.txt`, etc.) para o `pdf_processor_service`.
-4. 📝 **Lógica do Microserviço:** Implementar a lógica de extração de texto e armazenamento no PostgreSQL dentro do `pdf_processor_service`.
-5. 📝 **Endpoint do Microserviço:** Criar o endpoint `POST /process-pdf` no `worker`, que ficará acessível apenas dentro da rede do Docker.
-6. 📝 **Endpoint Gateway na API Principal:** Implementar o endpoint `POST /api/v1/documents/upload-and-process`. Este endpoint será o único ponto de entrada público, responsável por:
+1. ✅ **DB Schema:** Definir e criar a migração (Alembic) para a nova tabela `pdf_processed_chunks` (TASK-048). (Script de migração criado; aplicação pendente de resolução de acesso ao BD no ambiente de execução)
+2. ✅ **Orquestração:** Atualizar o `docker-compose.yml` para incluir o novo `pdf_processor_service` e garantir a comunicação entre os containers (TASK-052).
+3. ✅ **Estrutura do Microserviço:** Criar a estrutura de pastas e arquivos (`Dockerfile`, `requirements.txt`, etc.) para o `pdf_processor_service` (TASK-049).
+4. ✅ **Lógica do Microserviço:** Implementar a lógica de extração de texto e armazenamento no PostgreSQL dentro do `pdf_processor_service` (TASK-050).
+5. ✅ **Endpoint do Microserviço:** Criar o endpoint `POST /process-pdf` no `pdf_processor_service`, que ficará acessível apenas dentro da rede do Docker (TASK-051).
+6. ✅ **Endpoint Gateway na API Principal:** Implementar o endpoint `POST /api/v1/documents/upload-and-process` (TASK-053). Este endpoint será o único ponto de entrada público, responsável por:
    * Validar a autenticação e autorização do usuário.
    * Atuar como um proxy seguro, chamando o endpoint do microserviço.
    * ✅ Implementado endpoint `/api/documents/upload` (TASK-013) para upload e encaminhamento ao `transcritor_pdf_service`.
    * ✅ Criado plano de testes para o endpoint de upload `/api/documents/upload` (TASK-015).
    * ✅ Implementados testes de integração para `/api/documents/upload` (TASK-016, com ressalvas sobre execução ambiental).
+7. ✅ **TEST-PLAN (Fase 2):** Planejar Testes para `pdf_processor_service` e Novo Gateway (TASK-054).
 
 ---
 
@@ -108,7 +109,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **DEV: Construir Interface de Chat no Frontend** (TASK-041)
 * ✅ **DEV: Integrar ao Menu de Navegação Principal (Frontend)** (TASK-042)
 * ✅ **TEST-PLAN: Planejar Testes para Frontend do Analisador de Documentos** (TASK-043)
-* ⚠️ **TEST-IMPL: Implementar Testes para Frontend (Analisador)** (TASK-044) - BLOQUEADO: Instalação de dependências pendente
+* ✅ **TEST-IMPL: Implementar Testes para Frontend (Analisador)** (TASK-044) - Teste de componente inicial adicionado; execução da suíte completa pendente de investigação de timeouts.
 * ⚠️ **TEST-EXEC: Executar Testes da Fase 4 (Frontend Analisador)** (TASK-045) - BLOQUEADO: TASK-044 pendente
 
 

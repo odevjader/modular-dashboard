@@ -19,14 +19,18 @@ try:
     from app.core.database import Base
     from app.models.user import User
     from app.models.enums import UserRole
+    from app.models.document import Document, DocumentChunk # Ensure new models are imported
 
     target_metadata = Base.metadata
     print("Successfully imported models and set target_metadata")
 except ImportError as e:
     print(f"ERROR: Could not import models: {e}")
+    Base = None # Ensure Base is None if import fails
     target_metadata = None
 
 # ---- O resto do arquivo ----
+
+# ---- This block was for debugging and is now removed ----
 def run_migrations_offline() -> None:
     url = config.get_main_option("sqlalchemy.url")
     context.configure(

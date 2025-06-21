@@ -1,0 +1,1 @@
+from .document_service import create_document_and_chunks

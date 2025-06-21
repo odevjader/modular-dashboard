@@ -34,6 +34,9 @@ class Settings(BaseSettings):
     # Application Port
     APP_PORT: int = 8000
 
+    # Microservice URLs
+    PDF_PROCESSOR_SERVICE_URL: str = "http://pdf_processor_service:8000"
+
     class Config:
         env_file = ".env"
         env_file_encoding = 'utf-8'

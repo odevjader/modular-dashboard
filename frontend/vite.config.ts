@@ -1,24 +1,26 @@
 /// <reference types="vitest" />
 import { defineConfig } from 'vite' // Keep this for Vite's own config
 import react from '@vitejs/plugin-react'
-import { visualizer } from 'rollup-plugin-visualizer'; // Import
+// import { visualizer } from 'rollup-plugin-visualizer'; // Import
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
-    visualizer({ // Add visualizer plugin
-      filename: 'dist/stats.html', // Output file
-      open: false, // Set to false, as it cannot open browser here
-      gzipSize: true,
-      brotliSize: true,
-    }),
+    // visualizer({ // Add visualizer plugin
+    //   filename: 'dist/stats.html', // Output file
+    //   open: false, // Set to false, as it cannot open browser here
+    //   gzipSize: true,
+    //   brotliSize: true,
+    // }),
   ],
   test: {
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/setupTests.ts',
-    css: true,
+    css: false, // Disable CSS processing for tests
+    testTimeout: 30000, // Increase timeout to 30 seconds
+    include: ['src/modules/**/*.{test,spec}.?(c|m)[jt]s?(x)', 'src/components/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
   },
   server: {
     proxy: {

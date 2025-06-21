@@ -24,6 +24,28 @@ services:
     networks:
       - app-network
 
+  pdf_processor_service:
+    build:
+      context: ./backend/pdf_processor_service
+      dockerfile: Dockerfile
+    container_name: pdf_processor_service
+    env_file:
+      - ./backend/.env # For common DB variables
+    environment:
+      # Construct DATABASE_URL from .env variables for PostgreSQL
+      # The default in pdf_processor_service/app/core/config.py might be overridden by these if they are set in .env
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - PYTHONPATH=/app # Ensure app directory is in python path
+    volumes:
+      - ./backend/pdf_processor_service:/app # Mount code for development
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+    # No ports exposed to host by default, intended as an internal service
+    # command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload # Command is already in Dockerfile CMD
+
   # Microsserviço para processamento e vetorização de PDFs.
   transcritor_pdf:
     # O contexto aponta para um diretório irmão, onde o Dockerfile do serviço deve residir.
