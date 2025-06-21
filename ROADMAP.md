@@ -39,7 +39,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **Criação da Estrutura Inicial do Jules-Flow:** Diretórios, arquivos base (`README.md`, `INSTRUCTIONS_FOR_JULES.md`, `TASK_INDEX.md`), e o template de tarefas (`task_template.md`) foram configurados.
 * ✅ **Centralização de Documentos de Referência:** Documentos de referência do `transcritor-pdf` movidos para `docs/reference` (TASK-001).
 * ✅ **Revisão de .env.example Pós-Fase 1:** Arquivos `.env.example` verificados e considerados adequados (TASK-002).
-* 📝 **Definição do Processo de Criação de Tarefas On-Demand:** Documentação atualizada para permitir que o Desenvolvedor solicite tarefas diretamente, além daquelas geradas pelo Roadmap. (Referência: Commit de atualização de documentação do Jules-Flow)
+* ✅ **Definição do Processo de Criação de Tarefas On-Demand:** Documentação atualizada para permitir que o Desenvolvedor solicite tarefas diretamente, além daquelas geradas pelo Roadmap. (Referência: Commit de atualização de documentação do Jules-Flow)
 
 ---
 
@@ -144,6 +144,16 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 **Épico:** Amadurecer a plataforma, focando em usabilidade, monitoramento e segurança.
 *Objetivo: Tornar a aplicação mais robusta e fácil de manter a longo prazo.*
 
-* 📝 **Notificações no Frontend:** Implementar um mecanismo de notificação global (toasts/snackbars) para dar feedback claro ao usuário.
+* ✅ **Notificações no Frontend:** Implementar um mecanismo de notificação global (toasts/snackbars) para dar feedback claro ao usuário. (Coberto pela Fase 3 Core)
 * 📝 **Logging e Monitoramento:** Configurar um sistema de logging estruturado para todos os serviços e avaliar uma ferramenta de Application Performance Monitoring (APM).
 * 📝 **Sistema de Alertas (Backend):** Configurar alertas proativos via e-mail para falhas críticas, notificando a equipe de desenvolvimento.
+
+---
+
+## Fase Final: Submissão 📝
+
+**Épico:** Preparar a aplicação para a entrega final, garantindo que todos os componentes estejam revisados e a documentação atualizada.
+*Objetivo: Realizar as últimas verificações e garantir que o projeto esteja em um estado polido e completo conforme o escopo definido.*
+
+* ⚠️ **ENV-REVIEW: Revisão Final do .env.example (TASK-046) - BLOQUEADO: TASK-045 pendente**
+* ⚠️ **SUBMIT: Entregar todas as alterações do Roadmap Completo (TASK-047) - BLOQUEADO: TASK-046 pendente**

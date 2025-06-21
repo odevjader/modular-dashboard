@@ -46,5 +46,21 @@
 | TASK-043 | TEST-PLAN: Planejar Testes para Frontend do Analisador de Documentos | done | Fase 4: Construção da Experiência do Usuário (Frontend) |
 | TASK-044 | TEST-IMPL: Implementar Testes para Frontend (Analisador) | blocked | Fase 4: Construção da Experiência do Usuário (Frontend) |
 | TASK-045 | TEST-EXEC: Executar Testes da Fase 4 (Frontend Analisador) | blocked | Fase 4: Construção da Experiência do Usuário (Frontend) |
-| TASK-046 | ENV-REVIEW: Revisão Final do .env.example | backlog | Fase Final: Submissão |
-| TASK-047 | SUBMIT: Entregar todas as alterações do Roadmap Completo | backlog | Fase Final: Submissão |
+| TASK-046 | ENV-REVIEW: Revisão Final do .env.example | blocked | Fase Final: Submissão |
+| TASK-047 | SUBMIT: Entregar todas as alterações do Roadmap Completo | blocked | Fase Final: Submissão |
+| TASK-048 | DEV (Fase 2): Definir Schema e Migração para `pdf_processed_chunks` | backlog | Fase 2: Infraestrutura de Microserviços |
+| TASK-049 | DEV (Fase 2): Criar Estrutura Base do `pdf_processor_service` | backlog | Fase 2: Infraestrutura de Microserviços |
+| TASK-050 | DEV (Fase 2): Implementar Lógica de Extração de Texto no `pdf_processor_service` | backlog | Fase 2: Infraestrutura de Microserviços |
+| TASK-051 | DEV (Fase 2): Implementar Endpoint `POST /process-pdf` no `pdf_processor_service` | backlog | Fase 2: Infraestrutura de Microserviços |
+| TASK-052 | DEV (Fase 2): Atualizar Orquestração (docker-compose) para `pdf_processor_service` | backlog | Fase 2: Infraestrutura de Microserviços |
+| TASK-053 | DEV (Fase 2): Implementar Endpoint Gateway `/api/v1/documents/upload-and-process` na API Principal | backlog | Fase 2: Infraestrutura de Microserviços |
+| TASK-054 | TEST-PLAN (Fase 2): Planejar Testes para `pdf_processor_service` e Novo Gateway | backlog | Fase 2: Infraestrutura de Microserviços |
+| TASK-055 | TEST-IMPL (Fase 2): Implementar Testes para `pdf_processor_service` e Novo Gateway | backlog | Fase 2: Infraestrutura de Microserviços |
+| TASK-056 | TEST-EXEC (Fase 2): Executar Testes do `pdf_processor_service` e Novo Gateway | backlog | Fase 2: Infraestrutura de Microserviços |
+| TASK-057 | DEV (Fase 4 Piloto): Refatorar Frontend do `gerador_quesitos` para Upload via Gateway | backlog | Fase 4: Módulo Piloto e Integração |
+| TASK-058 | DEV (Fase 4 Piloto): Refatorar Backend do `gerador_quesitos` para Usar Texto Pré-processado | backlog | Fase 4: Módulo Piloto e Integração |
+| TASK-059 | TEST-PLAN (Fase 4 Piloto): Planejar Testes para `gerador_quesitos` Refatorado | backlog | Fase 4: Módulo Piloto e Integração |
+| TASK-060 | TEST-IMPL (Fase 4 Piloto): Implementar Testes para `gerador_quesitos` Refatorado | backlog | Fase 4: Módulo Piloto e Integração |
+| TASK-061 | TEST-EXEC (Fase 4 Piloto): Executar Testes do `gerador_quesitos` Refatorado | backlog | Fase 4: Módulo Piloto e Integração |
+| TASK-062 | DEV (Fase 5): Configurar Logging Estruturado e Avaliar APM | backlog | Fase 5: Governança e Maturidade |
+| TASK-063 | DEV (Fase 5): Configurar Sistema de Alertas (Backend) | backlog | Fase 5: Governança e Maturidade |
