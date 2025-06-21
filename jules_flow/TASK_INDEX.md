@@ -48,3 +48,9 @@
 | TASK-045 | TEST-EXEC: Executar Testes da Fase 4 (Frontend Analisador) | blocked | Fase 4: Construção da Experiência do Usuário (Frontend) |
 | TASK-046 | ENV-REVIEW: Revisão Final do .env.example | blocked | Fase Final: Submissão |
 | TASK-047 | SUBMIT: Entregar todas as alterações do Roadmap Completo | blocked | Fase Final: Submissão |
+| TASK-048 | DEV (Fase 2): Definir Schema e Migração para `pdf_processed_chunks` | backlog | Fase 2: Infraestrutura de Microserviços |
+| TASK-049 | DEV (Fase 2): Criar Estrutura Base do `pdf_processor_service` | backlog | Fase 2: Infraestrutura de Microserviços |
+| TASK-050 | DEV (Fase 2): Implementar Lógica de Extração de Texto no `pdf_processor_service` | backlog | Fase 2: Infraestrutura de Microserviços |
+| TASK-051 | DEV (Fase 2): Implementar Endpoint `POST /process-pdf` no `pdf_processor_service` | backlog | Fase 2: Infraestrutura de Microserviços |
+| TASK-052 | DEV (Fase 2): Atualizar Orquestração (docker-compose) para `pdf_processor_service` | backlog | Fase 2: Infraestrutura de Microserviços |
+| TASK-053 | DEV (Fase 2): Implementar Endpoint Gateway `/api/v1/documents/upload-and-process` na API Principal | backlog | Fase 2: Infraestrutura de Microserviços |
