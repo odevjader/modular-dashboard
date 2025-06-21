@@ -23,18 +23,31 @@ def sample_pdf_bytes() -> bytes:
 
 @pytest.fixture
 def mock_pypdfium2_pdfdocument(mocker):
-    mock_textpage = mocker.MagicMock()
-    mock_textpage.get_text_range.return_value = "Page 1 text.\n\nPage 2 text."
+    # Mock for page 1
+    mock_textpage1 = mocker.MagicMock()
+    mock_textpage1.get_text_range.return_value = "Page 1 text."
+    mock_textpage1.close = mocker.MagicMock()
 
-    mock_page = mocker.MagicMock()
-    mock_page.get_textpage.return_value = mock_textpage
+    mock_page1 = mocker.MagicMock()
+    mock_page1.get_textpage.return_value = mock_textpage1
+    mock_page1.close = mocker.MagicMock()
+
+    # Mock for page 2
+    mock_textpage2 = mocker.MagicMock()
+    mock_textpage2.get_text_range.return_value = "Page 2 text."
+    mock_textpage2.close = mocker.MagicMock()
+
+    mock_page2 = mocker.MagicMock()
+    mock_page2.get_textpage.return_value = mock_textpage2
+    mock_page2.close = mocker.MagicMock()
+
+    mock_page = mocker.MagicMock() # General page mock, not used if __getitem__ is specific
 
     mock_pdf = mocker.MagicMock()
     mock_pdf.__len__.return_value = 2 # Simulate 2 pages
-    mock_pdf.__getitem__.return_value = mock_page # Each page is this mock_page
+    # Configure __getitem__ to return different page mocks
+    mock_pdf.__getitem__.side_effect = [mock_page1, mock_page2]
     mock_pdf.close = mocker.MagicMock()
-    mock_page.close = mocker.MagicMock()
-    mock_textpage.close = mocker.MagicMock()
 
     return mocker.patch('app.services.extraction_service.pdfium.PdfDocument', return_value=mock_pdf)
 

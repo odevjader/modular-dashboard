@@ -67,6 +67,8 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
    * ✅ Criado plano de testes para o endpoint de upload `/api/documents/upload` (TASK-015).
    * ✅ Implementados testes de integração para `/api/documents/upload` (TASK-016, com ressalvas sobre execução ambiental).
 7. ✅ **TEST-PLAN (Fase 2):** Planejar Testes para `pdf_processor_service` e Novo Gateway (TASK-054).
+8. ✅ **TEST-IMPL (Fase 2):** Implementar Testes para `pdf_processor_service` e Novo Gateway (TASK-055). (Unit/Integration tests implemented; E2E out of scope for task)
+9. ✅ **TEST-EXEC (Fase 2):** Executar Testes do `pdf_processor_service` e Novo Gateway (TASK-056). (All implemented tests passed)
 
 ---
 

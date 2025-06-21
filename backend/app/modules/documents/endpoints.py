@@ -95,4 +95,5 @@ async def upload_and_process_document(
         except Exception as e:
             # Catch-all for other unexpected errors
             # Log e here for debugging
-            raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {str(e)}")
+            # Modified for debugging to see the actual error string
+            raise HTTPException(status_code=500, detail=f"Unexpected error in endpoint: {type(e).__name__} - {str(e)}")
