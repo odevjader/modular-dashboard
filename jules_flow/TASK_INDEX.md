@@ -54,3 +54,6 @@
 | TASK-051 | DEV (Fase 2): Implementar Endpoint `POST /process-pdf` no `pdf_processor_service` | backlog | Fase 2: Infraestrutura de Microserviços |
 | TASK-052 | DEV (Fase 2): Atualizar Orquestração (docker-compose) para `pdf_processor_service` | backlog | Fase 2: Infraestrutura de Microserviços |
 | TASK-053 | DEV (Fase 2): Implementar Endpoint Gateway `/api/v1/documents/upload-and-process` na API Principal | backlog | Fase 2: Infraestrutura de Microserviços |
+| TASK-054 | TEST-PLAN (Fase 2): Planejar Testes para `pdf_processor_service` e Novo Gateway | backlog | Fase 2: Infraestrutura de Microserviços |
+| TASK-055 | TEST-IMPL (Fase 2): Implementar Testes para `pdf_processor_service` e Novo Gateway | backlog | Fase 2: Infraestrutura de Microserviços |
+| TASK-056 | TEST-EXEC (Fase 2): Executar Testes do `pdf_processor_service` e Novo Gateway | backlog | Fase 2: Infraestrutura de Microserviços |
