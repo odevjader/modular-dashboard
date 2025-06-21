@@ -62,3 +62,5 @@
 | TASK-059 | TEST-PLAN (Fase 4 Piloto): Planejar Testes para `gerador_quesitos` Refatorado | backlog | Fase 4: Módulo Piloto e Integração |
 | TASK-060 | TEST-IMPL (Fase 4 Piloto): Implementar Testes para `gerador_quesitos` Refatorado | backlog | Fase 4: Módulo Piloto e Integração |
 | TASK-061 | TEST-EXEC (Fase 4 Piloto): Executar Testes do `gerador_quesitos` Refatorado | backlog | Fase 4: Módulo Piloto e Integração |
+| TASK-062 | DEV (Fase 5): Configurar Logging Estruturado e Avaliar APM | backlog | Fase 5: Governança e Maturidade |
+| TASK-063 | DEV (Fase 5): Configurar Sistema de Alertas (Backend) | backlog | Fase 5: Governança e Maturidade |
