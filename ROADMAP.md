@@ -55,7 +55,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **DEV: Criar Módulo `documents` na API Principal** (TASK-010)
 * ✅ **TEST-PLAN: Planejar Testes para Módulo `documents` (Estrutura)** (TASK-011)
 * ✅ **TEST-IMPL: Implementar Testes para Módulo `documents` (Estrutura)** (TASK-012)
-1. 📝 **DB Schema:** Definir e criar a migração (Alembic) para a nova tabela `pdf_processed_chunks`.
+1. ✅ **DB Schema:** Definir e criar a migração (Alembic) para a nova tabela `pdf_processed_chunks` (TASK-048). (Script de migração criado; aplicação pendente de resolução de acesso ao BD no ambiente de execução)
 2. 📝 **Orquestração:** Atualizar o `docker-compose.yml` para incluir o novo `pdf_processor_service` e garantir a comunicação entre os containers.
 3. 📝 **Estrutura do Microserviço:** Criar a estrutura de pastas e arquivos (`Dockerfile`, `requirements.txt`, etc.) para o `pdf_processor_service`.
 4. 📝 **Lógica do Microserviço:** Implementar a lógica de extração de texto e armazenamento no PostgreSQL dentro do `pdf_processor_service`.
