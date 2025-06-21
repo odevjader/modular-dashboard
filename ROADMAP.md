@@ -60,7 +60,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 3. ✅ **Estrutura do Microserviço:** Criar a estrutura de pastas e arquivos (`Dockerfile`, `requirements.txt`, etc.) para o `pdf_processor_service` (TASK-049).
 4. ✅ **Lógica do Microserviço:** Implementar a lógica de extração de texto e armazenamento no PostgreSQL dentro do `pdf_processor_service` (TASK-050).
 5. ✅ **Endpoint do Microserviço:** Criar o endpoint `POST /process-pdf` no `pdf_processor_service`, que ficará acessível apenas dentro da rede do Docker (TASK-051).
-6. 📝 **Endpoint Gateway na API Principal:** Implementar o endpoint `POST /api/v1/documents/upload-and-process`. Este endpoint será o único ponto de entrada público, responsável por:
+6. ✅ **Endpoint Gateway na API Principal:** Implementar o endpoint `POST /api/v1/documents/upload-and-process` (TASK-053). Este endpoint será o único ponto de entrada público, responsável por:
    * Validar a autenticação e autorização do usuário.
    * Atuar como um proxy seguro, chamando o endpoint do microserviço.
    * ✅ Implementado endpoint `/api/documents/upload` (TASK-013) para upload e encaminhamento ao `transcritor_pdf_service`.
