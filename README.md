@@ -9,7 +9,7 @@ O projeto segue uma arquitetura com Frontend SPA (React/Vite) e Backend API REST
 * **Frontend:** React (TypeScript) com Material UI, Vite e Zustand.
 * **Backend:** API RESTful Assíncrona com FastAPI (Python), SQLAlchemy. Provê os serviços Core (em `core_modules`) e os endpoints para os módulos plugáveis (`modules`).
 * **Banco de Dados:** PostgreSQL com extensão pgvector.
-* **Infraestrutura:** Docker e Docker Compose.
+* **Infraestrutura:** Docker e docker compose.
 
 *(Consulte [docs/01_ARQUITETURA.md](./docs/01_ARQUITETURA.md) para detalhes arquiteturais e [docs/07_FLUXO_DESENVOLVIMENTO_E_ONBOARDING.md](./docs/07_FLUXO_DESENVOLVIMENTO_E_ONBOARDING.md) para o fluxo de desenvolvimento).*
 

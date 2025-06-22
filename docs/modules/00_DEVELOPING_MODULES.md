@@ -136,13 +136,13 @@ class YourResourceListResponse(BaseModel):
     1.  Após definir ou alterar um modelo, você precisará gerar uma nova migração Alembic.
     2.  Execute o comando (no container `api`):
         ```bash
-        docker-compose exec api alembic revision -m "create_your_module_tables"
+        docker compose exec api alembic revision -m "create_your_module_tables"
         ```
         Substitua `"create_your_module_tables"` por uma mensagem descritiva.
     3.  Edite o arquivo de migração gerado (em `backend/app/alembic/versions/`) para incluir as operações `op.create_table(...)` e `op.drop_table(...)` para seus novos modelos.
     4.  Aplique a migração:
         ```bash
-        docker-compose exec api alembic upgrade head
+        docker compose exec api alembic upgrade head
         ```
 
 **Exemplo (`models.py`):**

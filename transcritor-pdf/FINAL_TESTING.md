@@ -131,12 +131,12 @@ Verifique se a aplicação `transcritor-pdf` e suas dependências (PostgreSQL, R
 
 *   **testar inicialização completa do ambiente com Docker Compose**:
     1.  Você deve navegar até o diretório raiz do projeto `modular-dashboard-adv` (que deve conter o `docker-compose.yml` principal que inclui o `transcritor-pdf` como um serviço).
-    2.  Execute o comando para iniciar todos os serviços: `docker-compose up -d` (o `-d` é para modo detached, mas para testes iniciais, você pode preferir rodar sem `-d` para ver os logs de todos os serviços).
+    2.  Execute o comando para iniciar todos os serviços: `docker compose up -d` (o `-d` é para modo detached, mas para testes iniciais, você pode preferir rodar sem `-d` para ver os logs de todos os serviços).
     3.  Verifique os logs de inicialização de cada contêiner relevante:
-        *   `docker-compose logs transcritor-pdf-api` (ou o nome do serviço da API do transcritor)
-        *   `docker-compose logs transcritor-pdf-worker` (ou o nome do serviço do worker Celery)
-        *   `docker-compose logs postgres` (ou o nome do serviço do PostgreSQL)
-        *   `docker-compose logs redis` (ou o nome do serviço do Redis)
+        *   `docker compose logs transcritor-pdf-api` (ou o nome do serviço da API do transcritor)
+        *   `docker compose logs transcritor-pdf-worker` (ou o nome do serviço do worker Celery)
+        *   `docker compose logs postgres` (ou o nome do serviço do PostgreSQL)
+        *   `docker compose logs redis` (ou o nome do serviço do Redis)
     4.  Você deve verificar se todos os contêineres iniciam sem erros e se os logs indicam que os serviços estão prontos (e.g., API escutando na porta, worker Celery conectado ao broker, banco de dados aceitando conexões).
     *   *Resultado Esperado*: Todos os contêineres definidos no `docker-compose.yml` para o `transcritor-pdf` e suas dependências estão rodando e saudáveis.
 *   **testar funcionalidade da API dentro do ambiente Docker**:
@@ -152,6 +152,6 @@ Verifique se a aplicação `transcritor-pdf` e suas dependências (PostgreSQL, R
     2.  Você deve verificar se não há erros de rede ou conexão entre os contêineres (e.g., API não consegue se conectar ao Redis ou PostgreSQL, worker não consegue se conectar ao broker ou ao banco).
     *   *Resultado Esperado*: Os serviços se comunicam uns com os outros usando os nomes de serviço definidos no Docker Compose (e.g., `redis://redis:6379/0`, `postgresql://user:pass@postgres:5432/dbname`).
 *   **testar parada e remoção dos contêineres**:
-    1.  Após os testes, pare e remova os contêineres usando `docker-compose down`.
-    2.  Verifique se todos os contêineres relacionados ao `transcritor-pdf` são parados e removidos. Se volumes persistentes forem usados, decida se devem ser removidos também (`docker-compose down -v`).
+    1.  Após os testes, pare e remova os contêineres usando `docker compose down`.
+    2.  Verifique se todos os contêineres relacionados ao `transcritor-pdf` são parados e removidos. Se volumes persistentes forem usados, decida se devem ser removidos também (`docker compose down -v`).
     *   *Resultado Esperado*: Os contêineres são parados e removidos corretamente, limpando o ambiente.

@@ -27,10 +27,10 @@ This document outlines the test plan for verifying the core infrastructure setup
 ## 3. Test Strategy
 
 Testing will primarily involve:
--   Starting the entire application stack using `docker-compose up --build -d`.
--   Inspecting container logs for errors (`docker-compose logs <service_name>`).
+-   Starting the entire application stack using `docker compose up --build -d`.
+-   Inspecting container logs for errors (`docker compose logs <service_name>`).
 -   Using `curl` or a browser to check HTTP endpoint connectivity (e.g., API health check, frontend serving).
--   Using `docker-compose exec` to run commands within containers for direct connectivity tests (e.g., `psql` to check DB connection from API and worker, `redis-cli ping` to check Redis connection from API and worker).
+-   Using `docker compose exec` to run commands within containers for direct connectivity tests (e.g., `psql` to check DB connection from API and worker, `redis-cli ping` to check Redis connection from API and worker).
 -   Manually triggering a test Celery task (e.g., via an API endpoint or a Python script using `send_task`).
 -   Checking database schema for successful application of migrations.
 
@@ -40,13 +40,13 @@ Testing will primarily involve:
 
 | Test ID | Description                                                                 | Expected Result                                                                                                                               |
 | :------ | :-------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------- |
-| TC-001  | Run `docker-compose up -d --build`                                          | All services (`api`, `frontend`, `db`, `redis`, `transcritor_pdf`, `transcritor_pdf_worker`) start without exit errors. `docker-compose ps` shows all as "Up" or "running". |
-| TC-002  | Inspect logs for `api` service (`docker-compose logs api`).                 | No critical startup errors. FastAPI server starts and listens on the configured port (e.g., 8000). Log indicates connection to DB and Redis if applicable at startup. |
-| TC-003  | Inspect logs for `frontend` service (`docker-compose logs frontend`).       | No critical startup errors. Development server (e.g., Vite) starts and listens on its port (e.g., 5173).                                       |
-| TC-004  | Inspect logs for `db` (PostgreSQL) service (`docker-compose logs db`).      | Database system is ready to accept connections. Log shows successful initialization.                                                          |
-| TC-005  | Inspect logs for `redis` service (`docker-compose logs redis`).             | Redis server is ready to accept connections.                                                                                                  |
-| TC-006  | Inspect logs for `transcritor_pdf` service (`docker-compose logs transcritor_pdf`). | No critical startup errors. FastAPI server (if applicable) starts. Log indicates connection to Redis if used for Celery.                 |
-| TC-007  | Inspect logs for `transcritor_pdf_worker` service (`docker-compose logs transcritor_pdf_worker`). | Celery worker starts, connects to the Redis broker, and discovers tasks. No repeated connection errors.                                    |
+| TC-001  | Run `docker compose up -d --build`                                          | All services (`api`, `frontend`, `db`, `redis`, `transcritor_pdf`, `transcritor_pdf_worker`) start without exit errors. `docker compose ps` shows all as "Up" or "running". |
+| TC-002  | Inspect logs for `api` service (`docker compose logs api`).                 | No critical startup errors. FastAPI server starts and listens on the configured port (e.g., 8000). Log indicates connection to DB and Redis if applicable at startup. |
+| TC-003  | Inspect logs for `frontend` service (`docker compose logs frontend`).       | No critical startup errors. Development server (e.g., Vite) starts and listens on its port (e.g., 5173).                                       |
+| TC-004  | Inspect logs for `db` (PostgreSQL) service (`docker compose logs db`).      | Database system is ready to accept connections. Log shows successful initialization.                                                          |
+| TC-005  | Inspect logs for `redis` service (`docker compose logs redis`).             | Redis server is ready to accept connections.                                                                                                  |
+| TC-006  | Inspect logs for `transcritor_pdf` service (`docker compose logs transcritor_pdf`). | No critical startup errors. FastAPI server (if applicable) starts. Log indicates connection to Redis if used for Celery.                 |
+| TC-007  | Inspect logs for `transcritor_pdf_worker` service (`docker compose logs transcritor_pdf_worker`). | Celery worker starts, connects to the Redis broker, and discovers tasks. No repeated connection errors.                                    |
 
 ### 4.2. Service Connectivity
 
