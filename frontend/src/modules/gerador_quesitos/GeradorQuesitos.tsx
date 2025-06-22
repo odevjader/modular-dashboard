@@ -9,6 +9,8 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { OPCOES_BENEFICIO, OPCOES_PROFISSAO, OPCOES_MODELO_IA, FRASES_DIVERTIDAS } from '../../config/opcoesFormulario';
 import { useGeradorQuesitosStore } from '../../stores/geradorQuesitosStore';
+// ProcessedDocumentInfo might be useful here for display, but not directly used in actions
+// import { ProcessedDocumentInfo } from '../../services/api';
 
 const GeradorQuesitos: React.FC = () => {
     // Local state
@@ -23,7 +25,10 @@ const GeradorQuesitos: React.FC = () => {
 
     // Global state
     const {
-        isLoading, error, quesitosResult, generateQuesitos
+        isLoading, error, quesitosResult,
+        uploadAndProcessSinglePdfForQuesitos, // New action
+        currentFileBeingProcessed, // New state
+        processedDocumentInfo // New state
     } = useGeradorQuesitosStore();
 
     // Effect for funny phrases
@@ -78,15 +83,20 @@ const GeradorQuesitos: React.FC = () => {
 
     const handleGerarQuesitos = () => {
         setUiMessage(null);
-        if (selectedFiles.length === 0) { setUiMessage("Nenhum arquivo PDF selecionado."); return; }
+        if (selectedFiles.length === 0) {
+            setUiMessage("Nenhum arquivo PDF selecionado.");
+            return;
+        }
+        if (selectedFiles.length > 1) {
+            setUiMessage("Apenas o primeiro arquivo PDF selecionado será processado para esta funcionalidade.");
+            // Continue with the first file
+        }
         if (!beneficio) { setUiMessage("Por favor, selecione o benefício."); return; }
         if (!profissao) { setUiMessage("Por favor, selecione a profissão."); return; }
-        const formData = new FormData();
-        selectedFiles.forEach(file => { formData.append('files', file); });
-        formData.append('beneficio', beneficio);
-        formData.append('profissao', profissao);
-        formData.append('modelo_nome', modeloIASelecionado);
-        generateQuesitos(formData);
+
+        const fileToProcess = selectedFiles[0];
+
+        uploadAndProcessSinglePdfForQuesitos(fileToProcess, beneficio, profissao, modeloIASelecionado);
     };
 
     return (
@@ -119,14 +129,23 @@ const GeradorQuesitos: React.FC = () => {
                </Box>
             </> ) : ( /* Loading State Display */
                 <Paper elevation={0} sx={{ p: 2, textAlign: 'center', bgcolor: 'action.hover' }}>
-                    <Typography variant="h5" component="p" gutterBottom> Gerando Quesitos... </Typography>
+                    <Typography variant="h5" component="p" gutterBottom>
+                        { currentFileBeingProcessed ? `Processando: ${currentFileBeingProcessed.name}` : "Gerando Quesitos..."}
+                    </Typography>
+                    { currentFileBeingProcessed && processedDocumentInfo && (
+                        <Typography variant="caption" display="block" color="text.secondary" sx={{mb:1}}>
+                           Arquivo processado: ID {processedDocumentInfo.id}, Hash: ...{processedDocumentInfo.file_hash.slice(-8)}
+                        </Typography>
+                    )}
                     <Typography variant="body1" color="text.secondary"> Benefício: {beneficio} </Typography>
                     <Typography variant="body1" color="text.secondary"> Profissão: {profissao} </Typography>
                     <Typography variant="body1" color="text.secondary"> Modelo: {modeloIASelecionado} </Typography>
                 </Paper>
             )}
             {selectedFiles.length > 0 && ( /* File List */ <Paper variant="outlined" sx={{ p: 1, mt: 1, maxHeight: '200px', overflowY: 'auto' }}>
-                 <Typography variant="subtitle2" gutterBottom sx={{ pl: 1 }}>Arquivos Selecionados ({selectedFiles.length}):</Typography>
+                 <Typography variant="subtitle2" gutterBottom sx={{ pl: 1 }}>
+                     {selectedFiles.length > 1 ? `Arquivo para processar: ${selectedFiles[0].name} (de ${selectedFiles.length} selecionados)` : `Arquivo Selecionado: ${selectedFiles[0].name}`}
+                 </Typography>
                 <List dense>
                     {selectedFiles.map((file, index) => (
                         <ListItem key={`${file.name}-${index}-${file.lastModified}`} secondaryAction={ <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveFile(index)} disabled={isLoading}> <DeleteIcon fontSize="small"/> </IconButton> } sx={{py: 0}}>
