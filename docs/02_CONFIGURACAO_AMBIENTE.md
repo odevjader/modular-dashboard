@@ -65,22 +65,22 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas em s
 3.  **Iniciar os Containers Docker:**
     A partir da raiz do projeto (`modular-dashboard/`), execute o Docker Compose para construir as imagens (se necessário) e iniciar os containers do backend (serviço `api`) e do banco de dados (serviço `db`).
     ```bash
-    docker-compose up -d --build
+    docker compose up -d --build
     ```
     * A opção `-d` executa os containers em modo detached (background).
     * A opção `--build` força a reconstrução das imagens se houver mudanças no `Dockerfile` ou arquivos relacionados.
-    * Aguarde até que os containers estejam em execução. Você pode verificar com `docker-compose ps`.
+    * Aguarde até que os containers estejam em execução. Você pode verificar com `docker compose ps`.
 
 4.  **Aplicar Migrações do Banco de Dados (Alembic):**
     Após o container `api` estar em execução, aplique as migrações do banco de dados para garantir que o schema esteja atualizado.
     ```bash
-    docker-compose exec api alembic upgrade head
+    docker compose exec api alembic upgrade head
     ```
 
 5.  **Criar Usuário Administrador Inicial (Opcional):**
     O projeto inclui um script para criar um usuário administrador padrão (`admin@gmail.com` / `admin@gmail.com`). Para executá-lo:
     ```bash
-    docker-compose exec api python app/create_admin_user.py
+    docker compose exec api python app/create_admin_user.py
     ```
     O script verificará se o usuário já existe. Se existir e não for admin ou estiver inativo, tentará atualizá-lo.
 
@@ -110,6 +110,6 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas em s
 
 Para parar os containers Docker quando terminar de trabalhar, execute na raiz do projeto:
 ```bash
-docker-compose down
+docker compose down
 ```
 Isto irá parar e remover os containers. Os volumes de dados do banco de dados (se configurados) geralmente são preservados.

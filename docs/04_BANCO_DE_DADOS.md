@@ -45,26 +45,26 @@ O Alembic é utilizado para gerenciar as alterações no schema do banco de dado
 
 * **Configuração:** `backend/app/alembic.ini`
 * **Scripts de Migração:** Armazenados na pasta `backend/app/versions/`. Cada arquivo representa uma revisão do schema.
-* **Execução de Comandos:** Os comandos do Alembic devem ser executados dentro do container `api` usando `docker-compose exec`.
+* **Execução de Comandos:** Os comandos do Alembic devem ser executados dentro do container `api` usando `docker compose exec`.
 
 **Comandos Comuns:**
 
 * **Gerar uma nova revisão de migração (após alterar modelos SQLAlchemy):**
     ```bash
-    docker-compose exec api alembic revision --autogenerate -m "Descreva a mudança aqui"
+    docker compose exec api alembic revision --autogenerate -m "Descreva a mudança aqui"
     ```
     *(Revise o script gerado em `versions/` antes de aplicá-lo!)*
 
 * **Aplicar todas as migrações pendentes (atualizar BD para a última versão):**
     ```bash
-    docker-compose exec api alembic upgrade head
+    docker compose exec api alembic upgrade head
     ```
 
 * **Reverter a última migração aplicada:**
     ```bash
-    docker-compose exec api alembic downgrade -1
+    docker compose exec api alembic downgrade -1
     ```
 
 * **Verificar a revisão atual do banco de dados:**
     ```bash
-    docker-compose exec api alembic current
+    docker compose exec api alembic current

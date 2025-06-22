@@ -209,18 +209,18 @@ OPENAI_API_KEY=your_openai_api_key_here
 ```
 
 ### Common Docker Compose Commands
-- `docker-compose up`: Builds (if necessary), creates, starts, and attaches to containers for an application. Add `-d` to run in detached mode.
-- `docker-compose down`: Stops and removes containers, networks, and optionally volumes (with `-v` or `--volumes`).
-- `docker-compose build [service_name]`: Builds or rebuilds images for services.
-- `docker-compose ps`: Lists containers for the current Compose project.
-- `docker-compose logs [service_name]`: Displays log output from services. Use `-f` to follow logs.
-- `docker-compose exec <service_name> <command>`: Executes a command in a running container (e.g., `docker-compose exec api bash`).
-- `docker-compose run <service_name> <command>`: Runs a one-off command on a service (creates a new container for it). Useful for tasks like database migrations.
-- `docker-compose pull [service_name]`: Pulls service images from the registry.
-- `docker-compose stop [service_name]`: Stops running containers without removing them.
-- `docker-compose start [service_name]`: Starts existing stopped containers.
-- `docker-compose restart [service_name]`: Restarts service containers.
-- `docker-compose config`: Validates and views the compiled Compose configuration.
+- `docker compose up`: Builds (if necessary), creates, starts, and attaches to containers for an application. Add `-d` to run in detached mode.
+- `docker compose down`: Stops and removes containers, networks, and optionally volumes (with `-v` or `--volumes`).
+- `docker compose build [service_name]`: Builds or rebuilds images for services.
+- `docker compose ps`: Lists containers for the current Compose project.
+- `docker compose logs [service_name]`: Displays log output from services. Use `-f` to follow logs.
+- `docker compose exec <service_name> <command>`: Executes a command in a running container (e.g., `docker compose exec api bash`).
+- `docker compose run <service_name> <command>`: Runs a one-off command on a service (creates a new container for it). Useful for tasks like database migrations.
+- `docker compose pull [service_name]`: Pulls service images from the registry.
+- `docker compose stop [service_name]`: Stops running containers without removing them.
+- `docker compose start [service_name]`: Starts existing stopped containers.
+- `docker compose restart [service_name]`: Restarts service containers.
+- `docker compose config`: Validates and views the compiled Compose configuration.
 
 ### Using Compose in Development vs. Production
 - **Development:**
@@ -233,7 +233,7 @@ OPENAI_API_KEY=your_openai_api_key_here
     - Don't expose unnecessary ports to the host or externally.
     - Use minimal, secure base images.
     - Manage secrets appropriately (e.g., Docker secrets, environment variables injected securely via CI/CD or orchestration platform, not hardcoded in `.env` files committed to the repo).
-    - Consider using multiple Compose files (e.g., a base `docker-compose.yml`, and a `docker-compose.prod.yml` for production-specific overrides like different restart policies, no debug tools, etc.). Load with `docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d`.
+    - Consider using multiple Compose files (e.g., a base `docker-compose.yml`, and a `docker-compose.prod.yml` for production-specific overrides like different restart policies, no debug tools, etc.). Load with `docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d`.
 
 ### Integration with a Larger Project (e.g., `modular-dashboard-adv`)
 When integrating a service like `transcritor-pdf` into a larger `docker-compose.yml` setup:
