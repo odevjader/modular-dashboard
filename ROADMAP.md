@@ -7,6 +7,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * 🎯 - Foco Atual / Em Andamento
 * 📝 - A Fazer
 * 🔭 - Visão Futura
+* ⚠️ - Bloqueado
 
 ---
 
@@ -138,7 +139,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 *Objetivo: Validar o fluxo de ponta a ponta, desde o upload no frontend até a resposta da IA.*
 
 * ✅ **Refatorar Frontend do Módulo:** Adicionar uma interface de upload de arquivo no módulo `gerador_quesitos` que chame o novo endpoint Gateway (TASK-057).
-* 📝 **Refatorar Backend do Módulo:** Modificar o endpoint do `gerador_quesitos` para, em vez de processar o arquivo, usar o `file_hash` para buscar o texto pré-processado no banco de dados e então executar a lógica com LangChain.
+* ✅ **Refatorar Backend do Módulo:** Modificar o endpoint do `gerador_quesitos` para, em vez de processar o arquivo, usar o `document_id` para buscar o texto pré-processado no banco de dados e então executar a lógica com LangChain (TASK-058).
 
 ---
 

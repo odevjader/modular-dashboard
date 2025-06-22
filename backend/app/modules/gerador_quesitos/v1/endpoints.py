@@ -8,13 +8,14 @@ from fastapi import (
     File,
     UploadFile,
     Form,
+    Depends, # Added Depends
 )
-# TODO: Funcionalidade desativada temporariamente (Fase 1 Roadmap - Refatoração Core).
-# Dependências removidas do container API. Será movida para um serviço dedicado na Fase 2.
-# Código original comentando abaixo:
-# from langchain_google_genai import ChatGoogleGenerativeAI
-# from langchain_core.messages import HumanMessage
-# from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_google_genai import ChatGoogleGenerativeAI # Uncommented/Added
+from langchain_core.messages import HumanMessage # Uncommented/Added
+from langchain_core.language_models.chat_models import BaseChatModel # Uncommented/Added
+from sqlalchemy.orm import Session # Added for DB session
+from app.core.database import get_db # Added for DB dependency
+from app.models.document import Document, DocumentChunk # Added for DB query
 
 # --- IMPORTS CORRIGIDOS ---
 from app.core.config import settings, logger
@@ -23,28 +24,30 @@ from app.core.config import settings, logger
 # Código original comentando abaixo:
 # from app.utils.pdf_processor import processar_pdfs_upload # Caminho absoluto
 # --- FIM IMPORTS CORRIGIDOS ---
+from . import esquemas # Updated to import the whole module
 from .esquemas import RespostaQuesitos # Relativo ok
 
 router = APIRouter()
 
 # --- Default LLM Initialization (from settings) ---
-# TODO: Funcionalidade desativada temporariamente (Fase 1 Roadmap - Refatoração Core).
-# Dependências removidas do container API. Será movida para um serviço dedicado na Fase 2.
-# Código original comentando abaixo:
-# default_llm: Optional[BaseChatModel] = None
-# default_model_name = settings.GEMINI_MODEL_NAME
-# if not settings.GOOGLE_API_KEY:
-#     logger.warning("GOOGLE_API_KEY not found. Default LLM for Gerador Quesitos will not function.")
-# else:
-#     try:
-#         default_llm = ChatGoogleGenerativeAI(
-#             model=default_model_name,
-#             google_api_key=settings.GOOGLE_API_KEY,
-#         )
-#         logger.info(f"Default LLM initialized successfully for gerador_quesitos with model: {default_model_name}")
-#     except Exception as e:
-#         logger.error(f"Failed to initialize default LLM for gerador_quesitos with model {default_model_name}: {e}", exc_info=True)
-#         # default_llm remains None
+# This will be used if specific model is not requested or if "<Modelo Padrão>" is chosen.
+default_llm: Optional[BaseChatModel] = None
+default_model_name = settings.GEMINI_MODEL_NAME
+if not settings.GOOGLE_API_KEY:
+    logger.warning("GOOGLE_API_KEY not found. Default LLM for Gerador Quesitos will not function.")
+else:
+    try:
+        default_llm = ChatGoogleGenerativeAI(
+            model=default_model_name,
+            google_api_key=settings.GOOGLE_API_KEY,
+            temperature=0.7, # Example: Adjust temperature if needed
+            # top_p=0.9, # Example: Adjust top_p if needed
+            # top_k=40   # Example: Adjust top_k if needed
+        )
+        logger.info(f"Default LLM initialized successfully for gerador_quesitos with model: {default_model_name}")
+    except Exception as e:
+        logger.error(f"Failed to initialize default LLM for gerador_quesitos with model {default_model_name}: {e}", exc_info=True)
+        # default_llm remains None
 
 # --- Load Prompt Template ---
 prompt_template_string = ""
@@ -174,4 +177,92 @@ async def gerar_quesitos(
     #         detail=f"Erro inesperado ao gerar quesitos: {str(e)}",
     #     )
     texto_resposta = "Funcionalidade de geração de quesitos via IA desativada temporariamente." # Placeholder response
+    return RespostaQuesitos(quesitos_texto=texto_resposta)
+
+
+@router.post(
+    "/gerar_com_referencia_documento",
+    response_model=RespostaQuesitos,
+    summary="Gera quesitos a partir de um ID de documento pré-processado.",
+    tags=["Gerador Quesitos"],
+)
+async def gerar_quesitos_com_referencia(
+    payload: esquemas.GerarQuesitosComDocIdPayload,
+    db: Session = Depends(get_db),
+    # current_user: User = Depends(get_current_active_user) # Add if auth is needed here
+):
+    if not prompt_template_string:
+        logger.error("Prompt template not loaded during startup.")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno: Template de prompt não disponível.")
+
+    logger.info(f"Received request for doc_id: {payload.document_id}, Beneficio: {payload.beneficio}, Profissao: {payload.profissao}, Model: {payload.modelo_nome}")
+
+    # 1. Fetch document chunks from DB
+    # Assuming Document and DocumentChunk are imported from app.models.document
+    chunks = db.query(DocumentChunk).filter(DocumentChunk.document_id == payload.document_id).order_by(DocumentChunk.chunk_order).all()
+    if not chunks:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Documento com ID {payload.document_id} não encontrado ou não possui conteúdo processado.")
+
+    texto_extraido_combinado = "\n\n".join([chunk.chunk_text for chunk in chunks])
+    logger.info(f"Retrieved and combined {len(chunks)} chunks. Total text length: {len(texto_extraido_combinado)}")
+
+    # 2. Select LLM
+    llm_to_use: Optional[BaseChatModel] = None
+    selected_model_display_name = ""
+    # default_model_name is already defined globally
+
+    if payload.modelo_nome == "<Modelo Padrão>" or not payload.modelo_nome:
+        logger.info(f"Using default LLM model: {default_model_name}")
+        llm_to_use = default_llm # Use the globally initialized default_llm
+        selected_model_display_name = default_model_name
+        if not llm_to_use: # Check if default_llm failed to initialize
+             logger.warning("Default LLM was not available. Attempting to re-initialize for this request.")
+             if settings.GOOGLE_API_KEY:
+                 try:
+                     llm_to_use = ChatGoogleGenerativeAI(model=default_model_name, google_api_key=settings.GOOGLE_API_KEY)
+                     selected_model_display_name = default_model_name
+                 except Exception as e:
+                     logger.error(f"Failed to re-initialize default LLM {default_model_name}: {e}")
+             else:
+                 logger.warning("GOOGLE_API_KEY not found for default LLM in gerar_quesitos_com_referencia")
+
+    else:
+        logger.info(f"Attempting to use specifically requested LLM model: {payload.modelo_nome}")
+        if not settings.GOOGLE_API_KEY:
+            logger.error("Cannot initialize specific model: GOOGLE_API_KEY not found.")
+            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Serviço de IA não configurado (chave API ausente).")
+        try:
+            llm_to_use = ChatGoogleGenerativeAI(model=payload.modelo_nome, google_api_key=settings.GOOGLE_API_KEY)
+            selected_model_display_name = payload.modelo_nome
+            logger.info(f"Dynamically initialized LLM with model: {payload.modelo_nome}")
+        except Exception as e:
+            logger.error(f"Failed to initialize requested LLM model '{payload.modelo_nome}': {e}", exc_info=True)
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=f"Não foi possível inicializar o modelo de IA solicitado: '{payload.modelo_nome}'."
+            )
+
+    if not llm_to_use:
+        logger.error("LLM instance is unavailable.")
+        logger.warning("LLM is unavailable. Returning placeholder response for quesitos.")
+        return RespostaQuesitos(quesitos_texto="Placeholder: LLM indisponível, quesitos não gerados.")
+
+    # 3. Format Prompt
+    final_prompt_text = prompt_template_string.format(
+        pdf_content=texto_extraido_combinado,
+        beneficio=payload.beneficio,
+        profissao=payload.profissao
+    )
+
+    # 4. Call LLM
+    message = HumanMessage(content=final_prompt_text)
+    logger.info(f"Sending request to Gemini model '{selected_model_display_name}' via Langchain...")
+    try:
+        ai_message = await llm_to_use.ainvoke([message])
+        texto_resposta = ai_message.content
+        logger.info(f"Received AI response snippet: '{texto_resposta[:100]}...'" )
+    except Exception as e:
+        logger.error(f"Error during LLM call: {e}", exc_info=True)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Erro ao contatar o serviço de IA: {str(e)}")
+
     return RespostaQuesitos(quesitos_texto=texto_resposta)
