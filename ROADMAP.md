@@ -32,11 +32,11 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **Banco de Dados:** Configurado com PostgreSQL e Alembic.
 * ✅ **Módulos de Exemplo:** Criados `gerador_quesitos`, `ai_test`, `info`.
 * ✅ **Documentação Inicial:** Criada a documentação base do projeto.
-* ✅ **Pesquisa de Documentação (Docker, Redis, Celery):** Documentação oficial e melhores práticas pesquisadas (TASK-003).
-* ✅ **Resumo de Documentação (Docker, Redis, Celery):** Sumários criados em `docs/reference/` (TASK-004).
-* ✅ **Planejamento de Testes (Fase 1 Infra):** Plano de teste para a configuração da infraestrutura da Fase 1 criado (TASK-005).
-* ✅ **Implementação de Testes (Fase 1 Infra):** Scripts de teste de integração para configuração da infraestrutura criados (TASK-006).
-* ⚠️ **Execução de Testes (Fase 1 Infra):** (TASK-007) - BLOCKED: Pendente de execução manual devido a limitações ambientais.
+* ✅ **Pesquisa de Documentação (Docker, Redis, Celery):** Documentação oficial e melhores práticas pesquisadas.
+* ✅ **Resumo de Documentação (Docker, Redis, Celery):** Sumários criados em `docs/reference/`.
+* ✅ **Planejamento de Testes (Fase 1 Infra):** Plano de teste para a configuração da infraestrutura da Fase 1 criado.
+* ✅ **Implementação de Testes (Fase 1 Infra):** Scripts de teste de integração para configuração da infraestrutura criados.
+* ⚠️ **Execução de Testes (Fase 1 Infra):** - BLOCKED: Pendente de execução manual devido a limitações ambientais.
 
 ---
 
@@ -46,8 +46,8 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 *Objetivo: Estabelecer a estrutura e os processos para que Jules (AI Agent) possa gerenciar suas próprias tarefas de desenvolvimento de forma organizada e rastreável.*
 
 * ✅ **Criação da Estrutura Inicial do Jules-Flow:** Diretórios, arquivos base (`README.md`, `INSTRUCTIONS_FOR_JULES.md`, `TASK_INDEX.md`), e o template de tarefas (`task_template.md`) foram configurados.
-* ✅ **Centralização de Documentos de Referência:** Documentos de referência do `transcritor-pdf` movidos para `docs/reference` (TASK-001).
-* ✅ **Revisão de .env.example Pós-Fase 1:** Arquivos `.env.example` verificados e considerados adequados (TASK-002).
+* ✅ **Centralização de Documentos de Referência:** Documentos de referência do `transcritor-pdf` movidos para `docs/reference`.
+* ✅ **Revisão de .env.example Pós-Fase 1:** Arquivos `.env.example` verificados e considerados adequados.
 * ✅ **Definição do Processo de Criação de Tarefas On-Demand:** Documentação atualizada para permitir que o Desenvolvedor solicite tarefas diretamente, além daquelas geradas pelo Roadmap. (Referência: Commit de atualização de documentação do Jules-Flow)
 
 ---
@@ -59,16 +59,16 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 
 #### Tarefas Priorizadas:
 
-* ✅ **DOC-SEARCH: Pesquisar Documentação (FastAPI)** (TASK-008) - Relevante para a API Gateway.
-* ✅ **DOC-SUMMARIZE: Resumir Documentação (FastAPI para Gateway)** (TASK-009) - Relevante para a API Gateway.
-* ✅ **DEV: Criar Módulo `documents` na API Principal** (TASK-010) - Estrutura base do módulo de documentos no backend.
-* ✅ **TEST-PLAN: Planejar Testes para Módulo `documents` (Estrutura)** (TASK-011) - Testes para a estrutura do módulo.
-* ✅ **TEST-IMPL: Implementar Testes para Módulo `documents` (Estrutura)** (TASK-012) - Testes para a estrutura do módulo.
-* ⚠️ **DB-SYNC: Resolver Incompatibilidade de Schema de Documentos (Backend & Transcritor)** (TASK-048 adaptada) - A tabela 'documents' (que armazena chunks) criada pelo `transcritor_pdf_service` é incompatível com os modelos ORM `Document`/`DocumentChunk` (duas tabelas) do backend principal. É CRÍTICO definir uma estratégia: A) Modificar modelos do backend para mapear a tabela do transcritor; B) Modificar transcritor para usar schema de duas tabelas; ou C) Backend acessa dados de chunks apenas via API do transcritor, tornando seus modelos atuais de chunk obsoletos para essa finalidade. Investigar e implementar a solução escolhida.
-* ✅ **DOCKER: Configuração `docker-compose.yml` (Transcritor PDF)** (TASK-052 adaptada) - Revisar e garantir que `docker-compose.yml` configura corretamente o `transcritor_pdf_service` e remove quaisquer referências ao `pdf_processor_service` obsoleto. (Concluído)
-* ✅ **Endpoint Gateway Upload: `/api/documents/upload` (Backend Principal)** (TASK-013) - Implementado para upload e encaminhamento ao `transcritor_pdf_service`.
-* ✅ **Plano de Testes Upload: `/api/documents/upload`** (TASK-015) - Criado plano de testes para o endpoint de upload.
-* ✅ **Testes Integração Upload: `/api/documents/upload`** (TASK-016) - Implementados testes de integração (com ressalvas sobre execução ambiental).
+* ✅ **DOC-SEARCH: Pesquisar Documentação (FastAPI)** - Relevante para a API Gateway.
+* ✅ **DOC-SUMMARIZE: Resumir Documentação (FastAPI para Gateway)** - Relevante para a API Gateway.
+* ✅ **DEV: Criar Módulo `documents` na API Principal** - Estrutura base do módulo de documentos no backend.
+* ✅ **TEST-PLAN: Planejar Testes para Módulo `documents` (Estrutura)** - Testes para a estrutura do módulo.
+* ✅ **TEST-IMPL: Implementar Testes para Módulo `documents` (Estrutura)** - Testes para a estrutura do módulo.
+* ✅ **DB-SYNC: Resolver Incompatibilidade de Schema de Documentos (Backend & Transcritor)** - Decisão arquitetural: O backend acessará os dados dos chunks (incluindo texto e embeddings) exclusivamente através da API do `transcritor_pdf_service` (Opção C). Isso significa que os modelos `DocumentChunk` do backend não armazenarão dados processados pelo transcritor. Os schemas permanecem distintos, respeitando a separação de responsabilidades. A "sincronização" ocorre via chamadas de API. (Concluído pela definição da estratégia de interação)
+* ✅ **DOCKER: Configuração `docker-compose.yml` (Transcritor PDF)** - Revisar e garantir que `docker-compose.yml` configura corretamente o `transcritor_pdf_service` e remove quaisquer referências ao `pdf_processor_service` obsoleto. (Concluído)
+* ✅ **Endpoint Gateway Upload: `/api/documents/upload` (Backend Principal)** - Implementado para upload e encaminhamento ao `transcritor_pdf_service`.
+* ✅ **Plano de Testes Upload: `/api/documents/upload`** - Criado plano de testes para o endpoint de upload.
+* ✅ **Testes Integração Upload: `/api/documents/upload`** - Implementados testes de integração (com ressalvas sobre execução ambiental).
 * 📝 **TEST-EXEC: Executar Testes da Fase 2 (Integração Transcritor PDF)** - Executar todos os testes relevantes para a integração do gateway com o `transcritor_pdf_service`.
 
 ---
@@ -78,24 +78,24 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 **Épico:** Habilitar a interação e diálogo com documentos através do backend do Transcritor-PDF.
 *Objetivo: Desenvolver o backend do `transcritor-pdf` para suportar busca semântica e interação baseada em LLM com os textos extraídos. Esta fase foca na construção dos componentes de backend que permitem ao sistema 'entender' e responder perguntas sobre os documentos processados.*
 
-* ✅ **DOC-SEARCH: Pesquisar Documentação (pgvector, LLM Client)** (TASK-018)
-* ✅ **DOC-SUMMARIZE: Resumir Documentação (pgvector, LLM Client)** (TASK-019)
-* ✅ **DEV: Implementar Endpoint de Processamento de PDF no Transcritor-PDF** (TASK-020)
-* ✅ **TEST-PLAN: Planejar Testes para Endpoint \`process-pdf\` (Transcritor)** (TASK-021)
-* ✅ **TEST-IMPL: Implementar Testes para Endpoint \`process-pdf\` (Transcritor)** (TASK-022)
-* ✅ **DEV: Desenvolver Inteligência de Busca Vetorial (Transcritor-PDF)** (TASK-023)
-* ✅ **TEST-PLAN: Planejar Testes para Busca Vetorial (Transcritor-PDF)** (TASK-024)
-* ✅ **TEST-IMPL: Implementar Testes para Busca Vetorial (Transcritor-PDF)** (TASK-025)
-* ✅ **DEV: Construir Orquestrador de Respostas com LLM (Transcritor-PDF)** (TASK-026)
-* ✅ **TEST-PLAN: Planejar Testes para Orquestrador de Respostas (Transcritor-PDF)** (TASK-027)
-* ✅ **TEST-IMPL: Implementar Testes para Orquestrador de Respostas (Transcritor-PDF)** (TASK-028)
-* ✅ **DEV: Criar Endpoint de Diálogo no Transcritor-PDF** (TASK-029)
-* ✅ **TEST-PLAN: Planejar Testes para Endpoint de Diálogo (Transcritor-PDF)** (TASK-030)
-* ✅ **TEST-IMPL: Implementar Testes para Endpoint de Diálogo (Transcritor-PDF)** (TASK-031)
-* ✅ **DEV: Expandir Gateway na API Principal para Diálogo** (TASK-032)
-* ✅ **TEST-PLAN: Planejar Testes para Gateway de Diálogo (API Principal)** (TASK-033)
-* ✅ **TEST-IMPL: Implementar Testes para Gateway de Diálogo (API Principal)** (TASK-034)
-* ⚠️ **TEST-EXEC: Executar Testes da Fase 3 (Transcritor-PDF e Gateway Diálogo)** (TASK-035) - BLOCKED: Pendente de execução manual.
+* ✅ **DOC-SEARCH: Pesquisar Documentação (pgvector, LLM Client)**
+* ✅ **DOC-SUMMARIZE: Resumir Documentação (pgvector, LLM Client)**
+* ✅ **DEV: Implementar Endpoint de Processamento de PDF no Transcritor-PDF**
+* ✅ **TEST-PLAN: Planejar Testes para Endpoint \`process-pdf\` (Transcritor)**
+* ✅ **TEST-IMPL: Implementar Testes para Endpoint \`process-pdf\` (Transcritor)**
+* ✅ **DEV: Desenvolver Inteligência de Busca Vetorial (Transcritor-PDF)**
+* ✅ **TEST-PLAN: Planejar Testes para Busca Vetorial (Transcritor-PDF)**
+* ✅ **TEST-IMPL: Implementar Testes para Busca Vetorial (Transcritor-PDF)**
+* ✅ **DEV: Construir Orquestrador de Respostas com LLM (Transcritor-PDF)**
+* ✅ **TEST-PLAN: Planejar Testes para Orquestrador de Respostas (Transcritor-PDF)**
+* ✅ **TEST-IMPL: Implementar Testes para Orquestrador de Respostas (Transcritor-PDF)**
+* ✅ **DEV: Criar Endpoint de Diálogo no Transcritor-PDF**
+* ✅ **TEST-PLAN: Planejar Testes para Endpoint de Diálogo (Transcritor-PDF)**
+* ✅ **TEST-IMPL: Implementar Testes para Endpoint de Diálogo (Transcritor-PDF)**
+* ✅ **DEV: Expandir Gateway na API Principal para Diálogo**
+* ✅ **TEST-PLAN: Planejar Testes para Gateway de Diálogo (API Principal)**
+* ✅ **TEST-IMPL: Implementar Testes para Gateway de Diálogo (API Principal)**
+* ⚠️ **TEST-EXEC: Executar Testes da Fase 3 (Transcritor-PDF e Gateway Diálogo)** - BLOCKED: Pendente de execução manual.
 
 ---
 
@@ -104,16 +104,16 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 **Épico:** Desenvolver a interface do usuário para o novo módulo de análise e diálogo de documentos.
 *Objetivo: Criar uma interface intuitiva no frontend que permita aos usuários fazer upload de documentos, visualizar o status do processamento, e interagir com os documentos processados através de um sistema de chat.*
 
-* ✅ **DOC-SEARCH: Pesquisar Documentação (React, Zustand, Frontend API)** (TASK-036)
-* ✅ **DOC-SUMMARIZE: Resumir Documentação (Frontend para Analisador)** (TASK-037)
-* ✅ **DEV: Criar Página 'Analisador de Documentos' (Frontend)** (TASK-038)
-* ✅ **DEV: Desenvolver Interface de Upload na Página (Frontend)** (TASK-039)
-* ✅ **DEV: Implementar Feedback de Processamento no Frontend** (TASK-040)
-* ✅ **DEV: Construir Interface de Chat no Frontend** (TASK-041)
-* ✅ **DEV: Integrar ao Menu de Navegação Principal (Frontend)** (TASK-042)
-* ✅ **TEST-PLAN: Planejar Testes para Frontend do Analisador de Documentos** (TASK-043)
-* ✅ **TEST-IMPL: Implementar Testes para Frontend (Analisador)** (TASK-044) - Testes de componente implementados.
-* ⚠️ **TEST-EXEC: Executar Testes da Fase 4 (Frontend Analisador)** (TASK-045) - BLOCKED: Pendente de execução manual dos testes da TASK-044.
+* ✅ **DOC-SEARCH: Pesquisar Documentação (React, Zustand, Frontend API)**
+* ✅ **DOC-SUMMARIZE: Resumir Documentação (Frontend para Analisador)**
+* ✅ **DEV: Criar Página 'Analisador de Documentos' (Frontend)**
+* ✅ **DEV: Desenvolver Interface de Upload na Página (Frontend)**
+* ✅ **DEV: Implementar Feedback de Processamento no Frontend**
+* ✅ **DEV: Construir Interface de Chat no Frontend**
+* ✅ **DEV: Integrar ao Menu de Navegação Principal (Frontend)**
+* ✅ **TEST-PLAN: Planejar Testes para Frontend do Analisador de Documentos**
+* ✅ **TEST-IMPL: Implementar Testes para Frontend (Analisador)** - Testes de componente implementados.
+* ⚠️ **TEST-EXEC: Executar Testes da Fase 4 (Frontend Analisador)** - BLOCKED: Pendente de execução manual dos testes.
 
 
 ---
@@ -138,11 +138,11 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 **Épico:** Refatorar o `gerador_quesitos` para usar a nova arquitetura, servindo como modelo para futuros módulos.
 *Objetivo: Validar o fluxo de ponta a ponta, desde o upload no frontend até a resposta da IA.*
 
-* ✅ **Refatorar Frontend do Módulo:** Adicionar uma interface de upload de arquivo no módulo `gerador_quesitos` que chame o novo endpoint Gateway (TASK-057).
-* 📝 **Refatorar Backend do Módulo (`gerador_quesitos`):** Alinhar o endpoint do `gerador_quesitos` para receber `document_filename` (ou identificador similar pós-processamento pelo `transcritor_pdf_service`) em vez de `document_id`. Garantir que a busca do texto do documento seja compatível com a forma como o `transcritor_pdf_service` armazena os dados. (TASK-058).
-* ✅ **TEST-PLAN (Fase 6 Piloto): Planejar Testes para `gerador_quesitos` Refatorado** (TASK-059).
-* ✅ **TEST-IMPL (Fase 6 Piloto): Implementar Testes para `gerador_quesitos` Refatorado** (TASK-060). (Testes de frontend e backend implementados)
-* ⚠️ **TEST-EXEC (Fase 6 Piloto): Executar Testes do `gerador_quesitos` Refatorado** (TASK-061). - BLOCKED: Pendente de execução manual dos testes da TASK-060.
+* ✅ **Refatorar Frontend do Módulo:** Adicionar uma interface de upload de arquivo no módulo `gerador_quesitos` que chame o novo endpoint Gateway.
+* 📝 **Refatorar Backend do Módulo (`gerador_quesitos`):** Alinhar o endpoint do `gerador_quesitos` para receber `document_filename` (ou identificador similar pós-processamento pelo `transcritor_pdf_service`) em vez de `document_id`. Garantir que a busca do texto do documento seja compatível com a forma como o `transcritor_pdf_service` armazena os dados.
+* ✅ **TEST-PLAN (Fase 6 Piloto): Planejar Testes para `gerador_quesitos` Refatorado**.
+* ✅ **TEST-IMPL (Fase 6 Piloto): Implementar Testes para `gerador_quesitos` Refatorado**. (Testes de frontend e backend implementados)
+* ⚠️ **TEST-EXEC (Fase 6 Piloto): Executar Testes do `gerador_quesitos` Refatorado**. - BLOCKED: Pendente de execução manual dos testes.
 
 
 ---
@@ -163,5 +163,5 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 **Épico:** Preparar a aplicação para a entrega final, garantindo que todos os componentes estejam revisados e a documentação atualizada.
 *Objetivo: Realizar as últimas verificações e garantir que o projeto esteja em um estado polido e completo conforme o escopo definido.*
 
-* ⚠️ **ENV-REVIEW: Revisão Final do .env.example (TASK-046) - BLOQUEADO: TASK-045 pendente**
-* ⚠️ **SUBMIT: Entregar todas as alterações do Roadmap Completo (TASK-047) - BLOQUEADO: TASK-046 pendente**
+* ⚠️ **ENV-REVIEW: Revisão Final do .env.example - BLOQUEADO: Execução de testes da Fase 4 pendente**
+* ⚠️ **SUBMIT: Entregar todas as alterações do Roadmap Completo - BLOQUEADO: Revisão final do .env.example pendente**
