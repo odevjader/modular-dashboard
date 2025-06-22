@@ -6,11 +6,11 @@ from .v1 import endpoints as v1_endpoints
 from pydantic import BaseModel
 from .schemas import TaskStatusResponse # Import the new response model
 
-# New imports for the gateway endpoint
-import httpx
-from fastapi import Request
-from typing import Any
-from app.core.config import settings # For PDF_PROCESSOR_SERVICE_URL
+# Imports below are no longer needed after removing the /upload-and-process endpoint
+# import httpx
+# from fastapi import Request
+# from typing import Any
+# from app.core.config import settings
 
 
 api_router = APIRouter()
