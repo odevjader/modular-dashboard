@@ -14,8 +14,8 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 
 * 📝 **REFACTOR-DOC: Renomear "modular-dashboard" / "modular-dashboard-adv" para "dashboard-adv"** - Atualizar todas as menções nos arquivos de documentação para refletir o nome correto do projeto "dashboard-adv".
 * 📝 **REFACTOR-DOC: Documentar Remoção do `pdf_processor_service`** - Atualizar a documentação de arquitetura (`01_ARQUITETURA.md`) e outros documentos relevantes para refletir a remoção do `pdf_processor_service` e a consolidação do fluxo de processamento de PDF via `transcritor_pdf_service`.
-* 📝 **REFACTOR-ALEMBIC: Unificar Configuração do Alembic (Backend)** - Investigar os arquivos `alembic.ini`, manter apenas um, e garantir que `env.py` carregue a URL do banco de dados das configurações centrais, removendo senhas hardcoded. (Parcialmente concluído)
-* 📝 **REFACTOR-PDF-SERVICE: Remover Completamente `pdf_processor_service` (Backend)** - Remover a variável de configuração, o endpoint associado, o diretório do serviço e atualizar testes. (Parcialmente concluído)
+* ✅ **REFACTOR-ALEMBIC: Unificar Configuração do Alembic (Backend)** - Investigar os arquivos `alembic.ini`, manter apenas um, e garantir que `env.py` carregue a URL do banco de dados das configurações centrais, removendo senhas hardcoded. (Concluído)
+* ✅ **REFACTOR-PDF-SERVICE: Remover Completamente `pdf_processor_service` (Backend)** - Remover a variável de configuração, o endpoint associado, o diretório do serviço e atualizar testes. (Concluído)
 
 ---
 
@@ -64,8 +64,8 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **DEV: Criar Módulo `documents` na API Principal** (TASK-010) - Estrutura base do módulo de documentos no backend.
 * ✅ **TEST-PLAN: Planejar Testes para Módulo `documents` (Estrutura)** (TASK-011) - Testes para a estrutura do módulo.
 * ✅ **TEST-IMPL: Implementar Testes para Módulo `documents` (Estrutura)** (TASK-012) - Testes para a estrutura do módulo.
-* 📝 **DB-SYNC: Sincronia de Schema Documentos (Backend & Transcritor)** (TASK-048 adaptada) - Garantir consistência entre os modelos `Document`/`DocumentChunk` do backend principal e a tabela `documents` gerenciada pelo `transcritor_pdf_service`. Avaliar necessidade de migrações Alembic no backend principal para estas tabelas se ele as lê/gerencia.
-* 📝 **DOCKER: Configuração `docker-compose.yml` (Transcritor PDF)** (TASK-052 adaptada) - Revisar e garantir que `docker-compose.yml` configura corretamente o `transcritor_pdf_service` e remove quaisquer referências ao `pdf_processor_service` obsoleto.
+* ⚠️ **DB-SYNC: Resolver Incompatibilidade de Schema de Documentos (Backend & Transcritor)** (TASK-048 adaptada) - A tabela 'documents' (que armazena chunks) criada pelo `transcritor_pdf_service` é incompatível com os modelos ORM `Document`/`DocumentChunk` (duas tabelas) do backend principal. É CRÍTICO definir uma estratégia: A) Modificar modelos do backend para mapear a tabela do transcritor; B) Modificar transcritor para usar schema de duas tabelas; ou C) Backend acessa dados de chunks apenas via API do transcritor, tornando seus modelos atuais de chunk obsoletos para essa finalidade. Investigar e implementar a solução escolhida.
+* ✅ **DOCKER: Configuração `docker-compose.yml` (Transcritor PDF)** (TASK-052 adaptada) - Revisar e garantir que `docker-compose.yml` configura corretamente o `transcritor_pdf_service` e remove quaisquer referências ao `pdf_processor_service` obsoleto. (Concluído)
 * ✅ **Endpoint Gateway Upload: `/api/documents/upload` (Backend Principal)** (TASK-013) - Implementado para upload e encaminhamento ao `transcritor_pdf_service`.
 * ✅ **Plano de Testes Upload: `/api/documents/upload`** (TASK-015) - Criado plano de testes para o endpoint de upload.
 * ✅ **Testes Integração Upload: `/api/documents/upload`** (TASK-016) - Implementados testes de integração (com ressalvas sobre execução ambiental).
@@ -118,7 +118,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 
 ---
 
-## Fase 3: Melhorias do Frontend Core ✅
+## Fase 5: Melhorias do Frontend Core ✅
 
 **Épico:** Aprimorar a usabilidade, consistência e performance da interface principal da aplicação.
 *Objetivo: Refinar a experiência do usuário no 'core' da aplicação, estabelecendo uma base sólida para todos os módulos.*
@@ -133,32 +133,32 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 
 ---
 
-## Fase 4: Módulo Piloto e Integração 📝
+## Fase 6: Módulo Piloto e Integração (`gerador_quesitos`) 📝
 
 **Épico:** Refatorar o `gerador_quesitos` para usar a nova arquitetura, servindo como modelo para futuros módulos.
 *Objetivo: Validar o fluxo de ponta a ponta, desde o upload no frontend até a resposta da IA.*
 
 * ✅ **Refatorar Frontend do Módulo:** Adicionar uma interface de upload de arquivo no módulo `gerador_quesitos` que chame o novo endpoint Gateway (TASK-057).
-* ✅ **Refatorar Backend do Módulo:** Modificar o endpoint do `gerador_quesitos` para, em vez de processar o arquivo, usar o `document_id` para buscar o texto pré-processado no banco de dados e então executar a lógica com LangChain (TASK-058).
-* ✅ **TEST-PLAN (Fase 4 Piloto): Planejar Testes para `gerador_quesitos` Refatorado** (TASK-059).
-* ✅ **TEST-IMPL (Fase 4 Piloto): Implementar Testes para `gerador_quesitos` Refatorado** (TASK-060). (Testes de frontend e backend implementados)
-* ⚠️ **TEST-EXEC (Fase 4 Piloto): Executar Testes do `gerador_quesitos` Refatorado** (TASK-061). - BLOCKED: Pendente de execução manual dos testes da TASK-060.
+* 📝 **Refatorar Backend do Módulo (`gerador_quesitos`):** Alinhar o endpoint do `gerador_quesitos` para receber `document_filename` (ou identificador similar pós-processamento pelo `transcritor_pdf_service`) em vez de `document_id`. Garantir que a busca do texto do documento seja compatível com a forma como o `transcritor_pdf_service` armazena os dados. (TASK-058).
+* ✅ **TEST-PLAN (Fase 6 Piloto): Planejar Testes para `gerador_quesitos` Refatorado** (TASK-059).
+* ✅ **TEST-IMPL (Fase 6 Piloto): Implementar Testes para `gerador_quesitos` Refatorado** (TASK-060). (Testes de frontend e backend implementados)
+* ⚠️ **TEST-EXEC (Fase 6 Piloto): Executar Testes do `gerador_quesitos` Refatorado** (TASK-061). - BLOCKED: Pendente de execução manual dos testes da TASK-060.
 
 
 ---
 
-## Fase 5: Governança e Maturidade 🔭
+## Fase 7: Governança e Maturidade 🔭
 
 **Épico:** Amadurecer a plataforma, focando em usabilidade, monitoramento e segurança.
 *Objetivo: Tornar a aplicação mais robusta e fácil de manter a longo prazo.*
 
-* ✅ **Notificações no Frontend:** Implementar um mecanismo de notificação global (toasts/snackbars) para dar feedback claro ao usuário. (Coberto pela Fase 3 Core)
+* ✅ **Notificações no Frontend:** Implementar um mecanismo de notificação global (toasts/snackbars) para dar feedback claro ao usuário. (Coberto pela Fase 5 Core)
 * 📝 **Logging e Monitoramento:** Configurar um sistema de logging estruturado para todos os serviços e avaliar uma ferramenta de Application Performance Monitoring (APM).
 * 📝 **Sistema de Alertas (Backend):** Configurar alertas proativos via e-mail para falhas críticas, notificando a equipe de desenvolvimento.
 
 ---
 
-## Fase Final: Submissão 📝
+## Fase 8: Submissão 📝
 
 **Épico:** Preparar a aplicação para a entrega final, garantindo que todos os componentes estejam revisados e a documentação atualizada.
 *Objetivo: Realizar as últimas verificações e garantir que o projeto esteja em um estado polido e completo conforme o escopo definido.*
