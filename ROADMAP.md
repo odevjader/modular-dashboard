@@ -137,7 +137,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 **Épico:** Refatorar o `gerador_quesitos` para usar a nova arquitetura, servindo como modelo para futuros módulos.
 *Objetivo: Validar o fluxo de ponta a ponta, desde o upload no frontend até a resposta da IA.*
 
-* 📝 **Refatorar Frontend do Módulo:** Adicionar uma interface de upload de arquivo no módulo `gerador_quesitos` que chame o novo endpoint Gateway.
+* ✅ **Refatorar Frontend do Módulo:** Adicionar uma interface de upload de arquivo no módulo `gerador_quesitos` que chame o novo endpoint Gateway (TASK-057).
 * 📝 **Refatorar Backend do Módulo:** Modificar o endpoint do `gerador_quesitos` para, em vez de processar o arquivo, usar o `file_hash` para buscar o texto pré-processado no banco de dados e então executar a lógica com LangChain.
 
 ---

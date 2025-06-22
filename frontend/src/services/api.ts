@@ -26,6 +26,13 @@ export interface RespostaQuesitos {
     quesitos_texto: string;
 }
 
+export interface GerarQuesitosPayload { // New payload for refactored endpoint
+  document_id: number;
+  beneficio: string;
+  profissao: string;
+  modelo_nome: string;
+}
+
 // Auth Module
 export interface LoginResponse {
     access_token: string;
@@ -102,6 +109,15 @@ export interface DocumentQueryResponse {
   query_id: string; // Assuming the backend returns a query_id
 }
 
+// For the new gateway endpoint /api/v1/documents/upload-and-process
+export interface ProcessedDocumentInfo {
+  id: number; // or string depending on your ID type
+  file_hash: string;
+  file_name: string | null;
+  created_at: string; // Assuming string from JSON
+  updated_at: string | null;
+}
+
 
 // --- Generic API Client (for JSON endpoints) ---
 async function apiClient<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -151,24 +167,36 @@ export const postAITestPing = (payload: AITestInput): Promise<AITestResponse> =>
     });
 };
 
-/** Uploads PDF and inputs to generate quesitos. Uses FormData. */
-export const postGerarQuesitos = async (formData: FormData): Promise<RespostaQuesitos> => {
-    const url = `${API_BASE_URL}/gerador_quesitos/v1/gerar`;
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            body: formData,
-        });
-        if (!response.ok) {
-            let errorData;
-            try { errorData = await response.json(); } catch (e) { /* Ignore */ }
-            throw new Error(`API request failed: ${response.status} ${response.statusText}${errorData ? ` - ${JSON.stringify(errorData)}` : ''}`);
-        }
-        return await response.json() as RespostaQuesitos;
-    } catch (error) {
-        console.error('Error in postGerarQuesitos:', error);
-        throw error;
-    }
+// /** Uploads PDF and inputs to generate quesitos. Uses FormData. (OLD - to be removed or refactored) */
+// export const postGerarQuesitos = async (formData: FormData): Promise<RespostaQuesitos> => {
+//     const url = `${API_BASE_URL}/gerador_quesitos/v1/gerar`;
+//     try {
+//         const response = await fetch(url, {
+//             method: 'POST',
+//             body: formData,
+//         });
+//         if (!response.ok) {
+//             let errorData;
+//             try { errorData = await response.json(); } catch (e) { /* Ignore */ }
+//             throw new Error(`API request failed: ${response.status} ${response.statusText}${errorData ? ` - ${JSON.stringify(errorData)}` : ''}`);
+//         }
+//         return await response.json() as RespostaQuesitos;
+//     } catch (error) {
+//         console.error('Error in postGerarQuesitos:', error);
+//         throw error;
+//     }
+// };
+
+// Placeholder - will be implemented in TASK-058 for backend changes
+export const postGerarQuesitosComReferenciaDeDocumento = async (payload: GerarQuesitosPayload): Promise<RespostaQuesitos> => {
+  console.log('Placeholder: postGerarQuesitosComReferenciaDeDocumento called with', payload);
+  // This will eventually call the refactored backend for gerador_quesitos
+  // For now, return a dummy response or throw an error indicating it's not implemented
+  // Example: return { quesitos_texto: "Quesitos (refatorados) para doc ID: " + payload.document_id };
+  return apiClient<RespostaQuesitos>('/gerador_quesitos/v1/gerar_com_referencia_documento', { // New endpoint path
+      method: 'POST',
+      body: JSON.stringify(payload),
+  });
 };
 
 /** Logs in a user and returns a JWT token. */
@@ -283,4 +311,37 @@ export const postDocumentQuery = async (
     method: 'POST',
     body: JSON.stringify(payload),
   });
+};
+
+/** Uploads a PDF for processing via the new gateway endpoint. */
+export const uploadAndProcessPdf = async (file: File): Promise<ProcessedDocumentInfo> => {
+  const url = `${API_BASE_URL}/documents/upload-and-process`; // Path to the gateway endpoint
+  const formData = new FormData();
+  formData.append('file', file); // 'file' is the key used in backend by `UploadFile = File(...)`
+
+  const token = localStorage.getItem('token');
+  const headers: HeadersInit = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  // Do NOT set Content-Type for FormData, browser does it with boundary.
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+    if (!response.ok) {
+      let errorData;
+      try { errorData = await response.json(); } catch (e) { /* Ignore */ }
+      // Try to parse error detail from backend if available
+      const detail = errorData?.detail || `API request failed: ${response.status} ${response.statusText}`;
+      throw new Error(String(detail));
+    }
+    return await response.json() as ProcessedDocumentInfo;
+  } catch (error) {
+    console.error('Error in uploadAndProcessPdf:', error);
+    throw error; // Re-throw to be caught by the calling component
+  }
 };
