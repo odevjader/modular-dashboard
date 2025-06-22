@@ -14,5 +14,5 @@ def set_test_environment_variables(monkeypatch): # Use standard monkeypatch fixt
     monkeypatch.setenv("SECRET_KEY", "testsecret")
     monkeypatch.setenv("ALGORITHM", "HS256")
     monkeypatch.setenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
-    # Ensure PDF_PROCESSOR_SERVICE_URL is also set if not overridden by tests
-    monkeypatch.setenv("PDF_PROCESSOR_SERVICE_URL", "http://mock-pdf-processor:8000")
+    # PDF_PROCESSOR_SERVICE_URL is removed as the service is deprecated
+    # monkeypatch.setenv("PDF_PROCESSOR_SERVICE_URL", "http://mock-pdf-processor:8000")

@@ -21,30 +21,13 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    networks:
-      - app-network
-
-  pdf_processor_service:
-    build:
-      context: ./backend/pdf_processor_service
-      dockerfile: Dockerfile
-    container_name: pdf_processor_service
-    env_file:
-      - ./backend/.env # For common DB variables
-    environment:
-      # Construct DATABASE_URL from .env variables for PostgreSQL
-      # The default in pdf_processor_service/app/core/config.py might be overridden by these if they are set in .env
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-      - PYTHONPATH=/app # Ensure app directory is in python path
-    volumes:
-      - ./backend/pdf_processor_service:/app # Mount code for development
-    depends_on:
-      db:
+      transcritor_pdf: # Adicionada dependência do transcritor_pdf
         condition: service_healthy
     networks:
       - app-network
-    # No ports exposed to host by default, intended as an internal service
-    # command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload # Command is already in Dockerfile CMD
+
+  # O serviço pdf_processor_service foi removido por ser obsoleto.
+  # A funcionalidade de processamento de PDF agora é tratada pelo transcritor_pdf.
 
   # Microsserviço para processamento e vetorização de PDFs.
   transcritor_pdf:
@@ -60,14 +43,19 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      redis: # Corrected indentation
+      redis:
         condition: service_healthy
     ports:
       - "8002:8002"
     volumes:
       - ../transcritor-pdf:/app # Monta o código fonte para desenvolvimento com live-reload.
-    # O comando assume que o serviço expõe uma API FastAPI, alinhado com a arquitetura.
     command: uvicorn src.main:app --host 0.0.0.0 --port 8002 --reload
+    healthcheck: # Adicionado healthcheck para o transcritor_pdf
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health/"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s # Dá tempo para o serviço iniciar
     networks:
       - app-network
 

@@ -6,7 +6,9 @@ from urllib.parse import urlparse # For safe logging
 
 class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
-    BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:5173", "[http://127.0.0.1:5173](http://127.0.0.1:5173)"]
+    # Default to an empty list or a very common local development origin if not set in .env
+    # Pydantic will overwrite this with the value from .env if present.
+    BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:5173"]
     API_PREFIX: str = "/api"
     PROJECT_NAME: str = "Modular Dashboard API"
     LOGGING_LEVEL: int = logging.INFO
@@ -35,15 +37,15 @@ class Settings(BaseSettings):
     APP_PORT: int = 8000
 
     # Microservice URLs
-    PDF_PROCESSOR_SERVICE_URL: str = "http://pdf_processor_service:8000"
+    # PDF_PROCESSOR_SERVICE_URL: str = "http://pdf_processor_service:8000" # Removed as it's legacy
 
     class Config:
         env_file = ".env"
         env_file_encoding = 'utf-8'
-        # Allow extra fields from environment variables
-        extra = "allow" # Or "ignore" if we don't want to define all env vars
+        # Ignore extra fields from environment variables for stricter config loading
+        extra = "ignore"
 
-# settings = Settings() # Defer instantiation
+# settings = Settings() # Defer instantiation - Handled by get_settings
 
 # Function to get settings, allowing for deferred initialization
 _settings_instance = None
@@ -71,24 +73,23 @@ def get_settings() -> Settings:
                 logger.info("Async Database URL loaded (details hidden).")
     return _settings_instance
 
-settings = get_settings() # Initial call to load for normal operation
+settings = get_settings() # Initial call to load for normal operation and configure logging
 
-# Configure logging - Moved into get_settings to ensure it runs after settings are loaded
-# logging.basicConfig(level=settings.LOGGING_LEVEL) # This would use potentially uninitialized settings
-logger = logging.getLogger(__name__)
+# The logging calls below are now redundant because get_settings handles them
+# upon the first instantiation.
+# logger = logging.getLogger(__name__) # This logger is already configured by get_settings
 
-# Log warnings for missing critical settings
-if not settings.GOOGLE_API_KEY: logger.warning("GOOGLE_API_KEY not found.")
-if not settings.DATABASE_URL: logger.warning("DATABASE_URL (sync) not found.") # Used by Alembic internals potentially
-if not settings.ASYNC_DATABASE_URL: # ADDED Check
-    logger.warning("ASYNC_DATABASE_URL not found. App DB operations will fail.")
-else:
-    # Log partial async URL for confirmation, hiding password
-    try:
-        parsed_url = urlparse(settings.ASYNC_DATABASE_URL)
-        safe_url = f"{parsed_url.scheme}://{parsed_url.username}@{parsed_url.hostname}:{parsed_url.port}{parsed_url.path}"
-        logger.info(f"Async Database URL loaded: {safe_url}")
-    except Exception:
-         logger.info("Async Database URL loaded (details hidden).")
+# Log warnings for missing critical settings - MOVED to get_settings
+# if not settings.GOOGLE_API_KEY: logger.warning("GOOGLE_API_KEY not found.")
+# if not settings.DATABASE_URL: logger.warning("DATABASE_URL (sync) not found.")
+# if not settings.ASYNC_DATABASE_URL:
+#     logger.warning("ASYNC_DATABASE_URL not found. App DB operations will fail.")
+# else:
+#     try:
+#         parsed_url = urlparse(settings.ASYNC_DATABASE_URL)
+#         safe_url = f"{parsed_url.scheme}://{parsed_url.username}@{parsed_url.hostname}:{parsed_url.port}{parsed_url.path}"
+#         logger.info(f"Async Database URL loaded: {safe_url}")
+#     except Exception:
+#          logger.info("Async Database URL loaded (details hidden).")
 
-# logger.info(f"Using Gemini Model: {settings.GEMINI_MODEL_NAME}")
+# logger.info(f"Using Gemini Model: {settings.GEMINI_MODEL_NAME}") # Can be enabled if needed for startup diagnostics
