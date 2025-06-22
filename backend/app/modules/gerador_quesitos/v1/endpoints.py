@@ -199,23 +199,46 @@ async def gerar_quesitos_com_referencia(
 
     # 1. Fetch document chunks from DB
     # Assuming Document and DocumentChunk are imported from app.models.document
-    # Refatorado para usar SQLAlchemy assíncrono
-    from sqlalchemy import select # Import select
+    # MODIFIED: Query directly the 'documents' table used by transcritor_pdf_service
+    # This table stores chunks directly, with 'filename' and 'text_content'.
+    # We'll order by page number and then by an assumed original chunk index if available in metadata.
+    from sqlalchemy import text
 
-    stmt = (
-        select(DocumentChunk)
-        .where(DocumentChunk.document_id == payload.document_id)
-        .order_by(DocumentChunk.chunk_order)
-    )
-    result = await db.execute(stmt)
-    chunks = result.scalars().all()
+    # The 'documents' table from transcritor_pdf has:
+    # chunk_id TEXT PK, filename TEXT, page_number INTEGER (in metadata),
+    # text_content TEXT, metadata JSONB (containing page_number, original_chunk_index_on_page)
+    # embedding VECTOR, created_at TIMESTAMP
 
-    if not chunks:
-        logger.warning(f"Nenhum chunk encontrado para document_id: {payload.document_id}")
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Documento com ID {payload.document_id} não encontrado ou não possui conteúdo processado.")
+    # Ensure the table name and column names are correct as per transcritor_pdf's main.py setup.
+    # The startup event in transcritor_pdf/src/main.py creates 'documents' table.
+    # Metadata stores filename and page_number. Let's assume 'original_chunk_index_on_page' is also there.
 
-    texto_extraido_combinado = "\n\n".join([chunk.chunk_text for chunk in chunks])
-    logger.info(f"Retrieved and combined {len(chunks)} chunks for doc_id {payload.document_id}. Total text length: {len(texto_extraido_combinado)}")
+    query_str = """
+        SELECT text_content
+        FROM documents
+        WHERE filename = :doc_filename
+        ORDER BY (metadata->>'page_number')::INT, (metadata->>'original_chunk_index_on_page')::INT NULLS LAST;
+    """
+    # NULLS LAST in case original_chunk_index_on_page is not always present
+
+    stmt = text(query_str).bindparams(doc_filename=payload.document_filename)
+
+    try:
+        result = await db.execute(stmt)
+        # result will be a CursorResult, iterate over it to get rows
+        # Each row will be a RowProxy-like object where text_content is the first element
+        chunk_texts = [row[0] for row in result.fetchall()] # Assuming text_content is the first column selected
+    except Exception as e:
+        logger.error(f"Database error when fetching chunks for filename {payload.document_filename}: {e}", exc_info=True)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro ao buscar conteúdo do documento no banco de dados.")
+
+
+    if not chunk_texts:
+        logger.warning(f"Nenhum chunk encontrado para document_filename: {payload.document_filename}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Documento com nome '{payload.document_filename}' não encontrado ou não possui conteúdo processado.")
+
+    texto_extraido_combinado = "\n\n".join(chunk_texts)
+    logger.info(f"Retrieved and combined {len(chunk_texts)} chunks for doc_filename {payload.document_filename}. Total text length: {len(texto_extraido_combinado)}")
 
     # 2. Select LLM
     llm_to_use: Optional[BaseChatModel] = None

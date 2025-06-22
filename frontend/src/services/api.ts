@@ -27,7 +27,7 @@ export interface RespostaQuesitos {
 }
 
 export interface GerarQuesitosPayload { // New payload for refactored endpoint
-  document_id: number;
+  document_filename: string; // Changed from document_id: number
   beneficio: string;
   profissao: string;
   modelo_nome: string;
@@ -302,6 +302,11 @@ export const uploadDocumentForAnalysis = async (file: File): Promise<DocumentUpl
   }
 };
 
+/** Fetches the status of a document processing task. */
+export const getTaskStatus = (taskId: string): Promise<TaskStatusResponse> => {
+  return apiClient<TaskStatusResponse>(`/documents/upload/status/${taskId}`);
+};
+
 /** Posts a query against a processed document. */
 export const postDocumentQuery = async (
   documentId: string,
@@ -313,10 +318,40 @@ export const postDocumentQuery = async (
   });
 };
 
-/** Uploads a PDF for processing via the new gateway endpoint. */
-export const uploadAndProcessPdf = async (file: File): Promise<ProcessedDocumentInfo> => {
-  const url = `${API_BASE_URL}/documents/upload-and-process`; // Path to the gateway endpoint
-  const formData = new FormData();
+// TODO: TASK-002 - This function is deprecated as the /documents/upload-and-process endpoint
+// (which targeted the pdf_processor_service) is being deactivated.
+// The Gerador de Quesitos module now uses uploadDocumentForAnalysis.
+// export const uploadAndProcessPdf = async (file: File): Promise<ProcessedDocumentInfo> => {
+//   const url = `${API_BASE_URL}/documents/upload-and-process`; // Path to the gateway endpoint
+//   const formData = new FormData();
+//   formData.append('file', file); // 'file' is the key used in backend by `UploadFile = File(...)`
+//
+//   const token = localStorage.getItem('token');
+//   const headers: HeadersInit = {};
+//   if (token) {
+//     headers['Authorization'] = `Bearer ${token}`;
+//   }
+//   // Do NOT set Content-Type for FormData, browser does it with boundary.
+//
+//   try {
+//     const response = await fetch(url, {
+//       method: 'POST',
+//       headers,
+//       body: formData,
+//     });
+//     if (!response.ok) {
+//       let errorData;
+//       try { errorData = await response.json(); } catch (e) { /* Ignore */ }
+//       // Try to parse error detail from backend if available
+//       const detail = errorData?.detail || `API request failed: ${response.status} ${response.statusText}`;
+//       throw new Error(String(detail));
+//     }
+//     return await response.json() as ProcessedDocumentInfo;
+//   } catch (error) {
+//     console.error('Error in uploadAndProcessPdf:', error);
+//     throw error; // Re-throw to be caught by the calling component
+//   }
+// };
   formData.append('file', file); // 'file' is the key used in backend by `UploadFile = File(...)`
 
   const token = localStorage.getItem('token');

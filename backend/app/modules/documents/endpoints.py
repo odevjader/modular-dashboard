@@ -97,3 +97,42 @@ async def upload_and_process_document(
             # Log e here for debugging
             # Modified for debugging to see the actual error string
             raise HTTPException(status_code=500, detail=f"Unexpected error in endpoint: {type(e).__name__} - {str(e)}")
+
+# TODO: TASK-002 - Esta rota foi desativada como parte da unificação do fluxo de processamento de PDF.
+# O fluxo agora deve usar /api/documents/upload que direciona para o transcritor_pdf_service.
+# @api_router.post("/upload-and-process", response_model=Any, summary="[DESATIVADO] Upload PDF and trigger processing via microservice", tags=["Documents Module"])
+# async def upload_and_process_document(
+#     request: Request, # To construct absolute URLs if needed, or for logging
+#     file: UploadFile = File(...),
+#     current_user: User = Depends(get_current_active_user) # Protect the endpoint
+# ):
+#     if not file.content_type == "application/pdf":
+#         raise HTTPException(status_code=400, detail="Invalid file type. Only PDFs are accepted.")
+#
+#     pdf_processor_url = f"{settings.PDF_PROCESSOR_SERVICE_URL}/processing/process-pdf"
+#
+#     async with httpx.AsyncClient() as client:
+#         try:
+#             # Prepare files for streaming upload to the microservice
+#             files = {'file': (file.filename, await file.read(), file.content_type)}
+#             response = await client.post(pdf_processor_url, files=files, timeout=30.0) # Increased timeout
+#
+#             response.raise_for_status() # Raise an exception for bad status codes (4xx or 5xx)
+#             return response.json() # Return the JSON response from the microservice
+#         except httpx.HTTPStatusError as e:
+#             # Attempt to forward the error detail from the microservice if possible
+#             error_detail = "Error processing document." # Default error
+#             if e.response and e.response.content:
+#                 try:
+#                     error_detail = e.response.json().get("detail", error_detail)
+#                 except Exception: # Gracefully handle if response is not JSON or detail is not present
+#                     pass
+#             raise HTTPException(status_code=e.response.status_code if e.response else 500, detail=error_detail)
+#         except httpx.RequestError as e:
+#             # Network error or other request issue
+#             raise HTTPException(status_code=503, detail=f"Service unavailable: Error connecting to PDF Processor. {str(e)}")
+#         except Exception as e:
+#             # Catch-all for other unexpected errors
+#             # Log e here for debugging
+#             # Modified for debugging to see the actual error string
+#             raise HTTPException(status_code=500, detail=f"Unexpected error in endpoint: {type(e).__name__} - {str(e)}")

@@ -6,7 +6,7 @@ class RespostaQuesitos(BaseModel):
     quesitos_texto: str = Field(..., description="O texto formatado contendo os quesitos gerados pela IA.")
 
 class GerarQuesitosComDocIdPayload(BaseModel):
-    document_id: int
+    document_filename: str # Changed from document_id: int
     beneficio: str
     profissao: str
     modelo_nome: str
