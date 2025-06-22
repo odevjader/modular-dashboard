@@ -2,6 +2,7 @@
 id: TASK-000
 title: "Título Curto e Descritivo da Tarefa"
 epic: "Fase X: Nome do Épico do Roadmap"
+type: "development" # Tipos: development, research, test, documentation, review
 status: backlog
 priority: medium
 dependencies: []
