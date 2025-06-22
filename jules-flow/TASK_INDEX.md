@@ -59,7 +59,7 @@
 | TASK-056 | TEST-EXEC (Fase 2): Executar Testes do `pdf_processor_service` e Novo Gateway | done    | Fase 2: Infraestrutura de Microserviços |
 | TASK-057 | DEV (Fase 4 Piloto): Refatorar Frontend do `gerador_quesitos` para Upload via Gateway | done    | Fase 4: Módulo Piloto e Integração |
 | TASK-058 | DEV (Fase 4 Piloto): Refatorar Backend do `gerador_quesitos` para Usar Texto Pré-processado | done    | Fase 4: Módulo Piloto e Integração |
-| TASK-059 | TEST-PLAN (Fase 4 Piloto): Planejar Testes para `gerador_quesitos` Refatorado | backlog | Fase 4: Módulo Piloto e Integração |
+| TASK-059 | TEST-PLAN (Fase 4 Piloto): Planejar Testes para `gerador_quesitos` Refatorado | done | Fase 4: Módulo Piloto e Integração |
 | TASK-060 | TEST-IMPL (Fase 4 Piloto): Implementar Testes para `gerador_quesitos` Refatorado | backlog | Fase 4: Módulo Piloto e Integração |
 | TASK-061 | TEST-EXEC (Fase 4 Piloto): Executar Testes do `gerador_quesitos` Refatorado | backlog | Fase 4: Módulo Piloto e Integração |
 | TASK-062 | DEV (Fase 5): Configurar Logging Estruturado e Avaliar APM | backlog | Fase 5: Governança e Maturidade |
