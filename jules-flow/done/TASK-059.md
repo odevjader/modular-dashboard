@@ -28,8 +28,8 @@ Criar um plano de teste detalhado para o módulo `gerador_quesitos` após sua re
 O plano de teste para o módulo `gerador_quesitos` refatorado foi criado e salvo em `docs/tests/gerador_quesitos_refatorado_test_plan.md`.
 
 O plano detalha:
-- Testes da interface do usuário (Frontend) para upload de arquivos e interação com o gateway.
-- Testes do endpoint da API (Backend) para geração de quesitos, incluindo o uso do `document_id` para buscar texto no banco de dados e a lógica com LangChain.
-- Cenários de testes End-to-End (E2E) para o fluxo completo.
+- Testes da interface do usuário (Frontend) para upload de arquivos e interação com o gateway, utilizando Jest e React Testing Library para componentes.
+- Testes do endpoint da API (Backend) para geração de quesitos, incluindo o uso do `document_id` para buscar texto no banco de dados e a lógica com LangChain, utilizando Pytest.
+- Cenários de testes End-to-End (E2E) Manuais para o fluxo completo, sem a sugestão de frameworks E2E automatizados como Cypress/Playwright.
 
-Todos os critérios de aceitação foram atendidos com a criação deste documento.
+Todos os critérios de aceitação foram atendidos com a criação deste documento, com o esclarecimento de que os testes E2E serão abordados manualmente.

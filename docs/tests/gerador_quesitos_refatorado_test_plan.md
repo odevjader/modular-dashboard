@@ -20,9 +20,9 @@ Este plano cobre:
 
 *   **Testes de Unidade (Backend):** Foco nas lógicas internas do serviço `gerador_quesitos` (ex: interação com LangChain, busca no banco de dados). (Já cobertos parcialmente em testes anteriores, mas verificar necessidade de novos testes específicos para a refatoração).
 *   **Testes de Integração (Backend):** Verificar a comunicação entre o endpoint do `gerador_quesitos` e o `document_service` (para buscar texto do PDF processado).
-*   **Testes de Componente (Frontend):** Testar os componentes React responsáveis pelo upload de arquivos e exibição de resultados.
+*   **Testes de Componente (Frontend):** Testar os componentes React responsáveis pelo upload de arquivos e exibição de resultados (utilizando Jest e React Testing Library).
 *   **Testes de API (Backend):** Testar diretamente o endpoint `/gerar_quesitos_refatorado` (ou nome similar).
-*   **Testes End-to-End (E2E):** Simular o fluxo completo do usuário.
+*   **Testes End-to-End (E2E) Manuais:** Simular o fluxo completo do usuário manualmente, seguindo os cenários descritos.
 
 ## 4. Detalhamento dos Testes
 
@@ -71,7 +71,8 @@ Este plano cobre:
 
 *   **Frontend:**
     *   Navegador: Chrome, Firefox (últimas versões)
-    *   Framework de Teste: Jest, React Testing Library (para componentes), Cypress ou Playwright (para E2E).
+    *   Framework de Teste de Componente: Jest, React Testing Library.
+    *   Testes E2E: Manuais, seguindo os cenários descritos.
 *   **Backend:**
     *   Ferramenta de Teste de API: Postman, Insomnia, ou scripts `pytest` com `httpx`/`requests`.
     *   Ambiente: Instância local/staging do `pdf_processor_service`, API Principal e `gerador_quesitos_service`.
