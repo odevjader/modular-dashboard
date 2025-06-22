@@ -28,7 +28,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **Resumo de Documentação (Docker, Redis, Celery):** Sumários criados em `docs/reference/` (TASK-004).
 * ✅ **Planejamento de Testes (Fase 1 Infra):** Plano de teste para a configuração da infraestrutura da Fase 1 criado (TASK-005).
 * ✅ **Implementação de Testes (Fase 1 Infra):** Scripts de teste de integração para configuração da infraestrutura criados (TASK-006).
-* ⚠️ **Execução de Testes (Fase 1 Infra):** BLOCKED - Pending manual execution due to environment limitations (TASK-007).
+* ⚠️ **Execução de Testes (Fase 1 Infra):** (TASK-007) - BLOCKED: Pendente de execução manual devido a limitações ambientais.
 
 ---
 
@@ -68,8 +68,8 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
    * ✅ Criado plano de testes para o endpoint de upload `/api/documents/upload` (TASK-015).
    * ✅ Implementados testes de integração para `/api/documents/upload` (TASK-016, com ressalvas sobre execução ambiental).
 7. ✅ **TEST-PLAN (Fase 2):** Planejar Testes para `pdf_processor_service` e Novo Gateway (TASK-054).
-8. ✅ **TEST-IMPL (Fase 2):** Implementar Testes para `pdf_processor_service` e Novo Gateway (TASK-055). (Unit/Integration tests implemented; E2E out of scope for task)
-9. ✅ **TEST-EXEC (Fase 2):** Executar Testes do `pdf_processor_service` e Novo Gateway (TASK-056). (All implemented tests passed)
+8. ✅ **TEST-IMPL (Fase 2):** Implementar Testes para `pdf_processor_service` e Novo Gateway (TASK-055). (Testes de unidade/integração implementados; E2E fora do escopo da tarefa)
+9. ⚠️ **TEST-EXEC (Fase 2):** Executar Testes do `pdf_processor_service` e Novo Gateway (TASK-056). - BLOCKED: Testes de `pdf_processor_service` (TASK-055) necessitam execução e validação manual. Gateway tests passed.
 
 ---
 
@@ -95,7 +95,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **DEV: Expandir Gateway na API Principal para Diálogo** (TASK-032)
 * ✅ **TEST-PLAN: Planejar Testes para Gateway de Diálogo (API Principal)** (TASK-033)
 * ✅ **TEST-IMPL: Implementar Testes para Gateway de Diálogo (API Principal)** (TASK-034)
-* ⚠️ **TEST-EXEC: Executar Testes da Fase 3 (Transcritor-PDF e Gateway Diálogo)** (TASK-035) - Bloqueado: Falha na execução automática de testes.
+* ⚠️ **TEST-EXEC: Executar Testes da Fase 3 (Transcritor-PDF e Gateway Diálogo)** (TASK-035) - BLOCKED: Pendente de execução manual.
 
 ---
 
@@ -112,8 +112,8 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **DEV: Construir Interface de Chat no Frontend** (TASK-041)
 * ✅ **DEV: Integrar ao Menu de Navegação Principal (Frontend)** (TASK-042)
 * ✅ **TEST-PLAN: Planejar Testes para Frontend do Analisador de Documentos** (TASK-043)
-* ✅ **TEST-IMPL: Implementar Testes para Frontend (Analisador)** (TASK-044) - Teste de componente inicial adicionado; execução da suíte completa pendente de investigação de timeouts.
-* ⚠️ **TEST-EXEC: Executar Testes da Fase 4 (Frontend Analisador)** (TASK-045) - BLOQUEADO: TASK-044 pendente
+* ✅ **TEST-IMPL: Implementar Testes para Frontend (Analisador)** (TASK-044) - Testes de componente implementados.
+* ⚠️ **TEST-EXEC: Executar Testes da Fase 4 (Frontend Analisador)** (TASK-045) - BLOCKED: Pendente de execução manual dos testes da TASK-044.
 
 
 ---
@@ -141,8 +141,8 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **Refatorar Frontend do Módulo:** Adicionar uma interface de upload de arquivo no módulo `gerador_quesitos` que chame o novo endpoint Gateway (TASK-057).
 * ✅ **Refatorar Backend do Módulo:** Modificar o endpoint do `gerador_quesitos` para, em vez de processar o arquivo, usar o `document_id` para buscar o texto pré-processado no banco de dados e então executar a lógica com LangChain (TASK-058).
 * ✅ **TEST-PLAN (Fase 4 Piloto): Planejar Testes para `gerador_quesitos` Refatorado** (TASK-059).
-* ✅ **TEST-IMPL (Fase 4 Piloto): Implementar Testes para `gerador_quesitos` Refatorado** (TASK-060). (Execução manual pendente pelo usuário)
-* 📝 **TEST-EXEC (Fase 4 Piloto): Executar Testes do `gerador_quesitos` Refatorado** (TASK-061). (Pendente de execução manual pelo usuário após TASK-060)
+* ✅ **TEST-IMPL (Fase 4 Piloto): Implementar Testes para `gerador_quesitos` Refatorado** (TASK-060). (Testes de frontend e backend implementados)
+* ⚠️ **TEST-EXEC (Fase 4 Piloto): Executar Testes do `gerador_quesitos` Refatorado** (TASK-061). - BLOCKED: Pendente de execução manual dos testes da TASK-060.
 
 
 ---
