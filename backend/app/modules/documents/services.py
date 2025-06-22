@@ -32,17 +32,19 @@ async def handle_file_upload(file: UploadFile, user_id: int):
             file_content = await file.read()
 
             # Prepare the file data for the multipart/form-data request.
-            # 'upload_file' is the field name the transcriber_pdf_service is expected to use for the file.
-            # This needs to match the parameter name in the transcriber service's endpoint.
-            files_data = {'upload_file': (file.filename, file_content, file.content_type)}
+            # 'file' is the field name the transcriber_pdf_service is expected to use for the file,
+            # matching its endpoint parameter `file: UploadFile = File(...)`.
+            files_data = {'file': (file.filename, file_content, file.content_type)}
 
             # Prepare other form data, like user_id.
-            form_data = {'user_id': str(user_id)}
+            # Note: The transcriber_pdf_service /process-pdf endpoint currently does not expect user_id in form_data.
+            # If it were needed, it would be passed here. For now, it's not explicitly used by the target endpoint.
+            # form_data = {'user_id': str(user_id)} # This line can be commented or removed if not used.
 
             response = await client.post(
                 TRANSCRIBER_SERVICE_URL,
                 files=files_data,
-                data=form_data,
+                # data=form_data, # Commented out as user_id is not used by transcriber's /process-pdf
                 timeout=60.0  # Increased timeout to 60 seconds for potentially larger files/slower processing
             )
 
