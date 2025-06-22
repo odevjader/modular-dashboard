@@ -61,7 +61,7 @@
 | TASK-058 | DEV (Fase 4 Piloto): Refatorar Backend do `gerador_quesitos` para Usar Texto Pré-processado | done    | Fase 4: Módulo Piloto e Integração |
 | TASK-059 | TEST-PLAN (Fase 4 Piloto): Planejar Testes para `gerador_quesitos` Refatorado | done | Fase 4: Módulo Piloto e Integração |
 | TASK-060 | TEST-IMPL (Fase 4 Piloto): Implementar Testes para `gerador_quesitos` Refatorado | done | Fase 4: Módulo Piloto e Integração |
-| TASK-061 | TEST-EXEC (Fase 4 Piloto): Executar Testes do `gerador_quesitos` Refatorado | backlog | Fase 4: Módulo Piloto e Integração |
+| TASK-061 | TEST-EXEC (Fase 4 Piloto): Executar Testes do `gerador_quesitos` Refatorado | blocked | Fase 4: Módulo Piloto e Integração |
 | TASK-062 | DEV (Fase 5): Configurar Logging Estruturado e Avaliar APM | backlog | Fase 5: Governança e Maturidade |
 | TASK-063 | DEV (Fase 5): Configurar Sistema de Alertas (Backend) | backlog | Fase 5: Governança e Maturidade |
 | TASK-064 | TEST-PLAN (Fase 5): Planejar Testes para Logging e Alertas | backlog | Fase 5: Governança e Maturidade |
