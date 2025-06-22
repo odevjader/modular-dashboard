@@ -26,9 +26,11 @@ const GeradorQuesitos: React.FC = () => {
     // Global state
     const {
         isLoading, error, quesitosResult,
-        uploadAndProcessSinglePdfForQuesitos, // New action
-        currentFileBeingProcessed, // New state
-        processedDocumentInfo // New state
+        uploadAndProcessSinglePdfForQuesitos,
+        currentFileBeingProcessed,
+        // processedDocumentInfo, // Replaced by currentTaskId and processingStatusMessage for UI feedback
+        currentTaskId,
+        processingStatusMessage,
     } = useGeradorQuesitosStore();
 
     // Effect for funny phrases
@@ -130,11 +132,16 @@ const GeradorQuesitos: React.FC = () => {
             </> ) : ( /* Loading State Display */
                 <Paper elevation={0} sx={{ p: 2, textAlign: 'center', bgcolor: 'action.hover' }}>
                     <Typography variant="h5" component="p" gutterBottom>
-                        { currentFileBeingProcessed ? `Processando: ${currentFileBeingProcessed.name}` : "Gerando Quesitos..."}
+                        {currentFileBeingProcessed ? `Processando: ${currentFileBeingProcessed.name}` : "Aguardando Ação..."}
                     </Typography>
-                    { currentFileBeingProcessed && processedDocumentInfo && (
+                    {processingStatusMessage && (
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 1 }}>
+                            {processingStatusMessage}
+                        </Typography>
+                    )}
+                    {currentTaskId && (
                         <Typography variant="caption" display="block" color="text.secondary" sx={{mb:1}}>
-                           Arquivo processado: ID {processedDocumentInfo.id}, Hash: ...{processedDocumentInfo.file_hash.slice(-8)}
+                           Task ID: {currentTaskId}
                         </Typography>
                     )}
                     <Typography variant="body1" color="text.secondary"> Benefício: {beneficio} </Typography>

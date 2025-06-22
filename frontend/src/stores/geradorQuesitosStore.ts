@@ -2,86 +2,136 @@
 import { create } from 'zustand';
 import {
     RespostaQuesitos,
-    ProcessedDocumentInfo, // New import
-    uploadAndProcessPdf,      // New import for the gateway call
-    postGerarQuesitosComReferenciaDeDocumento // New import for the refactored quesitos generation
+    // ProcessedDocumentInfo, // No longer directly using this structure from this store's perspective
+    uploadDocumentForAnalysis, // Changed from uploadAndProcessPdf
+    getTaskStatus,             // New import for polling
+    TaskStatusResponse,        // New import
+    DocumentUploadResponse,    // New import
+    postGerarQuesitosComReferenciaDeDocumento
 } from '../services/api';
 
 interface GeradorQuesitosState {
   isLoading: boolean;
   error: string | null;
   quesitosResult: string | null;
-  processedDocumentInfo: ProcessedDocumentInfo | null; // New state field
-  currentFileBeingProcessed: File | null; // New state field to track the file
+  // processedDocumentInfo: ProcessedDocumentInfo | null; // Replaced by taskId and processedFilename
+  currentFileBeingProcessed: File | null;
+  currentTaskId: string | null; // To store the task ID from uploadDocumentForAnalysis
+  processingStatusMessage: string | null; // For UI feedback during polling
+  processedFilename: string | null; // Store the filename once processing is successful
+  pollingTimerId: NodeJS.Timeout | null; // Store timer ID for polling
 }
 
 interface GeradorQuesitosActions {
-  // Renamed and signature changed
-  fetchQuesitosFromServer: (documentId: number, beneficio: string, profissao: string, modelo_nome: string) => Promise<void>;
-  // New action
+  fetchQuesitosFromServer: (documentFilename: string, beneficio: string, profissao: string, modelo_nome: string) => Promise<void>; // documentId -> documentFilename
   uploadAndProcessSinglePdfForQuesitos: (file: File, beneficio: string, profissao: string, modelo_nome: string) => Promise<void>;
   clearState: () => void;
+  _pollTaskStatus: (taskId: string, originalFilename: string, beneficio: string, profissao: string, modelo_nome: string) => void; // Helper for polling
 }
 
 const initialState: GeradorQuesitosState = {
   isLoading: false,
   error: null,
   quesitosResult: null,
-  processedDocumentInfo: null, // Initialize new field
-  currentFileBeingProcessed: null, // Initialize new field
+  // processedDocumentInfo: null,
+  currentFileBeingProcessed: null,
+  currentTaskId: null,
+  processingStatusMessage: null,
+  processedFilename: null,
+  pollingTimerId: null,
 };
 
 export const useGeradorQuesitosStore = create<GeradorQuesitosState & GeradorQuesitosActions>((set, get) => ({
   ...initialState,
 
-  // Renamed from generateQuesitos, new signature, new API call
-  fetchQuesitosFromServer: async (documentId: number, beneficio: string, profissao: string, modelo_nome: string) => {
-    console.log('[Store Action] fetchQuesitosFromServer: Iniciando...');
-    // isLoading is already true if called from uploadAndProcessSinglePdfForQuesitos
-    // If called directly, ensure isLoading is set:
-    if (!get().isLoading) {
-        set({ isLoading: true, error: null, quesitosResult: null });
-    } else {
-        set({ error: null, quesitosResult: null }); // Clear previous results/errors but keep loading
-    }
-    console.log('[Store Action] fetchQuesitosFromServer: isLoading potentially set');
-
+  fetchQuesitosFromServer: async (documentFilename: string, beneficio: string, profissao: string, modelo_nome: string) => {
+    set({ isLoading: true, error: null, quesitosResult: null, processingStatusMessage: 'Gerando quesitos...' });
     try {
-      console.log('[Store Action] fetchQuesitosFromServer: Chamando postGerarQuesitosComReferenciaDeDocumento API...');
-      const payload = { document_id: documentId, beneficio, profissao, modelo_nome };
+      const payload = { document_filename: documentFilename, beneficio, profissao, modelo_nome };
       const result: RespostaQuesitos = await postGerarQuesitosComReferenciaDeDocumento(payload);
-      console.log('[Store Action] fetchQuesitosFromServer: API Sucesso!', result);
-      set({ quesitosResult: result.quesitos_texto, isLoading: false, currentFileBeingProcessed: null });
-      console.log('[Store Action] fetchQuesitosFromServer: State atualizado com sucesso, isLoading false');
+      set({
+        quesitosResult: result.quesitos_texto,
+        isLoading: false,
+        currentFileBeingProcessed: null,
+        processingStatusMessage: 'Quesitos gerados com sucesso!',
+        currentTaskId: null, // Clear task ID after final success
+      });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Ocorreu um erro desconhecido ao gerar quesitos.';
-      console.error("[Store Action] fetchQuesitosFromServer: API Erro!", err);
-      set({ error: errorMessage, isLoading: false, currentFileBeingProcessed: null });
-      console.log('[Store Action] fetchQuesitosFromServer: State atualizado com erro, isLoading false');
+      set({ error: errorMessage, isLoading: false, currentFileBeingProcessed: null, processingStatusMessage: 'Falha ao gerar quesitos.' });
+    }
+  },
+
+  _pollTaskStatus: async (taskId: string, originalFilename: string, beneficio: string, profissao: string, modelo_nome: string) => {
+    try {
+      const statusResponse: TaskStatusResponse = await getTaskStatus(taskId);
+      set({ processingStatusMessage: `Status do processamento (${originalFilename}): ${statusResponse.status}` });
+
+      if (statusResponse.status === 'SUCCESS') {
+        if (get().pollingTimerId) clearInterval(get().pollingTimerId!);
+        set({ pollingTimerId: null, processedFilename: originalFilename, processingStatusMessage: `Processamento de '${originalFilename}' concluído. Gerando quesitos...` });
+        // Now that processing is successful, fetch the quesitos
+        await get().fetchQuesitosFromServer(originalFilename, beneficio, profissao, modelo_nome);
+      } else if (statusResponse.status === 'FAILURE' || statusResponse.status === 'REVOKED') {
+        if (get().pollingTimerId) clearInterval(get().pollingTimerId!);
+        set({
+          pollingTimerId: null,
+          error: `Falha no processamento do arquivo '${originalFilename}': ${statusResponse.error_info?.error || 'Erro desconhecido no processamento.'}`,
+          isLoading: false,
+          currentFileBeingProcessed: null,
+          currentTaskId: null,
+          processingStatusMessage: `Falha no processamento de '${originalFilename}'.`,
+        });
+      } else if (statusResponse.status === 'PENDING' || statusResponse.status === 'STARTED' || statusResponse.status === 'RETRY') {
+        // Continue polling
+        const timerId = setTimeout(() => get()._pollTaskStatus(taskId, originalFilename, beneficio, profissao, modelo_nome), 5000); // Poll every 5 seconds
+        set({ pollingTimerId: timerId });
+      }
+    } catch (pollError) {
+      if (get().pollingTimerId) clearInterval(get().pollingTimerId!);
+      const errorMessage = pollError instanceof Error ? pollError.message : 'Erro ao verificar status do processamento.';
+      set({
+        pollingTimerId: null,
+        error: errorMessage,
+        isLoading: false,
+        currentFileBeingProcessed: null,
+        currentTaskId: null,
+        processingStatusMessage: 'Erro ao verificar status.',
+      });
     }
   },
 
   uploadAndProcessSinglePdfForQuesitos: async (file: File, beneficio: string, profissao: string, modelo_nome: string) => {
-    console.log('[Store Action] uploadAndProcessSinglePdfForQuesitos: Iniciando...');
-    set({ isLoading: true, error: null, quesitosResult: null, processedDocumentInfo: null, currentFileBeingProcessed: file });
-    console.log('[Store Action] uploadAndProcessSinglePdfForQuesitos: isLoading set to true, currentFile set');
+    if (get().pollingTimerId) clearInterval(get().pollingTimerId!); // Clear any existing poll timer
+
+    set({
+      isLoading: true,
+      error: null,
+      quesitosResult: null,
+      // processedDocumentInfo: null,
+      currentFileBeingProcessed: file,
+      currentTaskId: null,
+      processingStatusMessage: `Enviando '${file.name}' para processamento...`,
+      processedFilename: null,
+      pollingTimerId: null,
+    });
+
     try {
-      const processedDoc = await uploadAndProcessPdf(file); // Call new API function from api.ts
-      console.log('[Store Action] uploadAndProcessSinglePdfForQuesitos: PDF processado!', processedDoc);
-      set({ processedDocumentInfo: processedDoc });
-      // Now call fetchQuesitosFromServer with the processedDoc.id
-      await get().fetchQuesitosFromServer(processedDoc.id, beneficio, profissao, modelo_nome);
-      // isLoading, error, quesitosResult will be set by fetchQuesitosFromServer
+      const uploadResponse: DocumentUploadResponse = await uploadDocumentForAnalysis(file);
+      set({
+        currentTaskId: uploadResponse.transcriber_data.task_id,
+        processingStatusMessage: `Arquivo '${uploadResponse.original_filename}' enviado. Aguardando processamento (Task ID: ${uploadResponse.transcriber_data.task_id})...`
+      });
+      // Start polling for status
+      get()._pollTaskStatus(uploadResponse.transcriber_data.task_id, uploadResponse.original_filename, beneficio, profissao, modelo_nome);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Ocorreu um erro desconhecido durante o upload ou processamento do PDF.';
-      console.error("[Store Action] uploadAndProcessSinglePdfForQuesitos: Erro no pipeline!", err);
-      set({ error: errorMessage, isLoading: false, currentFileBeingProcessed: null });
-      console.log('[Store Action] uploadAndProcessSinglePdfForQuesitos: State atualizado com erro, isLoading false');
+      const errorMessage = err instanceof Error ? err.message : 'Ocorreu um erro desconhecido durante o upload do PDF.';
+      set({ error: errorMessage, isLoading: false, currentFileBeingProcessed: null, processingStatusMessage: 'Falha no upload.' });
     }
   },
 
   clearState: () => {
-    console.log('[Store Action] clearState: Resetando estado.');
+    if (get().pollingTimerId) clearInterval(get().pollingTimerId!);
     set(initialState);
   },
 
