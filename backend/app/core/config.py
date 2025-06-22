@@ -43,10 +43,38 @@ class Settings(BaseSettings):
         # Allow extra fields from environment variables
         extra = "allow" # Or "ignore" if we don't want to define all env vars
 
-settings = Settings()
+# settings = Settings() # Defer instantiation
 
-# Configure logging
-logging.basicConfig(level=settings.LOGGING_LEVEL)
+# Function to get settings, allowing for deferred initialization
+_settings_instance = None
+
+def get_settings() -> Settings:
+    global _settings_instance
+    if _settings_instance is None:
+        _settings_instance = Settings()
+
+        # Configure logging once settings are loaded
+        logging.basicConfig(level=_settings_instance.LOGGING_LEVEL)
+        logger = logging.getLogger(__name__) # Re-get logger after basicConfig
+
+        # Log warnings for missing critical settings
+        if not _settings_instance.GOOGLE_API_KEY: logger.warning("GOOGLE_API_KEY not found.")
+        if not _settings_instance.DATABASE_URL: logger.warning("DATABASE_URL (sync) not found.")
+        if not _settings_instance.ASYNC_DATABASE_URL:
+            logger.warning("ASYNC_DATABASE_URL not found. App DB operations will fail.")
+        else:
+            try:
+                parsed_url = urlparse(_settings_instance.ASYNC_DATABASE_URL)
+                safe_url = f"{parsed_url.scheme}://{parsed_url.username}@{parsed_url.hostname}:{parsed_url.port}{parsed_url.path}"
+                logger.info(f"Async Database URL loaded: {safe_url}")
+            except Exception:
+                logger.info("Async Database URL loaded (details hidden).")
+    return _settings_instance
+
+settings = get_settings() # Initial call to load for normal operation
+
+# Configure logging - Moved into get_settings to ensure it runs after settings are loaded
+# logging.basicConfig(level=settings.LOGGING_LEVEL) # This would use potentially uninitialized settings
 logger = logging.getLogger(__name__)
 
 # Log warnings for missing critical settings

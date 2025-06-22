@@ -199,12 +199,23 @@ async def gerar_quesitos_com_referencia(
 
     # 1. Fetch document chunks from DB
     # Assuming Document and DocumentChunk are imported from app.models.document
-    chunks = db.query(DocumentChunk).filter(DocumentChunk.document_id == payload.document_id).order_by(DocumentChunk.chunk_order).all()
+    # Refatorado para usar SQLAlchemy assíncrono
+    from sqlalchemy import select # Import select
+
+    stmt = (
+        select(DocumentChunk)
+        .where(DocumentChunk.document_id == payload.document_id)
+        .order_by(DocumentChunk.chunk_order)
+    )
+    result = await db.execute(stmt)
+    chunks = result.scalars().all()
+
     if not chunks:
+        logger.warning(f"Nenhum chunk encontrado para document_id: {payload.document_id}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Documento com ID {payload.document_id} não encontrado ou não possui conteúdo processado.")
 
     texto_extraido_combinado = "\n\n".join([chunk.chunk_text for chunk in chunks])
-    logger.info(f"Retrieved and combined {len(chunks)} chunks. Total text length: {len(texto_extraido_combinado)}")
+    logger.info(f"Retrieved and combined {len(chunks)} chunks for doc_id {payload.document_id}. Total text length: {len(texto_extraido_combinado)}")
 
     # 2. Select LLM
     llm_to_use: Optional[BaseChatModel] = None
