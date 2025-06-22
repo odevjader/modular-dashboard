@@ -141,6 +141,9 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * ✅ **Refatorar Frontend do Módulo:** Adicionar uma interface de upload de arquivo no módulo `gerador_quesitos` que chame o novo endpoint Gateway (TASK-057).
 * ✅ **Refatorar Backend do Módulo:** Modificar o endpoint do `gerador_quesitos` para, em vez de processar o arquivo, usar o `document_id` para buscar o texto pré-processado no banco de dados e então executar a lógica com LangChain (TASK-058).
 * ✅ **TEST-PLAN (Fase 4 Piloto): Planejar Testes para `gerador_quesitos` Refatorado** (TASK-059).
+* ✅ **TEST-IMPL (Fase 4 Piloto): Implementar Testes para `gerador_quesitos` Refatorado** (TASK-060). (Execução manual pendente pelo usuário)
+* 📝 **TEST-EXEC (Fase 4 Piloto): Executar Testes do `gerador_quesitos` Refatorado** (TASK-061). (Pendente de execução manual pelo usuário após TASK-060)
+
 
 ---
 

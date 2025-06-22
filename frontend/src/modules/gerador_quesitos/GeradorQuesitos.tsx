@@ -125,7 +125,7 @@ const GeradorQuesitos: React.FC = () => {
                 </FormControl>
                <Box>
                    <Button variant="outlined" onClick={handleUploadClick} startIcon={<UploadFileIcon />} disabled={isLoading}> Adicionar PDF(s) </Button>
-                   <Input type="file" inputRef={fileInputRef} onChange={handleFileChange} inputProps={{ accept: '.pdf', multiple: true }} sx={{ display: 'none' }} />
+                   <Input type="file" inputRef={fileInputRef} onChange={handleFileChange} inputProps={{ accept: '.pdf', multiple: true, 'data-testid': 'file-input-gerador-quesitos' }} sx={{ display: 'none' }} />
                </Box>
             </> ) : ( /* Loading State Display */
                 <Paper elevation={0} sx={{ p: 2, textAlign: 'center', bgcolor: 'action.hover' }}>
