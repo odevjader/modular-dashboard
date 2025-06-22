@@ -109,14 +109,14 @@ export interface DocumentQueryResponse {
   query_id: string; // Assuming the backend returns a query_id
 }
 
-// For the new gateway endpoint /api/v1/documents/upload-and-process
-export interface ProcessedDocumentInfo {
-  id: number; // or string depending on your ID type
-  file_hash: string;
-  file_name: string | null;
-  created_at: string; // Assuming string from JSON
-  updated_at: string | null;
-}
+// ProcessedDocumentInfo is removed as its associated endpoint /documents/upload-and-process is deprecated.
+// export interface ProcessedDocumentInfo {
+//   id: number;
+//   file_hash: string;
+//   file_name: string | null;
+//   created_at: string;
+//   updated_at: string | null;
+// }
 
 
 // --- Generic API Client (for JSON endpoints) ---
@@ -318,65 +318,31 @@ export const postDocumentQuery = async (
   });
 };
 
-// TODO: TASK-002 - This function is deprecated as the /documents/upload-and-process endpoint
-// (which targeted the pdf_processor_service) is being deactivated.
-// The Gerador de Quesitos module now uses uploadDocumentForAnalysis.
-// export const uploadAndProcessPdf = async (file: File): Promise<ProcessedDocumentInfo> => {
-//   const url = `${API_BASE_URL}/documents/upload-and-process`; // Path to the gateway endpoint
-//   const formData = new FormData();
-//   formData.append('file', file); // 'file' is the key used in backend by `UploadFile = File(...)`
-//
-//   const token = localStorage.getItem('token');
-//   const headers: HeadersInit = {};
-//   if (token) {
-//     headers['Authorization'] = `Bearer ${token}`;
+// The deprecated function uploadAndProcessPdf and its associated comments have been removed.
+// The main document upload functionality is handled by uploadDocumentForAnalysis.
+
+// The following block was a duplicated, non-functional leftover and has been removed.
+// formData.append('file', file);
+// const token = localStorage.getItem('token');
+// const headers: HeadersInit = {};
+// if (token) {
+//   headers['Authorization'] = `Bearer ${token}`;
+// }
+// try {
+//   const response = await fetch(url, {
+//     method: 'POST',
+//     headers,
+//     body: formData,
+//   });
+//   if (!response.ok) {
+//     let errorData;
+//     try { errorData = await response.json(); } catch (e) { /* Ignore */ }
+//     const detail = errorData?.detail || `API request failed: ${response.status} ${response.statusText}`;
+//     throw new Error(String(detail));
 //   }
-//   // Do NOT set Content-Type for FormData, browser does it with boundary.
-//
-//   try {
-//     const response = await fetch(url, {
-//       method: 'POST',
-//       headers,
-//       body: formData,
-//     });
-//     if (!response.ok) {
-//       let errorData;
-//       try { errorData = await response.json(); } catch (e) { /* Ignore */ }
-//       // Try to parse error detail from backend if available
-//       const detail = errorData?.detail || `API request failed: ${response.status} ${response.statusText}`;
-//       throw new Error(String(detail));
-//     }
-//     return await response.json() as ProcessedDocumentInfo;
-//   } catch (error) {
-//     console.error('Error in uploadAndProcessPdf:', error);
-//     throw error; // Re-throw to be caught by the calling component
-//   }
+//   return await response.json() as ProcessedDocumentInfo;
+// } catch (error) {
+//   console.error('Error in uploadAndProcessPdf:', error);
+//   throw error;
+// }
 // };
-  formData.append('file', file); // 'file' is the key used in backend by `UploadFile = File(...)`
-
-  const token = localStorage.getItem('token');
-  const headers: HeadersInit = {};
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-  // Do NOT set Content-Type for FormData, browser does it with boundary.
-
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers,
-      body: formData,
-    });
-    if (!response.ok) {
-      let errorData;
-      try { errorData = await response.json(); } catch (e) { /* Ignore */ }
-      // Try to parse error detail from backend if available
-      const detail = errorData?.detail || `API request failed: ${response.status} ${response.statusText}`;
-      throw new Error(String(detail));
-    }
-    return await response.json() as ProcessedDocumentInfo;
-  } catch (error) {
-    console.error('Error in uploadAndProcessPdf:', error);
-    throw error; // Re-throw to be caught by the calling component
-  }
-};

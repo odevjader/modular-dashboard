@@ -14,7 +14,7 @@ class Document(DocumentBase):
     id: int # Assuming an ID will be assigned upon storage
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Schemas for Task Status
 class TaskStatusErrorInfo(BaseModel):

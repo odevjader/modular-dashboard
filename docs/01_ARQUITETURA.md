@@ -16,9 +16,10 @@ O ambiente é orquestrado via **Docker e Docker Compose**, e a arquitetura é pr
 1.  **Frontend (React SPA):** Responsável pela interface do usuário (UI), interação com o usuário final, gerenciamento de estado da UI (local e global com Zustand), e chamadas para a API Backend. Atua como o "shell" ou "casca" onde as UIs dos diferentes módulos são carregadas e apresentadas de forma integrada.
 2.  **Backend (FastAPI API):** Expõe endpoints RESTful para o frontend e potencialmente para outros serviços. Lida com a lógica de negócios **Core** da plataforma (localizada em `app/core_modules/`, ex: Autenticação, Health Check) e também expõe as funcionalidades específicas de cada **módulo plugável** carregado (localizados em `app/modules/`). Realiza validação de dados, interage com o banco de dados de forma assíncrona, integra com serviços de IA (via Langchain) e gerencia a segurança. (Ver `docs/03_ESTRUTURA_PASTAS.md` para detalhes).
 3.  **Banco de Dados (PostgreSQL + pgvector):** Armazena os dados persistentes da aplicação. Isso inclui dados do Core (tabelas `users`, `configuracoes_aplicacao`, `user_preferences`) e potencialmente tabelas específicas criadas e gerenciadas por módulos individuais (requer definição de estratégia de migração e nomes). A extensão `pgvector` habilita capacidades de busca semântica.
-4.  **Docker / Docker Compose:** Containeriza os serviços principais (Backend API, Banco de Dados e, futuramente, o serviço de processamento de PDF/OCR) para garantir um ambiente de desenvolvimento consistente, portátil e facilmente replicável. Gerencia a rede interna, volumes de dados e variáveis de ambiente. (Nota: Considera-se mover o processamento pesado de PDF/OCR para um container dedicado no futuro - ver `ROADMAP.md`).
-5.  **Google Jules (Agente de Desenvolvimento Primário):** Opera em um ambiente VM seguro e isolado, recebendo tarefas do Maestro IA, planejando e executando a implementação, e enviando o código para uma branch `jules` para validação do Desenvolvedor Humano.
-6.  **IA Coder (Agente de Desenvolvimento Secundário Local):** Opera diretamente na máquina local do Desenvolvedor Humano, utilizado para tarefas que exigem acesso ao ambiente local específico, debug ou prototipagem rápida sob orientação do Dev.
+4.  **Serviço Transcritor PDF (`transcritor-pdf`):** Um microserviço FastAPI/Python dedicado que utiliza Celery para processamento assíncrono de arquivos PDF. Ele é responsável por extrair texto e informações estruturadas de documentos (potencialmente usando LLMs), gerar embeddings vetoriais e armazená-los no banco de dados PostgreSQL/pgvector. O Backend API principal delega o processamento de PDFs para este serviço.
+5.  **Docker / Docker Compose:** Containeriza os serviços principais (Backend API, Frontend, Banco de Dados, Serviço Transcritor PDF) para garantir um ambiente de desenvolvimento consistente, portátil e facilmente replicável. Gerencia a rede interna, volumes de dados e variáveis de ambiente.
+6.  **Google Jules (Agente de Desenvolvimento Primário):** Opera em um ambiente VM seguro e isolado, recebendo tarefas do Maestro IA, planejando e executando a implementação, e enviando o código para uma branch `jules` para validação do Desenvolvedor Humano.
+7.  **IA Coder (Agente de Desenvolvimento Secundário Local):** Opera diretamente na máquina local do Desenvolvedor Humano, utilizado para tarefas que exigem acesso ao ambiente local específico, debug ou prototipagem rápida sob orientação do Dev.
 
 ## Diagrama de Arquitetura (Containers C4)
 
@@ -33,7 +34,7 @@ C4Container
     Container(frontend, "Frontend SPA", "React, TypeScript, Vite", "Interface com o Usuário Final (Shell + UIs dos Módulos)")
     Container(backend, "Backend API", "FastAPI, Python", "Core Modules (Auth, Health), Módulos Plugáveis, Lógica, Orquestração IA")
     ContainerDb(db, "Banco de Dados", "PostgreSQL, pgvector", "Armazena dados da plataforma e módulos")
-    Container(ocr_service, "Serviço PDF/OCR", "Python/Tesseract (TBD)", "Processamento pesado de PDFs/OCR (Futuro, container separado)")
+    Container(transcritor_pdf_service, "Serviço Transcritor PDF", "FastAPI, Python, Celery, Langchain", "Processamento de PDFs, extração de texto via LLM, vetorização")
   }
 
   System_Ext(google_ai, "Google AI API", "Serviço Externo (Gemini/Gemma)")
@@ -42,7 +43,7 @@ C4Container
   Rel(frontend, backend, "Faz chamadas API", "HTTPS/JSON")
   Rel(backend, db, "Lê/Escreve", "JDBC/TCP (via SQLAlchemy)")
   Rel(backend, google_ai, "Chama API", "HTTPS")
-  Rel(backend, ocr_service, "Delega Processamento", "HTTP/RPC? (Futuro)")
+  Rel(backend, transcritor_pdf_service, "Delega Processamento PDF", "HTTP/JSON")
 
   UpdateLayoutConfig({
     "layout": {
@@ -123,9 +124,10 @@ A gestão de configurações segue uma abordagem em camadas:
 2.  Frontend envia requisição HTTP (com JWT) para o **Backend**.
 3.  Backend processa: valida, autentica/autoriza, executa lógica (Core ou Módulo).
 4.  Se necessário, Backend interage com o **Banco de Dados**.
-5.  Se necessário, Backend interage com **Serviços Externos** (Google AI, futuro OCR).
-6.  Backend retorna JSON para o Frontend.
-7.  Frontend atualiza estado e re-renderiza UI.
+5.  Se necessário, Backend delega tarefas de processamento de PDF para o **Serviço Transcritor PDF**.
+6.  Se necessário, Backend interage com **Serviços Externos** (Google AI).
+7.  Backend retorna JSON para o Frontend.
+8.  Frontend atualiza estado e re-renderiza UI.
 
 ## Pilha Tecnológica (Resumo)
 

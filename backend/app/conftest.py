@@ -20,7 +20,7 @@ def set_test_environment_variables_session_auto():
         "ACCESS_TOKEN_EXPIRE_MINUTES": "34", # Changed to ensure it's different from a real value
         "GOOGLE_API_KEY": "testapikey_auto",
         "GEMINI_MODEL_NAME": "gemini-test-model-auto",
-        "PDF_PROCESSOR_SERVICE_URL": "http://mock-pdf-processor-service-auto",
+        # "PDF_PROCESSOR_SERVICE_URL": "http://mock-pdf-processor-service-auto", # Removed as service is deprecated
         "ENVIRONMENT": "test_auto"
     }
     # Patch os.environ BEFORE any critical imports happen (like app.core.config trying to load Settings)

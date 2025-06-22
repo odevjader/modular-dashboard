@@ -1,4 +1,4 @@
-# Roadmap Detalhado: Modular Dashboard
+# Roadmap Detalhado: dashboard-adv
 
 Este documento detalha o plano de desenvolvimento do projeto, com tarefas organizadas por fases e prioridades.
 
@@ -8,6 +8,14 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 * 📝 - A Fazer
 * 🔭 - Visão Futura
 * ⚠️ - Bloqueado
+
+---
+## Manutenção e Refatoração Contínua 🎯
+
+* 📝 **REFACTOR-DOC: Renomear "modular-dashboard" / "modular-dashboard-adv" para "dashboard-adv"** - Atualizar todas as menções nos arquivos de documentação para refletir o nome correto do projeto "dashboard-adv".
+* 📝 **REFACTOR-DOC: Documentar Remoção do `pdf_processor_service`** - Atualizar a documentação de arquitetura (`01_ARQUITETURA.md`) e outros documentos relevantes para refletir a remoção do `pdf_processor_service` e a consolidação do fluxo de processamento de PDF via `transcritor_pdf_service`.
+* ✅ **REFACTOR-ALEMBIC: Unificar Configuração do Alembic (Backend)** - Investigar os arquivos `alembic.ini`, manter apenas um, e garantir que `env.py` carregue a URL do banco de dados das configurações centrais, removendo senhas hardcoded. (Concluído)
+* ✅ **REFACTOR-PDF-SERVICE: Remover Completamente `pdf_processor_service` (Backend)** - Remover a variável de configuração, o endpoint associado, o diretório do serviço e atualizar testes. (Concluído)
 
 ---
 
@@ -44,32 +52,24 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 
 ---
 
-## Fase 2: Infraestrutura de Microserviços 🎯
+## Fase 2: Integração Robusta com Serviço Transcritor PDF 🎯
 
-**Épico:** Construir a pipeline de extração de documentos como um microserviço, utilizando a API principal como um Gateway seguro.
-*Objetivo: Criar a fundação de backend necessária para o processamento de PDFs de forma isolada e escalável.*
+**Épico:** Garantir a integração eficaz e segura do backend principal com o `transcritor_pdf_service` para processamento de documentos.
+*Objetivo: Consolidar o fluxo de processamento de PDF, utilizando o `transcritor_pdf_service` como o único responsável pela manipulação de documentos, e o backend principal como gateway.*
 
 #### Tarefas Priorizadas:
 
-* ✅ **DOC-SEARCH: Pesquisar Documentação (FastAPI)** (TASK-008)
-* ✅ **DOC-SUMMARIZE: Resumir Documentação (FastAPI para Gateway)** (TASK-009)
-* ✅ **DEV: Criar Módulo `documents` na API Principal** (TASK-010)
-* ✅ **TEST-PLAN: Planejar Testes para Módulo `documents` (Estrutura)** (TASK-011)
-* ✅ **TEST-IMPL: Implementar Testes para Módulo `documents` (Estrutura)** (TASK-012)
-1. ✅ **DB Schema:** Definir e criar a migração (Alembic) para a nova tabela `pdf_processed_chunks` (TASK-048). (Script de migração criado; aplicação pendente de resolução de acesso ao BD no ambiente de execução)
-2. ✅ **Orquestração:** Atualizar o `docker-compose.yml` para incluir o novo `pdf_processor_service` e garantir a comunicação entre os containers (TASK-052).
-3. ✅ **Estrutura do Microserviço:** Criar a estrutura de pastas e arquivos (`Dockerfile`, `requirements.txt`, etc.) para o `pdf_processor_service` (TASK-049).
-4. ✅ **Lógica do Microserviço:** Implementar a lógica de extração de texto e armazenamento no PostgreSQL dentro do `pdf_processor_service` (TASK-050).
-5. ✅ **Endpoint do Microserviço:** Criar o endpoint `POST /process-pdf` no `pdf_processor_service`, que ficará acessível apenas dentro da rede do Docker (TASK-051).
-6. ✅ **Endpoint Gateway na API Principal:** Implementar o endpoint `POST /api/v1/documents/upload-and-process` (TASK-053). Este endpoint será o único ponto de entrada público, responsável por:
-   * Validar a autenticação e autorização do usuário.
-   * Atuar como um proxy seguro, chamando o endpoint do microserviço.
-   * ✅ Implementado endpoint `/api/documents/upload` (TASK-013) para upload e encaminhamento ao `transcritor_pdf_service`.
-   * ✅ Criado plano de testes para o endpoint de upload `/api/documents/upload` (TASK-015).
-   * ✅ Implementados testes de integração para `/api/documents/upload` (TASK-016, com ressalvas sobre execução ambiental).
-7. ✅ **TEST-PLAN (Fase 2):** Planejar Testes para `pdf_processor_service` e Novo Gateway (TASK-054).
-8. ✅ **TEST-IMPL (Fase 2):** Implementar Testes para `pdf_processor_service` e Novo Gateway (TASK-055). (Testes de unidade/integração implementados; E2E fora do escopo da tarefa)
-9. ⚠️ **TEST-EXEC (Fase 2):** Executar Testes do `pdf_processor_service` e Novo Gateway (TASK-056). - BLOCKED: Testes de `pdf_processor_service` (TASK-055) necessitam execução e validação manual. Gateway tests passed.
+* ✅ **DOC-SEARCH: Pesquisar Documentação (FastAPI)** (TASK-008) - Relevante para a API Gateway.
+* ✅ **DOC-SUMMARIZE: Resumir Documentação (FastAPI para Gateway)** (TASK-009) - Relevante para a API Gateway.
+* ✅ **DEV: Criar Módulo `documents` na API Principal** (TASK-010) - Estrutura base do módulo de documentos no backend.
+* ✅ **TEST-PLAN: Planejar Testes para Módulo `documents` (Estrutura)** (TASK-011) - Testes para a estrutura do módulo.
+* ✅ **TEST-IMPL: Implementar Testes para Módulo `documents` (Estrutura)** (TASK-012) - Testes para a estrutura do módulo.
+* ⚠️ **DB-SYNC: Resolver Incompatibilidade de Schema de Documentos (Backend & Transcritor)** (TASK-048 adaptada) - A tabela 'documents' (que armazena chunks) criada pelo `transcritor_pdf_service` é incompatível com os modelos ORM `Document`/`DocumentChunk` (duas tabelas) do backend principal. É CRÍTICO definir uma estratégia: A) Modificar modelos do backend para mapear a tabela do transcritor; B) Modificar transcritor para usar schema de duas tabelas; ou C) Backend acessa dados de chunks apenas via API do transcritor, tornando seus modelos atuais de chunk obsoletos para essa finalidade. Investigar e implementar a solução escolhida.
+* ✅ **DOCKER: Configuração `docker-compose.yml` (Transcritor PDF)** (TASK-052 adaptada) - Revisar e garantir que `docker-compose.yml` configura corretamente o `transcritor_pdf_service` e remove quaisquer referências ao `pdf_processor_service` obsoleto. (Concluído)
+* ✅ **Endpoint Gateway Upload: `/api/documents/upload` (Backend Principal)** (TASK-013) - Implementado para upload e encaminhamento ao `transcritor_pdf_service`.
+* ✅ **Plano de Testes Upload: `/api/documents/upload`** (TASK-015) - Criado plano de testes para o endpoint de upload.
+* ✅ **Testes Integração Upload: `/api/documents/upload`** (TASK-016) - Implementados testes de integração (com ressalvas sobre execução ambiental).
+* 📝 **TEST-EXEC: Executar Testes da Fase 2 (Integração Transcritor PDF)** - Executar todos os testes relevantes para a integração do gateway com o `transcritor_pdf_service`.
 
 ---
 
@@ -118,7 +118,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 
 ---
 
-## Fase 3: Melhorias do Frontend Core ✅
+## Fase 5: Melhorias do Frontend Core ✅
 
 **Épico:** Aprimorar a usabilidade, consistência e performance da interface principal da aplicação.
 *Objetivo: Refinar a experiência do usuário no 'core' da aplicação, estabelecendo uma base sólida para todos os módulos.*
@@ -133,32 +133,32 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 
 ---
 
-## Fase 4: Módulo Piloto e Integração 📝
+## Fase 6: Módulo Piloto e Integração (`gerador_quesitos`) 📝
 
 **Épico:** Refatorar o `gerador_quesitos` para usar a nova arquitetura, servindo como modelo para futuros módulos.
 *Objetivo: Validar o fluxo de ponta a ponta, desde o upload no frontend até a resposta da IA.*
 
 * ✅ **Refatorar Frontend do Módulo:** Adicionar uma interface de upload de arquivo no módulo `gerador_quesitos` que chame o novo endpoint Gateway (TASK-057).
-* ✅ **Refatorar Backend do Módulo:** Modificar o endpoint do `gerador_quesitos` para, em vez de processar o arquivo, usar o `document_id` para buscar o texto pré-processado no banco de dados e então executar a lógica com LangChain (TASK-058).
-* ✅ **TEST-PLAN (Fase 4 Piloto): Planejar Testes para `gerador_quesitos` Refatorado** (TASK-059).
-* ✅ **TEST-IMPL (Fase 4 Piloto): Implementar Testes para `gerador_quesitos` Refatorado** (TASK-060). (Testes de frontend e backend implementados)
-* ⚠️ **TEST-EXEC (Fase 4 Piloto): Executar Testes do `gerador_quesitos` Refatorado** (TASK-061). - BLOCKED: Pendente de execução manual dos testes da TASK-060.
+* 📝 **Refatorar Backend do Módulo (`gerador_quesitos`):** Alinhar o endpoint do `gerador_quesitos` para receber `document_filename` (ou identificador similar pós-processamento pelo `transcritor_pdf_service`) em vez de `document_id`. Garantir que a busca do texto do documento seja compatível com a forma como o `transcritor_pdf_service` armazena os dados. (TASK-058).
+* ✅ **TEST-PLAN (Fase 6 Piloto): Planejar Testes para `gerador_quesitos` Refatorado** (TASK-059).
+* ✅ **TEST-IMPL (Fase 6 Piloto): Implementar Testes para `gerador_quesitos` Refatorado** (TASK-060). (Testes de frontend e backend implementados)
+* ⚠️ **TEST-EXEC (Fase 6 Piloto): Executar Testes do `gerador_quesitos` Refatorado** (TASK-061). - BLOCKED: Pendente de execução manual dos testes da TASK-060.
 
 
 ---
 
-## Fase 5: Governança e Maturidade 🔭
+## Fase 7: Governança e Maturidade 🔭
 
 **Épico:** Amadurecer a plataforma, focando em usabilidade, monitoramento e segurança.
 *Objetivo: Tornar a aplicação mais robusta e fácil de manter a longo prazo.*
 
-* ✅ **Notificações no Frontend:** Implementar um mecanismo de notificação global (toasts/snackbars) para dar feedback claro ao usuário. (Coberto pela Fase 3 Core)
+* ✅ **Notificações no Frontend:** Implementar um mecanismo de notificação global (toasts/snackbars) para dar feedback claro ao usuário. (Coberto pela Fase 5 Core)
 * 📝 **Logging e Monitoramento:** Configurar um sistema de logging estruturado para todos os serviços e avaliar uma ferramenta de Application Performance Monitoring (APM).
 * 📝 **Sistema de Alertas (Backend):** Configurar alertas proativos via e-mail para falhas críticas, notificando a equipe de desenvolvimento.
 
 ---
 
-## Fase Final: Submissão 📝
+## Fase 8: Submissão 📝
 
 **Épico:** Preparar a aplicação para a entrega final, garantindo que todos os componentes estejam revisados e a documentação atualizada.
 *Objetivo: Realizar as últimas verificações e garantir que o projeto esteja em um estado polido e completo conforme o escopo definido.*
