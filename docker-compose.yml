@@ -1,13 +1,13 @@
 # docker-compose.yml
-# Orquestra os serviços do Modular Dashboard e microsserviços integrados.
+# Orquestra os serviços do dashboard-adv e microsserviços integrados.
 
 services:
-  # API principal do Modular Dashboard.
+  # API principal do dashboard-adv.
   api:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: modular_dashboard_api
+    container_name: dashboard_adv_api # Alterado para dashboard-adv_api
     env_file:
       - ./backend/.env
     environment:
@@ -85,7 +85,7 @@ services:
   # Serviço de Fila de Mensagens (Cache e Broker para Celery).
   redis:
     image: redis:alpine
-    container_name: modular_dashboard_redis
+    container_name: dashboard_adv_redis # Alterado para dashboard-adv_redis
     # ports: # Não expor externamente por padrão, apenas à rede interna.
     #   - "6379:6379"
     volumes:
@@ -103,7 +103,7 @@ services:
   db:
     # Imagem PostgreSQL com a extensão pgvector pré-instalada.
     image: pgvector/pgvector:pg16
-    container_name: modular_dashboard_db
+    container_name: dashboard_adv_db # Alterado para dashboard-adv_db
     env_file:
       - ./backend/.env
     volumes:

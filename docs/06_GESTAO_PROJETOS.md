@@ -1,7 +1,7 @@
 # docs/06_GESTAO_PROJETOS.md
 # Gestão de Projetos com GitHub e IA
 
-Este documento descreve a abordagem de gestão de projetos para o Modular Dashboard, utilizando as ferramentas do GitHub (Issues, Project Boards) de forma integrada com o trabalho dos Agentes de IA e Desenvolvedores Humanos. O objetivo é manter um processo eficiente, transparente, com rastreabilidade e que sirva de memória para o projeto.
+Este documento descreve a abordagem de gestão de projetos para o dashboard-adv, utilizando as ferramentas do GitHub (Issues, Project Boards) de forma integrada com o trabalho dos Agentes de IA e Desenvolvedores Humanos. O objetivo é manter um processo eficiente, transparente, com rastreabilidade e que sirva de memória para o projeto.
 
 ## GitHub Issues: A Fonte da Verdade para Tarefas
 

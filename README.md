@@ -1,10 +1,10 @@
-# Modular Dashboard
+# dashboard-adv
 
 > Uma **plataforma base versátil e extensível** projetada para acelerar o desenvolvimento de aplicações web modulares e dashboards interativos, com capacidade de integração com Inteligência Artificial.
 
 ## Visão Geral da Arquitetura
 
-O projeto segue uma arquitetura com Frontend SPA (React/Vite) e Backend API RESTful (FastAPI), orquestrados via Docker Compose. Foi projetado para ser uma base modular versátil, onde os módulos são carregados dinamicamente com base em configurações centrais, permitindo maior flexibilidade tanto no backend quanto no frontend.
+O projeto dashboard-adv segue uma arquitetura com Frontend SPA (React/Vite) e Backend API RESTful (FastAPI), orquestrados via Docker Compose. Foi projetado para ser uma base modular versátil, onde os módulos são carregados dinamicamente com base em configurações centrais, permitindo maior flexibilidade tanto no backend quanto no frontend.
 
 * **Frontend:** React (TypeScript) com Material UI, Vite e Zustand.
 * **Backend:** API RESTful Assíncrona com FastAPI (Python), SQLAlchemy. Provê os serviços Core (em `core_modules`) e os endpoints para os módulos plugáveis (`modules`).

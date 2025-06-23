@@ -188,7 +188,7 @@ const MainLayout: React.FC = () => {
             noWrap
             sx={{ flexGrow: 1 }}
           >
-            Modular Dashboard
+            dashboard-adv
           </Typography>
           <Tooltip title="Logout">
             <IconButton color="inherit" onClick={handleLogout}

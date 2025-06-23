@@ -3,7 +3,7 @@
 
 ## Introdução ao Projeto e à Colaboração Humano-IA
 
-Bem-vindo(a) ao projeto Modular Dashboard! Nosso objetivo é criar uma plataforma web modular e versátil, utilizando Inteligência Artificial para acelerar e otimizar o desenvolvimento. Para uma visão completa dos objetivos, consulte o documento `docs/00_VISAO_GERAL.md`.
+Bem-vindo(a) ao projeto dashboard-adv! Nosso objetivo é criar uma plataforma web modular e versátil, utilizando Inteligência Artificial para acelerar e otimizar o desenvolvimento. Para uma visão completa dos objetivos, consulte o documento `docs/00_VISAO_GERAL.md`.
 
 Este projeto adota um **fluxo de trabalho híbrido**, onde Desenvolvedores Humanos (Devs) colaboram estrategicamente com agentes de IA. Acreditamos que a IA pode potencializar o desenvolvimento, mas a direção estratégica, validação rigorosa e supervisão humana são indispensáveis. Os Devs focam na definição de requisitos, arquitetura, decisões críticas, revisão de código, testes e garantia de qualidade, enquanto os Agentes de IA auxiliam na execução de tarefas bem definidas.
 
@@ -92,4 +92,4 @@ Para começar a contribuir efetivamente:
 *   **Paciência e Feedback Construtivo:** Este é um fluxo de trabalho em evolução. Seu feedback sobre o processo em si é valioso para aprimoramentos contínuos.
 *   **Gerenciamento de Código:** Siga as práticas padrão de Git (branches significativas, commits atômicos e descritivos, Pull Requests bem documentados).
 
-Bem-vindo(a) novamente! Estamos ansiosos pela sua contribuição para o Modular Dashboard.
+Bem-vindo(a) novamente! Estamos ansiosos pela sua contribuição para o dashboard-adv.

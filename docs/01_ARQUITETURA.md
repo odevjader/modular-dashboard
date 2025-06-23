@@ -1,10 +1,10 @@
-# Arquitetura do Modular Dashboard
+# Arquitetura do dashboard-adv
 
-Este documento descreve a arquitetura de alto nível do projeto Modular Dashboard, seus principais componentes, o fluxo de dados, as decisões de design fundamentais, o mecanismo de modularidade e a estratégia de configuração.
+Este documento descreve a arquitetura de alto nível do projeto dashboard-adv, seus principais componentes, o fluxo de dados, as decisões de design fundamentais, o mecanismo de modularidade e a estratégia de configuração.
 
 ## Visão Geral
 
-O Modular Dashboard adota uma arquitetura de **Monorepo** contendo:
+O dashboard-adv adota uma arquitetura de **Monorepo** contendo:
 * Uma aplicação **Frontend SPA (Single Page Application)** responsável pela interface do usuário final (React/TypeScript/Vite).
 * Um **Backend API RESTful Assíncrono** que expõe os endpoints e contém a lógica de negócio (FastAPI/Python/SQLAlchemy).
 * Um **Banco de Dados Relacional** para persistência (PostgreSQL/pgvector).
@@ -26,11 +26,11 @@ O ambiente é orquestrado via **Docker e Docker Compose**, e a arquitetura é pr
 O diagrama abaixo ilustra os principais containers (componentes de alto nível) do sistema e suas interações primárias:
 
 C4Container
-  title Diagrama de Containers - Modular Dashboard
+  title Diagrama de Containers - dashboard-adv
 
   Person(user, "Usuário Final", "Admin, Usuário comum, etc.") # Representa o usuário final interagindo com o sistema
 
-  System_Boundary(platform, "Modular Dashboard") {
+  System_Boundary(platform, "dashboard-adv") {
     Container(frontend, "Frontend SPA", "React, TypeScript, Vite", "Interface com o Usuário Final (Shell + UIs dos Módulos)")
     Container(backend, "Backend API", "FastAPI, Python", "Core Modules (Auth, Health), Módulos Plugáveis, Lógica, Orquestração IA")
     ContainerDb(db, "Banco de Dados", "PostgreSQL, pgvector", "Armazena dados da plataforma e módulos")

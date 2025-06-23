@@ -1,10 +1,10 @@
-# Estrutura de Pastas - Modular Dashboard
+# Estrutura de Pastas - dashboard-adv
 
-Este documento descreve a organização das pastas e arquivos principais do projeto Modular Dashboard, ajudando a navegar pela base de código.
+Este documento descreve a organização das pastas e arquivos principais do projeto dashboard-adv, ajudando a navegar pela base de código.
 
 ## Estrutura Raiz
 
-A raiz do projeto Modular Dashboard contém os seguintes arquivos e diretórios principais:
+A raiz do projeto dashboard-adv contém os seguintes arquivos e diretórios principais:
 
 *   **`.gitignore`**: Especifica arquivos e pastas intencionalmente não rastreados pelo Git.
 *   **`.prompts/`**: Contém prompts e configurações para interações com modelos de linguagem grande (LLMs).

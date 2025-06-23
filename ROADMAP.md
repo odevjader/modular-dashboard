@@ -12,8 +12,8 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 ---
 ## Manutenção e Refatoração Contínua 🎯
 
-* 📝 **REFACTOR-DOC: Renomear "modular-dashboard" / "modular-dashboard-adv" para "dashboard-adv"** - Atualizar todas as menções nos arquivos de documentação para refletir o nome correto do projeto "dashboard-adv".
-* 📝 **REFACTOR-DOC: Documentar Remoção do `pdf_processor_service`** - Atualizar a documentação de arquitetura (`01_ARQUITETURA.md`) e outros documentos relevantes para refletir a remoção do `pdf_processor_service` e a consolidação do fluxo de processamento de PDF via `transcritor_pdf_service`.
+* ✅ **REFACTOR-DOC: Renomear "modular-dashboard" / "modular-dashboard-adv" para "dashboard-adv"** - Atualizar todas as menções nos arquivos de documentação para refletir o nome correto do projeto "dashboard-adv". (Concluído)
+* ✅ **REFACTOR-DOC: Documentar Remoção do `pdf_processor_service`** - Atualizar a documentação de arquitetura (`01_ARQUITETURA.md`) e outros documentos relevantes para refletir a remoção do `pdf_processor_service` e a consolidação do fluxo de processamento de PDF via `transcritor_pdf_service`. (Concluído)
 * ✅ **REFACTOR-ALEMBIC: Unificar Configuração do Alembic (Backend)** - Investigar os arquivos `alembic.ini`, manter apenas um, e garantir que `env.py` carregue a URL do banco de dados das configurações centrais, removendo senhas hardcoded. (Concluído)
 * ✅ **REFACTOR-PDF-SERVICE: Remover Completamente `pdf_processor_service` (Backend)** - Remover a variável de configuração, o endpoint associado, o diretório do serviço e atualizar testes. (Concluído)
 
