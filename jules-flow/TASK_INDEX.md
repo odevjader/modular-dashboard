@@ -9,6 +9,7 @@ Este arquivo rastreia todas as tarefas gerenciadas pelo sistema Jules-Flow.
 - [ ] **TASK-003**: [Configurar Sistema de Alertas no Backend (Fase 7)](./backlog/TASK-003_alert_system_fase7.md)
 - [ ] **TASK-004**: [Revisão Final do .env.example (Fase 8)](./backlog/TASK-004_env_review_fase8.md)
 - [ ] **TASK-005**: [Entregar todas as alterações do Roadmap Completo (Fase 8)](./backlog/TASK-005_submit_roadmap_fase8.md)
+- [ ] **TASK-007**: [Develop Frontend Module for PDF Transcriber Testing](./backlog/TASK-007_develop_pdf_transcriber_frontend_tester.md)
 
 ## Em Progresso
 
