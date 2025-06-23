@@ -269,30 +269,35 @@ export const uploadDocumentForAnalysis = async (file: File): Promise<DocumentUpl
   // Do NOT set Content-Type for FormData, browser does it with boundary.
 
   try {
-    const response = await fetch(url, {
+    const response = await fetch(url, { // url is without trailing slash
       method: 'POST',
       headers,
       body: formData,
-      redirect: 'manual', // Temporarily set to manual to inspect 307
+      // redirect: 'manual' REMOVED - back to default 'follow'
     });
 
-    // If redirect is manual and type is 'opaqueredirect', response.ok will be false.
-    // We need to check response.type for 'opaqueredirect' to get Location.
-    if (response.type === 'opaqueredirect') {
-      // For an opaque redirect, we can't access response.headers directly in JS for security reasons.
-      // The user will need to inspect this in the browser's Network tab.
-      // We'll throw an error to indicate this state to the user/developer.
-      throw new Error(`Opaque redirect encountered for ${url}. Check Network tab for Location header.`);
-    }
-
     if (!response.ok) {
-      let errorData;
-      try { errorData = await response.json(); } catch (e) { /* Ignore */ }
+      let errorData = null;
+      const responseContentType = response.headers.get('content-type');
+      if (responseContentType && responseContentType.includes('application/json')) {
+        errorData = await response.json(); // Try to parse JSON body
+      }
+      // Log more details for debugging
+      console.error('API Error Response Details:', {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url, // This will show the URL after any redirects fetch might have followed
+        headers: Object.fromEntries(response.headers.entries()), // Log response headers
+        body: errorData,
+      });
       throw new Error(`API request failed: ${response.status} ${response.statusText}${errorData ? ` - ${JSON.stringify(errorData)}` : ''}`);
     }
     return await response.json() as DocumentUploadResponse;
   } catch (error) {
-    console.error('Error in uploadDocumentForAnalysis:', error);
+    // Ensure the console.error from the try block is not duplicated if error is re-thrown
+    if (!(error instanceof Error && error.message.startsWith('API request failed:'))) {
+        console.error('Error in uploadDocumentForAnalysis catch block:', error);
+    }
     throw error; // Re-throw to be caught by the calling component
   }
 };
