@@ -10,6 +10,7 @@ Este arquivo rastreia todas as tarefas gerenciadas pelo sistema Jules-Flow.
 - [ ] **TASK-004**: [Revisão Final do .env.example (Fase 8)](./backlog/TASK-004_env_review_fase8.md)
 - [ ] **TASK-005**: [Entregar todas as alterações do Roadmap Completo (Fase 8)](./backlog/TASK-005_submit_roadmap_fase8.md)
 - [ ] **TASK-008**: [Fix 307 Temporary Redirect Error on PDF Upload](./backlog/TASK-008_fix_307_redirect_pdf_upload.md)
+- [ ] **TASK-009**: [Fix Backend Gateway Handling of Transcriber Service Redirect](./backlog/TASK-009_fix_backend_gateway_redirect_handling.md)
 
 ## Em Progresso
 
