@@ -13,14 +13,6 @@ export interface SystemInfoResponse {
     api_prefix: string;
 }
 
-// AI Test Module
-export interface AITestInput {
-    text: string;
-}
-export interface AITestResponse {
-    response: string;
-}
-
 // Gerador Quesitos Module
 export interface RespostaQuesitos {
     quesitos_texto: string;
@@ -157,14 +149,6 @@ async function apiClient<T>(endpoint: string, options: RequestInit = {}): Promis
 /** Fetches system status information from the backend. */
 export const getSystemInfo = (): Promise<SystemInfoResponse> => {
     return apiClient<SystemInfoResponse>('/info/v1/status');
-};
-
-/** Sends a text prompt to the AI Test backend endpoint. */
-export const postAITestPing = (payload: AITestInput): Promise<AITestResponse> => {
-    return apiClient<AITestResponse>('/ai_test/v1/ping', {
-        method: 'POST',
-        body: JSON.stringify(payload),
-    });
 };
 
 // /** Uploads PDF and inputs to generate quesitos. Uses FormData. (OLD - to be removed or refactored) */
