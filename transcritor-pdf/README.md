@@ -162,70 +162,50 @@ A API estará acessível em `http://localhost:8000`.
 
 ## 🐳 Running with Docker Compose (as part of `dashboard-adv`)
 
-This service is designed to be run as part of the `dashboard-adv` project using its Docker Compose setup. This allows for easier management of services, dependencies (like the PostgreSQL database), and networking.
+This `transcritor-pdf` service is an integral part of the `dashboard-adv` project and is managed by its main Docker Compose setup. This integration simplifies service management, dependency handling (like the PostgreSQL database), and networking.
 
 ### Prerequisites
 
 *   **Docker and Docker Compose installed:** Ensure you have the latest versions of Docker Desktop (which includes Docker Compose) or Docker Engine and Docker Compose plugin installed on your system.
-*   **`dashboard-adv` project cloned:** You need to have the `docg1701/dashboard-adv` repository cloned to your local machine.
-*   **`transcritor-pdf` project cloned:** This `transcritor-pdf` project repository must be cloned as a **sibling directory** to the `dashboard-adv` project. The `docker-compose.yml` in `dashboard-adv` expects this structure for its build context.
-
-    Directory Structure Example:
-    ```
-    your_workspace_directory/
-    ├── dashboard-adv/   <-- Main project with Docker Compose
-    │   ├── backend/
-    │   │   └── .env             <-- Shared .env file
-    │   └── docker-compose.yml
-    └── transcritor-pdf/         <-- This project (sibling to dashboard-adv)
-        ├── Dockerfile
-        ├── src/
-        └── requirements.txt
-    ```
+*   **`dashboard-adv` project cloned:** You need to have the main `dashboard-adv` repository cloned. The `transcritor-pdf` service موجود neste repositório no diretório `transcritor-pdf/`.
 
 ### Configuration
 
-All runtime configuration for the `transcritor-pdf` service (when run via `dashboard-adv`'s Docker Compose) is managed through the `.env` file located at `dashboard-adv/backend/.env`.
+All runtime configuration for the `transcritor-pdf` service, when run via `dashboard-adv`'s Docker Compose, is managed through the `.env` file located at `dashboard-adv/backend/.env`.
 
 The `transcritor-pdf` service expects the following essential environment variables to be present in this shared `.env` file:
 
 *   `OPENAI_API_KEY`: Your API key for OpenAI (used for embeddings).
-*   `DB_HOST=db`: This is crucial. It tells `transcritor-pdf` to connect to the PostgreSQL service named `db` as defined within the `docker-compose.yml` of `dashboard-adv`.
-*   `DB_PORT=5432`: The internal port of the `db` service. (Ensure this matches the PostgreSQL port if customized in `docker-compose.yml`).
+*   `DB_HOST=db`: This tells `transcritor-pdf` to connect to the PostgreSQL service named `db` as defined within the `docker-compose.yml` of `dashboard-adv`.
+*   `DB_PORT=5432`: The internal port of the `db` service.
 *   `DB_NAME`: The name of the database to use (e.g., `appdb`).
 *   `DB_USER`: The username for connecting to the database (e.g., `appuser`).
 *   `DB_PASSWORD`: The password for the database user.
 
 **Important Note on `PYTHONPATH`**:
-For the `transcritor-pdf` service to correctly locate its Python modules (e.g., `src.main`) when running inside the container, the environment variable `PYTHONPATH=/app` must be set. This is typically handled by the `transcritor_pdf` service definition within the `dashboard-adv/docker-compose.yml` file (e.g., under the `environment` key). The `transcritor-pdf/Dockerfile` itself (as of the current version) does **not** set this variable. If you encounter `ModuleNotFoundError` or similar import errors when the service starts, ensure `PYTHONPATH=/app` is correctly defined for the `transcritor_pdf` container in the `docker-compose.yml` file. Refer to `docs/deployment/compose_integration_notes.md` for more details.
+The `PYTHONPATH=/app` environment variable is crucial for the service to locate its Python modules correctly within the container. This is set in the `dashboard-adv/docker-compose.yml` file for the `transcritor_pdf` service.
 
 ### Running the Service
 
-1.  **Navigate to the `dashboard-adv` directory:**
-    ```bash
-    cd path/to/your_workspace_directory/dashboard-adv
-    ```
+1.  **Navigate to the `dashboard-adv` root directory:**
+    If you have cloned the `dashboard-adv` project, navigate to its root directory.
 
 2.  **Run Docker Compose:**
-    To build (if necessary) and start only the `transcritor-pdf` service and its explicit dependencies (like the `db` service if not already running):
-    ```bash
-    docker compose up db transcritor_pdf
-    ```
-    To run in detached mode (in the background):
-    ```bash
-    docker compose up -d db transcritor_pdf
-    ```
-    If all services in `dashboard-adv` are desired, or if you want Docker Compose to handle all dependencies automatically:
+    To build (if necessary) and start all services defined in `dashboard-adv`, including `transcritor-pdf` and its dependencies:
     ```bash
     docker compose up
     ```
-    The `transcritor-pdf` service will build its Docker image based on `../transcritor-pdf/Dockerfile` (if not already built) and then start.
+    To run in detached mode (in the background):
+    ```bash
+    docker compose up -d
+    ```
+    The `transcritor-pdf` service will build its Docker image based on the `transcritor-pdf/Dockerfile` located within the `dashboard-adv` project and then start as part of the orchestrated services.
 
 ### Accessing the API
 
-Once the `transcritor-pdf` service is running via Docker Compose:
+Once the `transcritor-pdf` service is running via the main Docker Compose of `dashboard-adv`:
 
-*   The API will be available at: `http://localhost:8002` (as per the port mapping `8002:8002` typically defined in `dashboard-adv/docker-compose.yml` for this service).
+*   The API will be available at: `http://localhost:8002` (as per the port mapping `8002:8002` defined in `dashboard-adv/docker-compose.yml`).
 *   **Health Check:** `GET http://localhost:8002/health/`
 *   **Process PDF:** `POST http://localhost:8002/process-pdf/` (use with a tool like `curl` or Postman to upload a PDF file).
 

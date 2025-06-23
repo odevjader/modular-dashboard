@@ -25,6 +25,8 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas em s
     # O nome do repositório em si não pode ser alterado por este agente.
     ```
 
+    *Nota sobre o `transcritor-pdf`: O serviço `transcritor-pdf`, responsável pelo processamento de PDFs, está incluído neste repositório dentro do diretório `transcritor-pdf/`. Sua construção e execução são gerenciadas pelo arquivo `docker-compose.yml` principal do projeto `dashboard-adv`.*
+
 2.  **Configurar Variáveis de Ambiente (Backend):**
     O backend FastAPI requer um arquivo `.env` na pasta `backend/` para carregar configurações essenciais. O `docker-compose.yml` é configurado para carregar este arquivo.
 

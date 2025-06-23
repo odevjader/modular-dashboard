@@ -31,7 +31,7 @@ services:
 
   # Microsserviço para processamento e vetorização de PDFs.
   transcritor_pdf:
-    # O contexto aponta para um diretório irmão, onde o Dockerfile do serviço deve residir.
+    # O contexto aponta para o diretório transcritor-pdf dentro deste projeto.
     build:
       context: ./transcritor-pdf
       dockerfile: Dockerfile
