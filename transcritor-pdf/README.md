@@ -167,7 +167,7 @@ This service is designed to be run as part of the `dashboard-adv` project using 
 ### Prerequisites
 
 *   **Docker and Docker Compose installed:** Ensure you have the latest versions of Docker Desktop (which includes Docker Compose) or Docker Engine and Docker Compose plugin installed on your system.
-*   **`dashboard-adv` project cloned:** You need to have the `galvani4987/modular-dashboard` (or the appropriately named) repository cloned to your local machine.
+*   **`dashboard-adv` project cloned:** You need to have the `docg1701/dashboard-adv` repository cloned to your local machine.
 *   **`transcritor-pdf` project cloned:** This `transcritor-pdf` project repository must be cloned as a **sibling directory** to the `dashboard-adv` project. The `docker-compose.yml` in `dashboard-adv` expects this structure for its build context.
 
     Directory Structure Example:

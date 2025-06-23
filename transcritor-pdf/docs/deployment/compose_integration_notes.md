@@ -1,13 +1,13 @@
-# Docker Compose Integration Notes for transcritor-pdf with modular-dashboard-adv
+# Docker Compose Integration Notes for transcritor-pdf with dashboard-adv
 
-This document provides analysis and guidance for integrating the `transcritor-pdf` service with the `docker-compose.yml` from the `galvani4987/modular-dashboard-adv` project.
+This document provides analysis and guidance for integrating the `transcritor-pdf` service with the `docker-compose.yml` from the `docg1701/dashboard-adv` project.
 
-## Existing `transcritor-pdf` Service Definition in `modular-dashboard-adv`
+## Existing `transcritor-pdf` Service Definition in `dashboard-adv`
 
-The `modular-dashboard-adv/docker-compose.yml` already includes a service definition for `transcritor_pdf`:
+The `dashboard-adv/docker-compose.yml` already includes a service definition for `transcritor_pdf`:
 
 ```yaml
-# Snippet from modular-dashboard-adv/docker-compose.yml
+# Snippet from dashboard-adv/docker-compose.yml
 services:
   # ... other services ...
 
@@ -43,11 +43,11 @@ This existing service definition is well-suited for a development environment. H
    - The `build.context: ../transcritor-pdf` implies the following directory structure when both projects are checked out:
      ```
      your_workspace_directory/
-     ├── modular-dashboard-adv/
+     ├── dashboard-adv/
      │   ├── backend/
      │   │   └── .env  <-- Shared .env file
      │   └── docker-compose.yml
-     └── transcritor-pdf/   <-- Sibling directory to modular-dashboard-adv
+     └── transcritor-pdf/   <-- Sibling directory to dashboard-adv
          ├── Dockerfile
          ├── src/
          │   └── main.py
@@ -56,7 +56,7 @@ This existing service definition is well-suited for a development environment. H
    - Ensure this structure is maintained for `docker compose up` to correctly build the `transcritor-pdf` image.
 
 **2. Shared `.env` File:**
-   - The `env_file: - ./backend/.env` means `transcritor-pdf` will use the environment variables defined in `modular-dashboard-adv/backend/.env`.
+   - The `env_file: - ./backend/.env` means `transcritor-pdf` will use the environment variables defined in `dashboard-adv/backend/.env`.
    - **Crucial:** This `.env` file *must* contain all necessary variables for `transcritor-pdf`. Specifically:
      - `DB_HOST=db` (This tells `transcritor-pdf` to connect to the `db` service defined in the same Docker Compose file).
      - `DB_PORT=5432` (The internal port of the PostgreSQL service).
@@ -67,7 +67,7 @@ This existing service definition is well-suited for a development environment. H
      - Any other custom environment variables required by `transcritor-pdf`.
 
 **3. `PYTHONPATH` (Recommended Addition):**
-   - The `modular-dashboard-adv`'s main `api` service includes `PYTHONPATH=/app`.
+   - The `dashboard-adv`'s main `api` service includes `PYTHONPATH=/app`.
    - If the `transcritor-pdf` `Dockerfile` sets `WORKDIR /app` and the application code (e.g., `main.py`) is within a subdirectory like `src` (i.e., `/app/src/main.py`), it's recommended to add `PYTHONPATH=/app` to the `transcritor_pdf` service definition's environment variables. This ensures Python can find `src.main`.
    - **Suggested addition to `transcritor_pdf` service in `docker-compose.yml`:**
      ```yaml
@@ -133,10 +133,10 @@ This existing service definition is well-suited for a development environment. H
      CMD ["/opt/venv/bin/python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "${APP_PORT}"]
      ```
 
-**Note:** The sample `Dockerfile` above includes `ENV PYTHONPATH=/app`. While this is a valid approach, the primary `Dockerfile` at the root of the `transcritor-pdf` repository (as of this writing) does not set `PYTHONPATH`, deferring this configuration to the Docker Compose environment (e.g., in `modular-dashboard-adv/docker-compose.yml`) to allow for flexibility. The key is to ensure `/app` is in Python's import path when the container runs.
+**Note:** The sample `Dockerfile` above includes `ENV PYTHONPATH=/app`. While this is a valid approach, the primary `Dockerfile` at the root of the `transcritor-pdf` repository (as of this writing) does not set `PYTHONPATH`, deferring this configuration to the Docker Compose environment (e.g., in `dashboard-adv/docker-compose.yml`) to allow for flexibility. The key is to ensure `/app` is in Python's import path when the container runs.
 
 **5. Port and Command:**
    - The service is configured to run on port `8002` and uses `uvicorn src.main:app ... --reload`. This aligns with a FastAPI application structure where `main.py` is inside a `src` directory.
    - The `volumes: - ../transcritor-pdf:/app` mount supports the `--reload` functionality.
 
-By ensuring these points of alignment, particularly the directory structure, shared `.env` variables (with `DB_HOST=db`), and a compatible `Dockerfile` within `transcritor-pdf`, the service should integrate smoothly when `docker compose up` is run from the `modular-dashboard-adv` directory.
+By ensuring these points of alignment, particularly the directory structure, shared `.env` variables (with `DB_HOST=db`), and a compatible `Dockerfile` within `transcritor-pdf`, the service should integrate smoothly when `docker compose up` is run from the `dashboard-adv` directory.
