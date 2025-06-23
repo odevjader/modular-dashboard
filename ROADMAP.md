@@ -139,7 +139,7 @@ Este documento detalha o plano de desenvolvimento do projeto, com tarefas organi
 *Objetivo: Validar o fluxo de ponta a ponta, desde o upload no frontend até a resposta da IA.*
 
 * ✅ **Refatorar Frontend do Módulo:** Adicionar uma interface de upload de arquivo no módulo `gerador_quesitos` que chame o novo endpoint Gateway.
-* 📝 **Refatorar Backend do Módulo (`gerador_quesitos`):** Alinhar o endpoint do `gerador_quesitos` para receber `document_filename` (ou identificador similar pós-processamento pelo `transcritor_pdf_service`) em vez de `document_id`. Garantir que a busca do texto do documento seja compatível com a forma como o `transcritor_pdf_service` armazena os dados.
+* ✅ **Refatorar Backend do Módulo (`gerador_quesitos`):** Endpoint `/gerar_com_referencia_documento` agora recebe `document_filename` e busca texto do DB. Endpoint `/gerar` (upload direto) foi removido.
 * ✅ **TEST-PLAN (Fase 6 Piloto): Planejar Testes para `gerador_quesitos` Refatorado**.
 * ✅ **TEST-IMPL (Fase 6 Piloto): Implementar Testes para `gerador_quesitos` Refatorado**. (Testes de frontend e backend implementados)
 * ⚠️ **TEST-EXEC (Fase 6 Piloto): Executar Testes do `gerador_quesitos` Refatorado**. - BLOCKED: Pendente de execução manual dos testes.

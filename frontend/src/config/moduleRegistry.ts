@@ -1,6 +1,8 @@
 import React, { ComponentType, LazyExoticComponent } from 'react';
 import { SvgIconComponent } from '@mui/icons-material';
 import BuildIcon from '@mui/icons-material/Build'; // Example Icon
+import GavelIcon from '@mui/icons-material/Gavel'; // Icon for Gerador Quesitos
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'; // Icon for System Info
 
 export interface ModuleRoute {
   path: string;
@@ -35,6 +37,34 @@ const moduleRegistry: ModuleRegistry = {
       {
         path: '/', // Root path for this module
         component: React.lazy(() => import('../modules/test_module/TestModulePage')),
+        exact: true,
+      },
+    ],
+  },
+  geradorQuesitos: {
+    name: 'Gerador de Quesitos',
+    basePath: '/gerador-quesitos',
+    navIcon: GavelIcon,
+    navText: 'Gerador Quesitos',
+    adminOnly: false, // Assuming it's not admin only, adjust if needed
+    routes: [
+      {
+        path: '/',
+        component: React.lazy(() => import('../pages/PaginaGeradorQuesitos')),
+        exact: true,
+      },
+    ],
+  },
+  systemInfo: {
+    name: 'System Info',
+    basePath: '/system-info',
+    navIcon: InfoOutlinedIcon,
+    navText: 'System Info',
+    adminOnly: false, // Assuming it's not admin only, adjust if needed
+    routes: [
+      {
+        path: '/',
+        component: React.lazy(() => import('../pages/SystemInfoPage')),
         exact: true,
       },
     ],

@@ -18,62 +18,51 @@ O objetivo deste módulo é auxiliar profissionais da área jurídica/previdenci
 7.  **Exibição do Resultado:** Após a conclusão, os quesitos gerados pela IA são exibidos em uma área de texto na interface para o usuário revisar, copiar ou salvar.
 8.  **Persistência de Estado (UI):** O último resultado gerado ou erro ocorrido é persistido no estado do frontend (usando Zustand) para que o usuário não perca a informação caso navegue para outra página e retorne durante ou após o processamento.
 
-## Endpoint da API
+## Endpoints da API
 
-O frontend interage com o seguinte endpoint no backend:
+O módulo `gerador_quesitos` expõe o seguinte endpoint principal:
 
-* **Método:** `POST`
-* **Rota:** `/api/gerador_quesitos/v1/gerar`
-* **Descrição:** Recebe os arquivos PDF e os parâmetros do formulário, processa os documentos, interage com o modelo de IA selecionado e retorna os quesitos gerados.
-* **Autenticação:** (A ser definido/implementado - atualmente pode estar desprotegido ou dependerá do módulo Auth)
-* **Request Body (`multipart/form-data`):**
-    * `files`: Uma ou mais partes do formulário, cada uma contendo um arquivo PDF (`UploadFile`).
-    * `tipo_beneficio`: Uma parte do formulário contendo o valor string (ex: `"Auxílio-Doença"`).
-    * `profissao`: Uma parte do formulário contendo o valor string (ex: `"Motorista"`).
-    * `(opcional) model_name`: Uma parte do formulário contendo o valor string (ex: `"gemini-pro"`).
+### Gerar Quesitos com Referência de Documento
 
-* **Exemplo de Requisição (Conceitual):**
-    * Uma requisição `POST` para `/api/gerador_quesitos/v1/gerar` com o `Content-Type: multipart/form-data`. A requisição conteria:
-        * Uma ou mais partes chamadas `files`, cada uma com os dados binários de um arquivo PDF e seu nome/tipo.
-        * Uma parte chamada `tipo_beneficio` com o valor texto selecionado.
-        * Uma parte chamada `profissao` com o valor texto selecionado.
-        * Opcionalmente, uma parte `model_name` com o nome do modelo.
-    * Ferramentas como Postman ou código frontend (usando `FormData` com a API `fetch` ou um cliente HTTP como `axios`) podem construir essa requisição.
-
-* **Exemplo de Resposta (Sucesso - HTTP 200):**
+*   **Método:** `POST`
+*   **Rota:** `/api/gerador_quesitos/v1/gerar_com_referencia_documento`
+*   **Descrição:** Recebe o nome de um arquivo de documento (previamente processado pelo serviço `transcritor-pdf`), informações do caso (benefício, profissão) e o nome do modelo de IA. Busca o conteúdo textual do documento no banco de dados, formata um prompt e chama o modelo de IA para gerar os quesitos.
+*   **Autenticação:** (A ser definido/implementado - atualmente pode estar desprotegido ou dependerá do módulo Auth).
+*   **Request Body (JSON):**
     ```json
     {
-      "quesitos": "1. Considerando a atividade habitual de Motorista, quais limitações funcionais apresentadas nos laudos médicos de fls. XX-YY impedem o exercício desta profissão?\n2. O quadro descrito no exame de imagem de fls. ZZ é compatível com o exercício da atividade de Motorista de forma contínua?\n3. ..."
+      "document_filename": "nome_do_arquivo.pdf",
+      "beneficio": "Auxílio-Doença",
+      "profissao": "Motorista",
+      "modelo_nome": "gemini-pro" // ou "<Modelo Padrão>"
     }
     ```
-
-* **Exemplo de Resposta (Erro de Validação - HTTP 422):** (Exemplo: `tipo_beneficio` não enviado)
+    *   `document_filename`: String, nome do arquivo do documento como armazenado pelo `transcritor-pdf`.
+    *   `beneficio`: String, tipo de benefício previdenciário.
+    *   `profissao`: String, profissão do requerente.
+    *   `modelo_nome`: String, nome do modelo de IA ou `"<Modelo Padrão>"`.
+*   **Exemplo de Resposta (Sucesso - HTTP 200):**
     ```json
     {
-      "detail": [
-        {
-          "loc": [
-            "body",
-            "tipo_beneficio"
-          ],
-          "msg": "field required",
-          "type": "value_error.missing"
-        }
-      ]
+      "quesitos_texto": "1. Considerando a atividade habitual de Motorista, quais limitações funcionais apresentadas nos laudos médicos de fls. XX-YY impedem o exercício desta profissão?\n2. ..."
     }
     ```
-* **Outras Respostas de Erro:**
-    * `HTTP 400 Bad Request`: Pode ocorrer se nenhum arquivo for enviado ou outra validação customizada falhar.
-    * `HTTP 500 Internal Server Error`: Para erros inesperados no processamento (PDF, OCR, IA).
+*   **Respostas de Erro Comuns:**
+    *   `HTTP 404 Not Found`: Se o `document_filename` não for encontrado no banco de dados ou não tiver conteúdo processado.
+    *   `HTTP 422 Unprocessable Entity`: Se os dados do payload forem inválidos.
+    *   `HTTP 500 Internal Server Error`: Para erros na consulta ao banco, falha na comunicação com a IA, ou outros erros inesperados.
+    *   `HTTP 503 Service Unavailable`: Se o serviço de IA não estiver configurado ou disponível.
+
+**(Nota: O endpoint anterior `/api/gerador_quesitos/v1/gerar` que realizava upload direto de PDFs foi descontinuado e removido em favor deste fluxo que utiliza documentos pré-processados pelo serviço `transcritor-pdf`.)**
 
 ## Fluxo Técnico (Backend)
 
-Quando o endpoint `/api/gerador_quesitos/v1/gerar` é chamado, o backend executa os seguintes passos:
+Quando o endpoint `/api/gerador_quesitos/v1/gerar_com_referencia_documento` é chamado:
 
-1.  **Recebimento e Validação:** O FastAPI recebe a requisição `multipart/form-data`. Os parâmetros do formulário (`tipo_beneficio`, `profissao`, `model_name`) e os arquivos (`files`) são validados usando Pydantic Schemas definidos em `backend/app/modules/gerador_quesitos/v1/schemas.py`.
-2.  **Processamento de PDFs:**
-    * **Nota:** A funcionalidade de upload direto de PDFs e processamento com `DoclingLoader` (que usava Tesseract) neste endpoint foi desativada temporariamente. O processamento de PDFs agora é primariamente responsabilidade do serviço `transcritor-pdf`. Este módulo (`gerador_quesitos`) focará em utilizar o texto já extraído e armazenado por aquele serviço, ou receber texto diretamente.
-    * O texto relevante para o caso (previamente processado e recuperado do banco de dados ou fornecido de outra forma) é usado como contexto.
+1.  **Recebimento e Validação:** O FastAPI recebe o payload JSON e o valida usando o schema Pydantic `GerarQuesitosComDocIdPayload`.
+2.  **Busca do Conteúdo do Documento:**
+    *   O sistema consulta a tabela `documents` (populada pelo `transcritor-pdf`) usando o `document_filename` fornecido.
+    *   Os chunks de texto (`text_content`) associados ao arquivo são recuperados e concatenados para formar o contexto completo do documento.
 3.  **Construção do Prompt para LLM:**
     * Um prompt template estruturado é preenchido com:
         * O contexto extraído dos PDFs.
