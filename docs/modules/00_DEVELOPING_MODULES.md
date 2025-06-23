@@ -196,7 +196,7 @@ async def create_new_resource(db: AsyncSession, resource_data: schemas.YourResou
 
 ### 3.6. Registro do Módulo (`backend/app/config/modules.yaml`)
 
-Para que o backend carregue seu módulo (especificamente seus endpoints), ele precisa ser registrado no arquivo `modules.yaml`. A estrutura detalhada deste arquivo e o comportamento do carregador são descritos em `docs/05_MODULARIDADE.md`.
+Para que o backend carregue seu módulo (especificamente seus endpoints), ele precisa ser registrado no arquivo `modules.yaml`. A estrutura detalhada deste arquivo e o comportamento do carregador são descritos em `../05_MODULARIDADE.md`.
 
 **Exemplo de Adição:**
 ```yaml
@@ -337,7 +337,7 @@ export const createYourModuleResource = async (payload: YourModuleCreatePayload)
 
 ### 4.6. Registro do Módulo (`frontend/src/config/moduleRegistry.ts`)
 
-Para que o frontend reconheça seu módulo, suas rotas e links de navegação, ele precisa ser registrado em `moduleRegistry.ts`. Este arquivo define a estrutura e lista todos os módulos de frontend disponíveis, utilizando a interface `FrontendModule` (detalhada em `docs/05_MODULARIDADE.md`).
+Para que o frontend reconheça seu módulo, suas rotas e links de navegação, ele precisa ser registrado em `moduleRegistry.ts`. Este arquivo define a estrutura e lista todos os módulos de frontend disponíveis, utilizando a interface `FrontendModule` (detalhada em `../05_MODULARIDADE.md`).
 
 **Exemplo de Adição ao array `APP_MODULES`:**
 ```typescript

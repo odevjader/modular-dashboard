@@ -72,11 +72,8 @@ Quando o endpoint `/api/gerador_quesitos/v1/gerar` é chamado, o backend executa
 
 1.  **Recebimento e Validação:** O FastAPI recebe a requisição `multipart/form-data`. Os parâmetros do formulário (`tipo_beneficio`, `profissao`, `model_name`) e os arquivos (`files`) são validados usando Pydantic Schemas definidos em `backend/app/modules/gerador_quesitos/v1/schemas.py`.
 2.  **Processamento de PDFs:**
-    * O sistema itera sobre a lista de `UploadFile` recebida.
-    * Para cada arquivo, utiliza a biblioteca `DoclingLoader` (integrada via `langchain-docling`) para carregar e extrair o conteúdo textual.
-    * `DoclingLoader` é configurado para usar OCR (via Tesseract, **cuja instalação/acesso precisa ser garantida e documentada - ver `docs/02_CONFIGURACAO_AMBIENTE.md`**) para extrair texto de imagens dentro dos PDFs, se houver.
-    * O texto extraído de todos os PDFs válidos é concatenado em um único grande bloco de texto (contexto do caso).
-    * *(**Nota:** Esta etapa é identificada como um potencial gargalo de performance).*
+    * **Nota:** A funcionalidade de upload direto de PDFs e processamento com `DoclingLoader` (que usava Tesseract) neste endpoint foi desativada temporariamente. O processamento de PDFs agora é primariamente responsabilidade do serviço `transcritor-pdf`. Este módulo (`gerador_quesitos`) focará em utilizar o texto já extraído e armazenado por aquele serviço, ou receber texto diretamente.
+    * O texto relevante para o caso (previamente processado e recuperado do banco de dados ou fornecido de outra forma) é usado como contexto.
 3.  **Construção do Prompt para LLM:**
     * Um prompt template estruturado é preenchido com:
         * O contexto extraído dos PDFs.
@@ -93,13 +90,13 @@ Quando o endpoint `/api/gerador_quesitos/v1/gerar` é chamado, o backend executa
 
 ## Tecnologias Específicas do Módulo
 
-* **Backend:** FastAPI, Pydantic, Langchain, `langchain-google-genai`, `langchain-docling` (requer Tesseract OCR).
+* **Backend:** FastAPI, Pydantic, Langchain, `langchain-google-genai`. A dependência direta de `langchain-docling` e Tesseract OCR neste módulo foi removida em favor da integração com o serviço `transcritor-pdf`.
 * **Frontend:** React, API `fetch` (com `FormData`), Zustand (para persistência de estado do resultado/erro).
 
 ## Considerações e Melhorias Futuras
 
-* **Performance do PDF/OCR:** O processamento de múltiplos PDFs, especialmente com OCR, pode ser lento e consumir muitos recursos. Investigar otimizações no `DoclingLoader`, pré-processamento, ou mover essa tarefa para um background worker assíncrono (ex: Celery, ARQ) para não bloquear a resposta HTTP.
-* **Caching:** Implementar cache (ex: Redis) para resultados de processamento de PDF ou talvez até para respostas da IA baseadas em contextos similares (requer análise cuidadosa).
+* **Integração com Transcritor-PDF:** Fortalecer a integração com o serviço `transcritor-pdf` para consumir os documentos processados. Atualmente, o endpoint `/gerar_com_referencia_documento` busca chunks diretamente do banco de dados que é populado pelo `transcritor-pdf`.
+* **Caching:** Implementar cache (ex: Redis) para respostas da IA baseadas em contextos similares.
 * **Streaming de Resposta:** Para longas gerações de texto pela IA, considerar o uso de streaming para exibir os resultados progressivamente na UI.
 * **Error Handling:** Refinar o tratamento de erros específicos da API da IA ou do processamento de arquivos.
 * **UI/UX:** Melhorar o feedback visual durante o processamento e a apresentação dos resultados.

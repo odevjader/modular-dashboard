@@ -67,3 +67,10 @@ docker-compose.override.yaml
 
 #-- php github browser
 browse_github.php
+
+# --- Logs ---
+# Ignore content of .logs directory, but not the directory itself or .gitkeep files
+.logs/*
+!.logs/.gitkeep
+!.logs/task_summaries/
+!.logs/task_summaries/.gitkeep

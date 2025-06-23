@@ -102,10 +102,10 @@ A pasta `docs/` armazena toda a documentação do projeto:
 *   **`05_MODULARIDADE.md`**: Explicação do mecanismo de modularidade.
 *   **`06_GESTAO_PROJETOS.md`**: Como as tarefas são gerenciadas (Issues, Board).
 *   **`07_FLUXO_DESENVOLVIMENTO_E_ONBOARDING.md`**: Fluxo de trabalho de desenvolvimento híbrido IA e guia de onboarding.
-*   **`backup/`**: Contém backups de versões anteriores de documentos.
-*   **`jules/`**: Pode conter logs ou relatórios gerados por agentes de IA (ex: Jules).
 *   **`modules/`**: Documentação específica para cada módulo funcional.
     *   `00_DEVELOPING_MODULES.md`: Guia geral para desenvolvimento de novos módulos.
     *   `01_GERADOR_QUESITOS.md`, `02_AUTH_USER.md`, `03_AI_TEST.md`: Documentação para módulos específicos.
+*   **`reference/`**: Contém resumos e notas sobre tecnologias/bibliotecas usadas no projeto.
+*   **`tests/`**: Contém planos de teste e documentação relacionada a testes.
 
 Esta estrutura visa manter o projeto organizado, facilitando a navegação e o desenvolvimento.
