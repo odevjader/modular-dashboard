@@ -4,7 +4,9 @@ from fastapi import UploadFile, HTTPException
 # URL for the transcriber PDF service, expected to be running and accessible.
 # The hostname "transcritor_pdf_service" should be resolvable by this service,
 # typically in a containerized environment (e.g., Docker Compose).
-TRANSCRIBER_SERVICE_URL = "http://transcritor_pdf_service:8002/process-pdf"
+# Path updated with trailing slash for /process-pdf/ as per TASK-009. Hostname reverted to service name.
+TRANSCRIBER_SERVICE_URL = "http://transcritor_pdf_service:8002/process-pdf/"
+# Reverted other URLs to use service name. Trailing slash status for these is unknown but not the primary bug.
 TRANSCRIBER_QUERY_SERVICE_URL_TEMPLATE = "http://transcritor_pdf_service:8002/query-document/{document_id}"
 TRANSCRIBER_TASK_STATUS_URL_TEMPLATE = "http://transcritor_pdf_service:8002/process-pdf/status/{task_id}"
 
