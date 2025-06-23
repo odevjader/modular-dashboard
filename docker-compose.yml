@@ -33,7 +33,7 @@ services:
   transcritor_pdf:
     # O contexto aponta para um diretório irmão, onde o Dockerfile do serviço deve residir.
     build:
-      context: ../transcritor-pdf
+      context: ./transcritor-pdf
       dockerfile: Dockerfile
     container_name: transcritor_pdf_service
     env_file:
@@ -48,7 +48,7 @@ services:
     ports:
       - "8002:8002"
     volumes:
-      - ../transcritor-pdf:/app # Monta o código fonte para desenvolvimento com live-reload.
+      - ./transcritor-pdf:/app # Monta o código fonte para desenvolvimento com live-reload.
     command: uvicorn src.main:app --host 0.0.0.0 --port 8002 --reload
     healthcheck: # Adicionado healthcheck para o transcritor_pdf
       test: ["CMD", "curl", "-f", "http://localhost:8002/health/"]
@@ -62,7 +62,7 @@ services:
   # Worker Celery para o Transcritor PDF.
   transcritor_pdf_worker:
     build:
-      context: ../transcritor-pdf # Mesmo contexto e Dockerfile do serviço principal do transcritor
+      context: ./transcritor-pdf # Mesmo contexto e Dockerfile do serviço principal do transcritor
       dockerfile: Dockerfile
     container_name: transcritor_pdf_worker
     env_file:
@@ -73,7 +73,7 @@ services:
       - CELERY_BACKEND_URL=redis://redis:6379/1
     command: celery -A src.celery_app worker -l info
     volumes:
-      - ../transcritor-pdf:/app # Monta o código fonte para desenvolvimento
+      - ./transcritor-pdf:/app # Monta o código fonte para desenvolvimento
     depends_on:
       db:
         condition: service_healthy

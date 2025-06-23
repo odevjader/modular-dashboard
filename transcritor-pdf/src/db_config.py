@@ -43,42 +43,36 @@ db_pool: asyncpg.Pool | None = None
 
 async def connect_to_db():
     """
-    Establishes a connection pool to the PostgreSQL database.
-    The pool is stored in the global `db_pool` variable.
+    Establishes a global database connection pool.
+    This function is called once at FastAPI application startup.
     """
     global db_pool
-    if db_pool is not None:
-        logger.info("Database connection pool already exists.")
+    if db_pool:
+        logger.info("Database pool already exists.")
         return
 
-    logger.info(f"Attempting to connect to database using URL: {DATABASE_URL}") # Updated log message
-    try:
-        pool = await asyncpg.create_pool(
-            dsn=DATABASE_URL,
-            min_size=int(os.getenv("DB_POOL_MIN_SIZE", "1")),
-            max_size=int(os.getenv("DB_POOL_MAX_SIZE", "10")),
-            # Add other pool settings if needed, e.g., timeouts
-            # command_timeout=60,  # Example: Default command timeout for connections from this pool
-        )
-        if pool:
-            db_pool = pool
-            logger.info("Successfully connected to the database and created connection pool.")
-            # Optionally, test the connection with a simple query
-            async with db_pool.acquire() as conn:
-                await conn.fetchval("SELECT 1")
-            logger.info("Database connection pool test query successful.")
-        else:
-            logger.error("asyncpg.create_pool returned None. Pool creation failed.")
-            # This case should ideally not happen if create_pool doesn't raise an exception
-            # but it's good to be aware of.
+    if not DATABASE_URL:
+        logger.error("DATABASE_URL is not set in environment variables.")
+        db_pool = None
+        return
 
-    except asyncpg.exceptions.PostgresError as pe: # More specific asyncpg errors
-        logger.error(f"PostgreSQL error while connecting to the database: {pe}")
-        # Depending on the app's needs, you might want to sys.exit() or raise
-    except Exception as e:
+    logger.info(f"Attempting to connect to database using URL: {DATABASE_URL}")
+    try:
+        # FIX: asyncpg expects a DSN starting with 'postgresql://', not 'postgresql+asyncpg://'.
+        # We replace the SQLAlchemy-specific scheme with the asyncpg-compatible one.
+        compatible_dsn = DATABASE_URL.replace("postgresql+asyncpg", "postgresql")
+        
+        pool = await asyncpg.create_pool(
+            dsn=compatible_dsn,
+            min_size=1,
+            max_size=10,
+            # Add other pool options here if needed, e.g., command_timeout
+        )
+        db_pool = pool
+        logger.info("Successfully connected to the database and created pool.")
+    except (asyncpg.exceptions.PostgresError, OSError) as e:
         logger.error(f"Failed to connect to the database and create pool: {e}", exc_info=True)
-        # Optionally re-raise or handle as appropriate for startup (e.g., sys.exit for critical failure)
-        # raise # Re-raise if you want the application to fail on startup if DB connection fails
+        db_pool = None
 
 async def close_db_connection():
     """

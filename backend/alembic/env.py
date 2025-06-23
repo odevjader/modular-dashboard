@@ -3,7 +3,7 @@ import os
 import sys
 from logging.config import fileConfig
 
-from sqlalchemy import create_engine, pool # Modified import
+from sqlalchemy import create_engine, pool
 from alembic import context
 
 # Adiciona o diretório /app ao sys.path para que os módulos sejam encontrados

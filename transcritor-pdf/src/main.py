@@ -10,7 +10,7 @@ from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY, HTTP_500_INTERNAL_SE
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel # Added for Pydantic model
 
-from src.tasks import process_pdf_task # Added for Celery task dispatch
+# from src.tasks import process_pdf_task # Added for Celery task dispatch
 from src.celery_app import celery_app # Added for task status check
 from celery.result import AsyncResult # Added for task status check
 from src.query_processor import get_llm_answer_with_context # Added for query endpoint
@@ -180,6 +180,8 @@ async def process_pdf_endpoint(file: UploadFile = File(...)):
     Endpoint to upload and process a PDF file.
     It reads the file, then calls the main processing pipeline.
     """
+    from src.tasks import process_pdf_task
+    
     logger.info(f"Received file: {file.filename} (type: {file.content_type})")
 
     # Basic file validation

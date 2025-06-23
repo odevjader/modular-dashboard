@@ -10,7 +10,7 @@ langchain           # Framework principal
 langchain-openai    # Integração com OpenAI (ChatModels, Embeddings)
 langchain-community # Integrações da comunidade (ex: FakeListChatModel para testes)
 openai              # Biblioteca cliente da OpenAI (usada por langchain-openai)
-# google-generativeai # Para acesso direto à API Gemini (opcional)
+google-generativeai # Para acesso direto à API Gemini (opcional)
 
 # === PDF & Image Handling ===
 pypdfium2           # Manipulação de PDF (dividir páginas)
@@ -36,3 +36,5 @@ requests            # For simple HTTP requests (e.g., in smoke tests)
 # === Task Queuing / Celery ===
 celery[redis]~=5.3.6 # Distributed Task Queue with Redis support
 redis~=5.0.0         # Python client for Redis
+
+python-multipart

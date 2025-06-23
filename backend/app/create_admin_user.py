@@ -1,17 +1,24 @@
 import asyncio
 import logging
+import sys
+
+# --- CONFIGURAÇÃO DE LOG PRIMEIRO ---
+# Este bloco DEVE ser a primeira coisa a ser executada para garantir que um
+# logger esteja configurado antes que qualquer módulo da aplicação (que pode usar o logger)
+# seja importado.
+logging.basicConfig(level=logging.INFO, stream=sys.stdout, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+# --- FIM DA CONFIGURAÇÃO DE LOG ---
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-# Adjust these imports based on your project structure
-from app.core.database import async_engine, Base, get_db_contextmanager
+# Agora, importe os módulos da aplicação
+from app.core.database import get_db_contextmanager
 from app.models.user import User
 from app.models.enums import UserRole
+# Corrigido para usar 'hash_password' como no seu arquivo original
 from app.core.security import hash_password
-
-# Configure basic logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 ADMIN_EMAIL = "admin@gmail.com"
 ADMIN_PASSWORD = "admin@gmail.com" # Script will hash this
@@ -52,6 +59,7 @@ async def create_initial_admin_user():
             hashed_password=hashed_admin_password,
             role=UserRole.ADMIN,
             is_active=True
+            # A linha 'full_name' foi removida pois não existe no modelo User.
         )
 
         db.add(new_admin_user)
@@ -60,9 +68,6 @@ async def create_initial_admin_user():
         logger.info(f"Admin user {ADMIN_EMAIL} created successfully.")
 
 async def main():
-    # This is optional, can be used to create tables if they don't exist
-    # async with async_engine.begin() as conn:
-    #     await conn.run_sync(Base.metadata.create_all)
     await create_initial_admin_user()
 
 if __name__ == "__main__":

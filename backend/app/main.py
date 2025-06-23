@@ -1,26 +1,35 @@
 # backend/app/main.py
+import logging
+import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-# Use get_settings() for deferred initialization
-from app.core.config import get_settings, logger
+# --- IMPORT CORRIGIDO ---
+# Importa apenas get_settings de config.py. O logger será configurado aqui.
+from app.core.config import get_settings
 from app.core.module_loader import load_and_register_modules
 from app.api_router import api_router
+# --- FIM IMPORT CORRIGIDO ---
+
 
 # Initialize settings by calling get_settings()
-# This ensures that if this is the first time settings are accessed (e.g. by tests after patching env vars),
-# they are loaded with the correct (potentially mocked) environment.
 settings = get_settings()
 
+# --- CONFIGURAÇÃO DE LOGGING ---
+# A configuração do logger é feita aqui, no ponto de entrada da aplicação,
+# após as configurações (settings) terem sido carregadas.
+logging.basicConfig(level=settings.LOGGING_LEVEL, stream=sys.stdout, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+# --- FIM DA CONFIGURAÇÃO ---
+
+
 # --- FastAPI App Initialization ---
-# Now use the 'settings' instance obtained from get_settings()
 openapi_url = f"{settings.API_PREFIX}/openapi.json" if settings.ENVIRONMENT == "development" else None
 docs_url = "/docs" if settings.ENVIRONMENT == "development" else None
 redoc_url = "/redoc" if settings.ENVIRONMENT == "development" else None
 
 if not settings.PROJECT_NAME:
     logger.error("ERROR: Settings not loaded correctly in main.py, PROJECT_NAME is missing.")
-    # This fallback might be less necessary if get_settings() ensures proper loading
     settings.PROJECT_NAME = "Fallback Project Name"
 if not settings.API_PREFIX:
     logger.error("ERROR: Settings not loaded correctly in main.py, API_PREFIX is missing.")
@@ -45,7 +54,7 @@ if settings.BACKEND_CORS_ORIGINS:
              allow_origins = [origin.strip() for origin in settings.BACKEND_CORS_ORIGINS.split(",") if origin]
         else:
              logger.warning(f"BACKEND_CORS_ORIGINS has unexpected type: {type(settings.BACKEND_CORS_ORIGINS)}")
-             allow_origins = [] # Default to empty if type is unexpected
+             allow_origins = []
     except Exception as e:
         logger.error(f"Error processing BACKEND_CORS_ORIGINS: {e}", exc_info=True)
         allow_origins = []
@@ -82,13 +91,11 @@ except Exception as e: # Catch a more general exception if api_router itself is 
 # --- Root Endpoint ---
 @app.get("/", tags=["Root"])
 async def read_root():
-    # Access settings through the get_settings() function if you want to be absolutely sure
-    # about getting the most up-to-date instance, though the global 'settings' should be fine here.
     current_settings = get_settings()
     return {
         "message": f"Welcome to {current_settings.PROJECT_NAME} - Now with Dynamic Modules!",
         "environment": current_settings.ENVIRONMENT,
-        "docs_url": app.docs_url, # app.docs_url is fine as it's set on app init
+        "docs_url": app.docs_url,
         "api_base_prefix": current_settings.API_PREFIX
     }
 
