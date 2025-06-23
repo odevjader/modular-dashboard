@@ -257,7 +257,7 @@ export const deleteUser = async (userId: number): Promise<void> => {
 
 /** Uploads a document for analysis. */
 export const uploadDocumentForAnalysis = async (file: File): Promise<DocumentUploadResponse> => {
-  const url = `${API_BASE_URL}/documents/upload/`; // Added trailing slash for testing 307 redirect
+  const url = `${API_BASE_URL}/documents/upload`; // Reverted: Path relative to API_BASE_URL
   const formData = new FormData();
   formData.append('file', file); // 'file' is the key used in backend by `UploadFile = File(...)`
 
@@ -273,7 +273,18 @@ export const uploadDocumentForAnalysis = async (file: File): Promise<DocumentUpl
       method: 'POST',
       headers,
       body: formData,
+      redirect: 'manual', // Temporarily set to manual to inspect 307
     });
+
+    // If redirect is manual and type is 'opaqueredirect', response.ok will be false.
+    // We need to check response.type for 'opaqueredirect' to get Location.
+    if (response.type === 'opaqueredirect') {
+      // For an opaque redirect, we can't access response.headers directly in JS for security reasons.
+      // The user will need to inspect this in the browser's Network tab.
+      // We'll throw an error to indicate this state to the user/developer.
+      throw new Error(`Opaque redirect encountered for ${url}. Check Network tab for Location header.`);
+    }
+
     if (!response.ok) {
       let errorData;
       try { errorData = await response.json(); } catch (e) { /* Ignore */ }
