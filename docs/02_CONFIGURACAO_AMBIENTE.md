@@ -1,7 +1,7 @@
 # docs/02_CONFIGURACAO_AMBIENTE.md
-# Guia de Configuração de Ambiente - Modular Dashboard
+# Guia de Configuração de Ambiente - dashboard-adv
 
-Este guia descreve os passos necessários para configurar e executar o projeto Modular Dashboard em um ambiente de desenvolvimento local utilizando Docker e Node.js.
+Este guia descreve os passos necessários para configurar e executar o projeto dashboard-adv em um ambiente de desenvolvimento local utilizando Docker e Node.js.
 
 ## Pré-requisitos
 
@@ -20,7 +20,9 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas em s
     Abra seu terminal ou prompt de comando e clone o repositório do GitHub:
     ```bash
     git clone https://github.com/odevjader/modular-dashboard.git
-    cd modular-dashboard
+    cd dashboard-adv
+    # Assumindo que o diretório clonado será renomeado ou o comando cd ajustado manualmente.
+    # O nome do repositório em si não pode ser alterado por este agente.
     ```
 
 2.  **Configurar Variáveis de Ambiente (Backend):**
@@ -57,13 +59,13 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas em s
 
         # Opcional: Outras configurações (ver backend/app/core/config.py para lista completa)
         # ENVIRONMENT=development
-        # PROJECT_NAME="Modular Dashboard"
+        # PROJECT_NAME="dashboard-adv" # Ajustado para o novo nome
         # ALLOWED_ORIGINS='["http://localhost:5173","http://127.0.0.1:5173"]' # Exemplo para CORS
         ```
     * **Segurança:** Nunca comite o arquivo `.env` no Git. Garanta que ele esteja no `.gitignore`.
 
 3.  **Iniciar os Containers Docker:**
-    A partir da raiz do projeto (`modular-dashboard/`), execute o Docker Compose para construir as imagens (se necessário) e iniciar os containers do backend (serviço `api`) e do banco de dados (serviço `db`).
+    A partir da raiz do projeto (`dashboard-adv/`), execute o Docker Compose para construir as imagens (se necessário) e iniciar os containers do backend (serviço `api`) e do banco de dados (serviço `db`).
     ```bash
     docker compose up -d --build
     ```
