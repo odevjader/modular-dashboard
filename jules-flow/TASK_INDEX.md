@@ -9,7 +9,6 @@ Este arquivo rastreia todas as tarefas gerenciadas pelo sistema Jules-Flow.
 - [ ] **TASK-003**: [Configurar Sistema de Alertas no Backend (Fase 7)](./backlog/TASK-003_alert_system_fase7.md)
 - [ ] **TASK-004**: [Revisão Final do .env.example (Fase 8)](./backlog/TASK-004_env_review_fase8.md)
 - [ ] **TASK-005**: [Entregar todas as alterações do Roadmap Completo (Fase 8)](./backlog/TASK-005_submit_roadmap_fase8.md)
-- [ ] **TASK-006**: [Fix Celery ImportError in src/tasks.py](./backlog/TASK-006_fix_celery_import_error.md)
 
 ## Em Progresso
 
@@ -17,4 +16,4 @@ Este arquivo rastreia todas as tarefas gerenciadas pelo sistema Jules-Flow.
 
 ## Concluídas
 
-(Nenhuma tarefa concluída ainda)
+- [x] **TASK-006**: [Fix Celery ImportError in src/tasks.py](./done/TASK-006_fix_celery_import_error.md)

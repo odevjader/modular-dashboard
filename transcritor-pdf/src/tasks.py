@@ -47,8 +47,10 @@ def process_pdf_task(file_content_bytes: bytes, filename: str) -> dict:
         # and store the exception information.
         raise
 
-from .celery_app import app
+# The celery_app is already imported at the top of the file as:
+# from src.celery_app import celery_app
+# So, we use that instance for all tasks.
 
-@app.task(name="transcritor_pdf.tasks.health_check_task")
+@celery_app.task(name="transcritor_pdf.tasks.health_check_task")
 def health_check_task():
     return "Celery is healthy!"
