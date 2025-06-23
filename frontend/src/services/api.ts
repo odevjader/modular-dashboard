@@ -269,35 +269,19 @@ export const uploadDocumentForAnalysis = async (file: File): Promise<DocumentUpl
   // Do NOT set Content-Type for FormData, browser does it with boundary.
 
   try {
-    const response = await fetch(url, { // url is without trailing slash
+    const response = await fetch(url, {
       method: 'POST',
       headers,
       body: formData,
-      // redirect: 'manual' REMOVED - back to default 'follow'
     });
-
     if (!response.ok) {
-      let errorData = null;
-      const responseContentType = response.headers.get('content-type');
-      if (responseContentType && responseContentType.includes('application/json')) {
-        errorData = await response.json(); // Try to parse JSON body
-      }
-      // Log more details for debugging
-      console.error('API Error Response Details:', {
-        status: response.status,
-        statusText: response.statusText,
-        url: response.url, // This will show the URL after any redirects fetch might have followed
-        headers: Object.fromEntries(response.headers.entries()), // Log response headers
-        body: errorData,
-      });
+      let errorData;
+      try { errorData = await response.json(); } catch (e) { /* Ignore */ }
       throw new Error(`API request failed: ${response.status} ${response.statusText}${errorData ? ` - ${JSON.stringify(errorData)}` : ''}`);
     }
     return await response.json() as DocumentUploadResponse;
   } catch (error) {
-    // Ensure the console.error from the try block is not duplicated if error is re-thrown
-    if (!(error instanceof Error && error.message.startsWith('API request failed:'))) {
-        console.error('Error in uploadDocumentForAnalysis catch block:', error);
-    }
+    console.error('Error in uploadDocumentForAnalysis:', error);
     throw error; // Re-throw to be caught by the calling component
   }
 };
