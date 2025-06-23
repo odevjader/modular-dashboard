@@ -20,15 +20,16 @@ import { useAuthStore } from './stores/authStore'; // Import useAuthStore
 // Small component to bridge notistack's context with Zustand store
 const NotificationSetup: React.FC = () => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  // TODO: Ensure setEnqueueSnackbar and setCloseSnackbar are correctly defined in the store
-  // For now, assuming they exist as per the previous subtask's example.
-  const setEnqueueSnackbar = useNotificationStore((state) => state.setEnqueueSnackbar);
-  const setCloseSnackbar = useNotificationStore((state) => state.setCloseSnackbar);
+  // The setEnqueueSnackbar and setCloseSnackbar functions from the store
+  // are used to store the actual notistack functions.
+  const storeSetEnqueueSnackbar = useNotificationStore((state) => state.setEnqueueSnackbar);
+  const storeSetCloseSnackbar = useNotificationStore((state) => state.setCloseSnackbar);
 
   useEffect(() => {
-    setEnqueueSnackbar(enqueueSnackbar);
-    setCloseSnackbar(closeSnackbar);
-  }, [enqueueSnackbar, closeSnackbar, setEnqueueSnackbar, setCloseSnackbar]);
+    // Store the notistack functions in Zustand store so they can be called from anywhere
+    storeSetEnqueueSnackbar(enqueueSnackbar);
+    storeSetCloseSnackbar(closeSnackbar);
+  }, [enqueueSnackbar, closeSnackbar, storeSetEnqueueSnackbar, storeSetCloseSnackbar]);
 
   return null; // This component does not render anything
 };

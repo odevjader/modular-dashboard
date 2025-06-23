@@ -1,0 +1,3 @@
+# Este arquivo existe para garantir que o diretório .logs seja versionado.
+# O conteúdo de .logs (exceto este arquivo e .logs/task_summaries/.gitkeep)
+# deve ser ignorado pelo Git, conforme .gitignore.

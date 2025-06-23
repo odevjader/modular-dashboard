@@ -12,7 +12,7 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas em s
 * [Node.js](https://nodejs.org/): Versão 18 ou superior (inclui npm) para o desenvolvimento frontend.
 * (Recomendado) WSL 2 se estiver utilizando Windows, para melhor integração com Docker.
 
-*(Nota: Funcionalidades que dependem de OCR em PDFs, como no módulo `01_GERADOR_QUESITOS`, exigirão Tesseract OCR. Esta dependência foi removida do container principal da API e será gerenciada por um serviço dedicado futuro).*
+*(Nota: O processamento de OCR em PDFs é realizado pelo serviço `transcritor-pdf`, que gerencia suas próprias dependências (como Tesseract OCR, se aplicável). Não é necessário configurar Tesseract OCR diretamente para o ambiente de desenvolvimento do `modular-dashboard` (API principal e Frontend).)*
 
 ## Passos para Configuração
 
