@@ -9,8 +9,6 @@ Este arquivo rastreia todas as tarefas gerenciadas pelo sistema Jules-Flow.
 - [ ] **TASK-003**: [Configurar Sistema de Alertas no Backend (Fase 7)](./backlog/TASK-003_alert_system_fase7.md)
 - [ ] **TASK-004**: [Revisão Final do .env.example (Fase 8)](./backlog/TASK-004_env_review_fase8.md)
 - [ ] **TASK-005**: [Entregar todas as alterações do Roadmap Completo (Fase 8)](./backlog/TASK-005_submit_roadmap_fase8.md)
-- [ ] **TASK-008**: [Fix 307 Temporary Redirect Error on PDF Upload](./backlog/TASK-008_fix_307_redirect_pdf_upload.md)
-- [ ] **TASK-009**: [Fix Backend Gateway Handling of Transcriber Service Redirect](./backlog/TASK-009_fix_backend_gateway_redirect_handling.md)
 
 ## Em Progresso
 
@@ -20,3 +18,5 @@ Este arquivo rastreia todas as tarefas gerenciadas pelo sistema Jules-Flow.
 
 - [x] **TASK-006**: [Fix Celery ImportError in src/tasks.py](./done/TASK-006_fix_celery_import_error.md)
 - [x] **TASK-007**: [Develop Frontend Module for PDF Transcriber Testing (Transcritor PDF - Tester)](./done/TASK-007_develop_pdf_transcriber_frontend_tester.md)
+- [x] **TASK-008**: [Fix 307 Temporary Redirect Error on PDF Upload](./done/TASK-008_fix_307_redirect_pdf_upload.md)
+- [x] **TASK-009**: [Fix Backend Gateway Handling of Transcriber Service Redirect](./done/TASK-009_fix_backend_gateway_redirect_handling.md)
