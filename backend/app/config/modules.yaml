@@ -63,11 +63,11 @@ modules:
     tags: ["Gerador Quesitos"]
 
   - name: "documents"
-    path: "modules.documents"  # Path relative to 'app' directory
-    router_variable_name: "api_router" # As defined in documents/router.py
-    version: "v1" # Or appropriate version
-    prefix: "/documents" # This will be prefixed by the global /api
-    tags: ["Documents"]
+    path: "modules.documents.v1"  # Updated path to point to v1 endpoints
+    router_variable_name: "router" # Router in v1/endpoints.py is named 'router'
+    version: "v1"
+    prefix: "/documents"
+    tags: ["Documents v1"] # Updated tag to reflect versioning
     enabled: true
 
   # Example of a disabled module:

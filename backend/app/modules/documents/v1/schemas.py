@@ -37,3 +37,34 @@ class DocumentListResponse(BaseModel):
     page: int
     size: int
     pages: int
+
+# --- Schemas moved from top-level documents/schemas.py ---
+
+class DocumentBase(BaseModel):
+    filename: str
+    content_type: Optional[str] = None
+    size: Optional[int] = None
+
+class DocumentCreate(DocumentBase):
+    pass
+
+class Document(DocumentBase): # This might be a duplicate or needs renaming if DocumentRead is preferred
+    id: int
+
+    class Config:
+        from_attributes = True
+
+# Schemas for Task Status
+class TaskStatusErrorInfo(BaseModel):
+    error: Optional[str] = None
+    traceback: Optional[str] = None
+
+class TaskStatusResponse(BaseModel):
+    task_id: str
+    status: str
+    result: Optional[Any] = None
+    error_info: Optional[TaskStatusErrorInfo] = None
+
+# Schema for Document Query Request (used in v1/endpoints.py)
+class DocumentQueryRequest(BaseModel):
+    user_query: str
