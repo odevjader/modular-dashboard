@@ -1,5 +1,14 @@
 import httpx
-from fastapi import UploadFile, HTTPException
+import hashlib
+from fastapi import UploadFile, HTTPException, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+
+
+from app.core.database import get_db
+from app.models.document import Document
+from app.models.user import User # Assuming User model is needed for current_user.id
+
 
 # URL for the transcriber PDF service, expected to be running and accessible.
 # The hostname "transcritor_pdf_service" should be resolvable by this service,
@@ -10,9 +19,11 @@ TRANSCRIBER_SERVICE_URL = "http://transcritor_pdf_service:8002/process-pdf/"
 TRANSCRIBER_QUERY_SERVICE_URL_TEMPLATE = "http://transcritor_pdf_service:8002/query-document/{document_id}"
 TRANSCRIBER_TASK_STATUS_URL_TEMPLATE = "http://transcritor_pdf_service:8002/process-pdf/status/{task_id}"
 
-async def handle_file_upload(file: UploadFile, user_id: int):
+async def handle_file_upload(file: UploadFile, user_id: int, db: AsyncSession = Depends(get_db)):
     """
-    Handles the file upload by sending it to the transcriber PDF service.
+    Handles the file upload:
+    1. Creates a Document record in the local database.
+    2. Sends the file and the new document_id to the transcriber PDF service.
 
     Args:
         file: The UploadFile object received from the FastAPI request.
@@ -27,27 +38,53 @@ async def handle_file_upload(file: UploadFile, user_id: int):
     """
     async with httpx.AsyncClient() as client:
         try:
-            # Read file content into memory. For very large files, streaming might be preferred,
-            # but that would require changes in how the client sends the file and how the
-            # receiving service handles it (e.g., supporting chunked transfer encoding explicitly
-            # for streaming if it doesn't already). `await file.read()` is common for now.
+            # Read file content into memory. For very large files, streaming might be preferred.
             file_content = await file.read()
+            await file.seek(0) # Reset file pointer if read multiple times or for hashing
+
+            # Generate file hash
+            file_hash = hashlib.sha256(file_content).hexdigest()
+
+            # Check if document with this hash already exists
+            stmt = select(Document).where(Document.file_hash == file_hash)
+            result = await db.execute(stmt)
+            db_document = result.scalars().first()
+
+            if db_document:
+                # Document already exists, use its ID
+                document_id = db_document.id
+                # Optionally, you might want to update file_name or updated_at if it's a re-upload
+                # db_document.file_name = file.filename
+                # db_document.updated_at = func.now() # SQLAlchemy func.now()
+                # await db.commit()
+                # await db.refresh(db_document)
+                # For now, just use existing document_id and let transcriber re-process if needed
+            else:
+                # Create new document record
+                db_document = Document(
+                    file_hash=file_hash,
+                    file_name=file.filename,
+                    # created_at is server_default
+                )
+                db.add(db_document)
+                await db.commit()
+                await db.refresh(db_document)
+                document_id = db_document.id
+
+            if document_id is None: # Should not happen if refresh worked
+                raise HTTPException(status_code=500, detail="Failed to retrieve document ID after creation/lookup.")
 
             # Prepare the file data for the multipart/form-data request.
-            # 'file' is the field name the transcriber_pdf_service is expected to use for the file,
-            # matching its endpoint parameter `file: UploadFile = File(...)`.
             files_data = {'file': (file.filename, file_content, file.content_type)}
 
-            # Prepare other form data, like user_id.
-            # Note: The transcriber_pdf_service /process-pdf endpoint currently does not expect user_id in form_data.
-            # If it were needed, it would be passed here. For now, it's not explicitly used by the target endpoint.
-            # form_data = {'user_id': str(user_id)} # This line can be commented or removed if not used.
+            # Prepare other form data to send to transcriber service
+            form_data = {'document_id': str(document_id)} # Pass the document_id
 
             response = await client.post(
                 TRANSCRIBER_SERVICE_URL,
                 files=files_data,
-                # data=form_data, # Commented out as user_id is not used by transcriber's /process-pdf
-                timeout=60.0  # Increased timeout to 60 seconds for potentially larger files/slower processing
+                data=form_data, # Send document_id as form data
+                timeout=60.0
             )
 
             # Raise an exception for 4xx (client errors) or 5xx (server errors) responses.

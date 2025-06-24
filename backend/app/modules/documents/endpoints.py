@@ -29,13 +29,14 @@ async def read_documents_root():
 @api_router.post("/upload", summary="Upload a document for processing", tags=["Documents Module"])
 async def upload_document(
     file: UploadFile = File(...),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db) # Inject DB session
 ):
     # Placeholder for service call
     # result = await services.handle_file_upload(file, current_user)
     # return {"filename": file.filename, "message": "File uploaded successfully", "detail": result}
     # For now, just return a placeholder response until the service is implemented
-    return await services.handle_file_upload(file, current_user.id) # Pass user_id for now
+    return await services.handle_file_upload(file, current_user.id, db) # Pass user_id and db session
 
 @api_router.post("/query/{document_id}", summary="Query a processed document via gateway", tags=["Documents Module"])
 async def query_document_gateway(
