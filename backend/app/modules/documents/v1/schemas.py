@@ -68,3 +68,16 @@ class TaskStatusResponse(BaseModel):
 # Schema for Document Query Request (used in v1/endpoints.py)
 class DocumentQueryRequest(BaseModel):
     user_query: str
+
+# Schema for the response from the transcriber service part
+class TranscriberDataResponse(BaseModel):
+    task_id: str
+    document_id: int # Added this as per transcritor-pdf/src/main.py response
+    message: str
+
+# Schema for the overall /upload endpoint response from the gateway
+class GatewayDocumentUploadResponse(BaseModel):
+    message: str
+    transcriber_data: TranscriberDataResponse
+    original_filename: str
+    uploader_user_id: int # Assuming user_id is int

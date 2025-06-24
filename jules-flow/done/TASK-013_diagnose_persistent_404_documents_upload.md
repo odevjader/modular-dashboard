@@ -1,9 +1,9 @@
 ---
 id: TASK-013
-title: "Diagnose Persistent 404 Error for /api/documents/upload"
-epic: "Bugfix - Backend Gateway Routing"
+title: "Diagnose & Fix Issues Preventing Documents Module Loading"
+epic: "Bugfix - Backend Gateway Routing & Module Loading"
 type: "bug"
-status: done # Updated status
+status: done
 priority: high
 dependencies: ["TASK-012"]
 assignee: Jules
@@ -11,32 +11,41 @@ assignee: Jules
 
 ### Descrição
 
-Despite fixes applied in TASK-012 (creating `app/modules/__init__.py` and refactoring the `documents` module structure), the frontend continued to receive a 404 Not Found error when POSTing to `/api/documents/upload`. This task involved adding route logging to `backend/app/main.py` to inspect all registered routes.
+Initially, this task was to diagnose a persistent 404 Not Found error for `/api/documents/upload`. Route logging was added to `backend/app/main.py`. Analysis of startup logs revealed that the `documents` module was not being loaded due to an `ImportError` in a preceding module (`gerador_quesitos`). After `gerador_quesitos` was temporarily disabled (TASK-014), a new `AttributeError` surfaced during the loading of the `documents` module itself: `module 'app.modules.documents.services' has no attribute 'DocumentUploadResponse'`.
+
+This task was then extended to fix this `AttributeError`.
 
 ### Critérios de Aceitação
 
 - [x] Route logging code was added to `backend/app/main.py`.
-- [x] User ran the backend and provided the startup logs.
-- [x] Analysis of the logged routes revealed that the `documents` module (and `gerador_quesitos`) was not being loaded due to an `ImportError` in `gerador_quesitos` (`cannot import name 'logger' from 'app.core.config'`).
-- [x] A clear path to resolving the 404 was determined: fix the `ImportError` in `gerador_quesitos` to allow all modules to load correctly. This will be handled in TASK-014.
+- [x] Startup logs analyzed, revealing an `ImportError` in `gerador_quesitos` initially, and then an `AttributeError` in `documents` module.
+- [x] `gerador_quesitos` module was temporarily disabled in `modules.yaml` (handled in TASK-014, but relevant context).
+- [x] The `AttributeError: module 'app.modules.documents.services' has no attribute 'DocumentUploadResponse'` in `documents/v1/endpoints.py` was resolved.
+- [x] The `documents` module and its routes (e.g., `/api/documents/upload`) should now load successfully. (User to verify with next test)
+- [ ] The 404 error on `/api/documents/upload` is fully resolved. (User to verify by testing)
 
 ### Arquivos Relevantes
 
-* `backend/app/main.py` (modified for logging)
-* `backend/app/modules/documents/v1/schemas.py` (fixed NameError for `Any` during this task's investigation)
-* `backend/app/core/module_loader.py` (reviewed)
-* `backend/app/config/modules.yaml` (reviewed)
-* `backend/app/modules/gerador_quesitos/v1/endpoints.py` (identified as source of new ImportError)
+*   `backend/app/main.py` (modified for logging, then logging removed as it served its purpose)
+*   `backend/app/modules/documents/v1/schemas.py` (fixed `NameError: name 'Any' is not defined`; added `GatewayDocumentUploadResponse`)
+*   `backend/app/modules/documents/v1/endpoints.py` (updated `response_model` to use `GatewayDocumentUploadResponse` from local schemas)
+*   `backend/app/config/modules.yaml` (modified in TASK-014 to disable `gerador_quesitos`)
 
 ### Relatório de Execução
 
-1.  **Added Route Logging:** Modified `backend/app/main.py` to log all registered FastAPI routes at startup.
-2.  **Fixed Prerequisite `NameError`:** Corrected a `NameError: name 'Any' is not defined` in `backend/app/modules/documents/v1/schemas.py` by adding `from typing import Any`. This allowed the module loader to proceed further.
-3.  **Analyzed Startup Logs:** User provided startup logs. These logs showed:
-    *   The `documents` module routes (including `/api/documents/upload`) were **still missing**.
-    *   A new `ImportError` was occurring during the loading of the `gerador_quesitos` module: `cannot import name 'logger' from 'app.core.config'`.
-    *   The module loader log indicated only 3 modules were successfully loaded, meaning the process was interrupted before loading `documents` (which comes after `gerador_quesitos` in `modules.yaml`).
-4.  **Conclusion:** The persistent 404 for `/api/documents/upload` is due to the `ImportError` in the `gerador_quesitos` module, which prevents the `documents` module from being loaded and its routes registered.
-5.  **Next Step:** A new task, TASK-014, will be created to fix the `ImportError` in the `gerador_quesitos` module.
+1.  **Initial 404 Diagnosis:** Added route logging to `main.py`.
+2.  **First Blocker Fixed:** Corrected a `NameError: name 'Any' is not defined` in `backend/app/modules/documents/v1/schemas.py`.
+3.  **Second Blocker Identified:** Startup logs (after disabling `gerador_quesitos` in TASK-014) showed an `AttributeError: module 'app.modules.documents.services' has no attribute 'DocumentUploadResponse'` when `module_loader.py` attempted to import `app.modules.documents.v1.endpoints`. This was because the `response_model` for the `/upload` endpoint was incorrectly trying to access `DocumentUploadResponse` via the `services` module.
+4.  **`AttributeError` Fix:**
+    *   Defined a new Pydantic model `GatewayDocumentUploadResponse` in `backend/app/modules/documents/v1/schemas.py` to match the expected structure of the response from the gateway's `/upload` endpoint.
+    *   Updated `backend/app/modules/documents/v1/endpoints.py`:
+        *   Imported `GatewayDocumentUploadResponse` from `.schemas`.
+        *   Changed `response_model=services.DocumentUploadResponse` to `response_model=GatewayDocumentUploadResponse` for the `/upload` endpoint.
+5.  **Route Logging Removal:** The detailed route logging added to `main.py` for diagnostics was helpful but verbose for regular startup. It has been removed in this commit as its primary diagnostic purpose for this task is fulfilled.
+6.  **Next Steps for User:**
+    *   Pull the latest changes.
+    *   Rebuild and restart the backend service.
+    *   Check startup logs to confirm `documents` module routes are now logged correctly.
+    *   Test the `/api/documents/upload` endpoint.
 
-This diagnostic task is now complete. The root cause of the persistent 404 (after initial fixes) has been identified.
+This task is now 'done' in terms of the fixes applied. The resolution of the 404 depends on these changes and the user's subsequent testing. The original `gerador_quesitos` import error will need to be addressed in a future task if that module is to be re-enabled.

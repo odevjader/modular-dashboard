@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.dependencies import get_current_active_user, get_db
 from app.models.user import User
 from .. import services # services.py is one level up
-from .schemas import TaskStatusResponse, DocumentQueryRequest, PingResponse, DocumentListResponse, DocumentRead # Assuming DocumentQueryRequest is also moved here
+from .schemas import TaskStatusResponse, DocumentQueryRequest, GatewayDocumentUploadResponse, DocumentListResponse, DocumentRead # Added GatewayDocumentUploadResponse
 
 router = APIRouter()
 
@@ -15,7 +15,7 @@ router = APIRouter()
 async def read_documents_v1_root():
     return {"message": "Welcome to the Documents Module v1"}
 
-@router.post("/upload", summary="Upload a document for processing", tags=["Documents v1"], response_model=services.DocumentUploadResponse) # Assuming services.py defines this response model or similar
+@router.post("/upload", summary="Upload a document for processing", tags=["Documents v1"], response_model=GatewayDocumentUploadResponse)
 async def upload_document(
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_active_user),
