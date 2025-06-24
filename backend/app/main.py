@@ -84,8 +84,36 @@ try:
     logger.info(f"Including main API router with prefix: {settings.API_PREFIX}")
     app.include_router(api_router, prefix=settings.API_PREFIX)
     logger.info(f"Successfully included main API router. Check logs for dynamically loaded module routes.")
+
+    # --- Log all registered routes for debugging ---
+    logger.info("--- BEGIN REGISTERED ROUTES ---")
+    for route in app.routes:
+        if hasattr(route, "path"):
+            logger.info(f"Path: {route.path}, Name: {route.name}, Methods: {getattr(route, 'methods', None)}")
+        # For mounted APIRouters (like our main api_router)
+        if hasattr(route, "routes") and hasattr(route, "prefix"): # Check if it's a Mount or an APIRouter included directly
+             # If route is an APIRouter instance itself (not a Mount of an APIRouter)
+            if hasattr(route, "routes") and not hasattr(route, "app"): # Heuristic to differentiate APIRouter from Mount
+                for sub_route in route.routes:
+                    if hasattr(sub_route, "path"):
+                        path = f"{route.prefix if hasattr(route, 'prefix') else ''}{sub_route.path}"
+                        name = sub_route.name
+                        methods = getattr(sub_route, 'methods', None)
+                        logger.info(f"  Sub-Path: {path}, Name: {name}, Methods: {methods}")
+            # If it's a Mount object which has an 'app' attribute that is the APIRouter
+            elif hasattr(route, "app") and hasattr(route.app, "routes"):
+                 for sub_route in route.app.routes:
+                    if hasattr(sub_route, "path"):
+                        path = f"{route.path}{sub_route.path}".replace("//","/") # route.path is the mount path
+                        name = sub_route.name
+                        methods = getattr(sub_route, 'methods', None)
+                        logger.info(f"  Mounted Sub-Path: {path}, Name: {name}, Methods: {methods}")
+
+
+    logger.info("--- END REGISTERED ROUTES ---")
+
 except Exception as e: # Catch a more general exception if api_router itself is problematic
-    logger.error(f"Error including main api_router: {e}", exc_info=True)
+    logger.error(f"Error including main api_router or logging routes: {e}", exc_info=True)
 
 
 # --- Root Endpoint ---
