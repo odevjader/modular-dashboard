@@ -10,6 +10,7 @@ Este arquivo rastreia todas as tarefas gerenciadas pelo sistema Jules-Flow.
 - [ ] **TASK-004**: [Revisão Final do .env.example (Fase 8)](./backlog/TASK-004_env_review_fase8.md)
 - [ ] **TASK-005**: [Entregar todas as alterações do Roadmap Completo (Fase 8)](./backlog/TASK-005_submit_roadmap_fase8.md)
 - [ ] **TASK-010**: [Configure OpenAI API Key for Transcriber PDF Service](./backlog/TASK-010_configure_openai_api_key_transcriber.md)
+- [ ] **TASK-011**: [Fix UndefinedColumnError (chunk_id) in Transcritor PDF Service](./backlog/TASK-011_fix_transcriber_db_undefined_column_chunk_id.md)
 
 ## Em Progresso
 
