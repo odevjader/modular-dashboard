@@ -57,7 +57,7 @@ modules:
     path: "modules.gerador_quesitos.v1" # Standard module path
     version: "v1"
     description: "Generates legal questions (quesitos) from PDF documents."
-    enabled: true
+    enabled: false # Temporarily disabled due to import error
     router_variable_name: "router"
     prefix: "/gerador_quesitos/v1" # Keep consistent
     tags: ["Gerador Quesitos"]
