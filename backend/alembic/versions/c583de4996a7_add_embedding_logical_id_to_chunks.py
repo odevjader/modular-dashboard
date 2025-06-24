@@ -14,7 +14,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = 'c583de4996a7'
-down_revision: Union[str, None] = '9d1910135b7c'
+down_revision: Union[str, None] = '5ae6f76c6288' # Corrected: Depends on the migration that created document_chunks
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
