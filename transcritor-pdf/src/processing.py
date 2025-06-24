@@ -46,9 +46,10 @@ def chunk_text(text: str, chunk_size: int = DEFAULT_CHUNK_SIZE, chunk_overlap: i
     return chunks
 
 # --- Main PDF Processing Pipeline Function ---
-async def process_pdf_pipeline(file_content: bytes, filename: str) -> Dict[str, Any]:
+async def process_pdf_pipeline(file_content: bytes, filename: str, document_id: int) -> Dict[str, Any]: # Added document_id
     """
     Orchestrates the PDF processing pipeline:
+    Requires document_id to associate chunks with their parent document in the vector store.
     1. Loads PDF from bytes.
     2. Extracts text content page by page.
     3. Chunks the extracted text.
@@ -133,12 +134,13 @@ async def process_pdf_pipeline(file_content: bytes, filename: str) -> Dict[str, 
 
 
         # 4. Store Chunks in Database (Vector Store)
-        logger.info("Adding chunks with embeddings to the vector store...")
+        logger.info(f"Adding chunks with embeddings to the vector store for document_id: {document_id}...")
         try:
-            await vector_store_handler.add_chunks_to_vector_store(chunks_with_embeddings)
-            logger.info("Successfully added/updated chunks in the vector store.")
+            # Pass document_id to the updated handler function
+            await vector_store_handler.add_chunks_to_vector_store(document_id, chunks_with_embeddings)
+            logger.info(f"Successfully added/updated chunks in the vector store for document_id: {document_id}.")
         except Exception as store_exc:
-            logger.error(f"Error adding chunks to vector store for {filename}: {store_exc}", exc_info=True)
+            logger.error(f"Error adding chunks to vector store for {filename} (Doc ID: {document_id}): {store_exc}", exc_info=True)
             return {"status": "error_storing", "message": str(store_exc), "filename": filename, "error_details": type(store_exc).__name__}
 
         # 5. Return Summary

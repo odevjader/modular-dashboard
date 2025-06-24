@@ -257,7 +257,7 @@ export const deleteUser = async (userId: number): Promise<void> => {
 
 /** Uploads a document for analysis. */
 export const uploadDocumentForAnalysis = async (file: File): Promise<DocumentUploadResponse> => {
-  const url = `${API_BASE_URL}/documents/upload`; // Path relative to API_BASE_URL
+  const url = `${API_BASE_URL}/documents/upload`; // Reverted: Path relative to API_BASE_URL
   const formData = new FormData();
   formData.append('file', file); // 'file' is the key used in backend by `UploadFile = File(...)`
 

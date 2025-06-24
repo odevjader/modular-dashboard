@@ -7,10 +7,11 @@ from src.processing import process_pdf_pipeline # Import from the new processing
 # that both main.py and tasks.py can import.
 
 @celery_app.task(name='src.tasks.process_pdf_task')
-def process_pdf_task(file_content_bytes: bytes, filename: str) -> dict:
+def process_pdf_task(file_content_bytes: bytes, filename: str, document_id: int) -> dict: # Added document_id
     '''
     Celery task to process a PDF file.
-    Relies on process_pdf_pipeline from src.main for the core logic.
+    Relies on process_pdf_pipeline for the core logic.
+    Now requires document_id to link chunks to the parent document.
     '''
     try:
         # Now calling process_pdf_pipeline imported from src.processing
@@ -34,9 +35,13 @@ def process_pdf_task(file_content_bytes: bytes, filename: str) -> dict:
         import asyncio # Ensure asyncio is imported
 
         # Call the async pipeline using asyncio.run()
-        result_summary = asyncio.run(process_pdf_pipeline(file_content=file_content_bytes, filename=filename))
+        result_summary = asyncio.run(process_pdf_pipeline(
+            file_content=file_content_bytes,
+            filename=filename,
+            document_id=document_id # Pass document_id
+        ))
 
-        print(f"Celery task finished processing for: {filename}. Result: {result_summary.get('status')}")
+        print(f"Celery task finished processing for: {filename} (Doc ID: {document_id}). Result: {result_summary.get('status')}")
         return result_summary
     except Exception as e:
         # Log the exception

@@ -3,6 +3,7 @@ import { SvgIconComponent } from '@mui/icons-material';
 import BuildIcon from '@mui/icons-material/Build'; // Example Icon
 import GavelIcon from '@mui/icons-material/Gavel'; // Icon for Gerador Quesitos
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'; // Icon for System Info
+import DescriptionIcon from '@mui/icons-material/Description'; // Icon for PDF Transcriber
 
 export interface ModuleRoute {
   path: string;
@@ -65,6 +66,20 @@ const moduleRegistry: ModuleRegistry = {
       {
         path: '/',
         component: React.lazy(() => import('../pages/SystemInfoPage')),
+        exact: true,
+      },
+    ],
+  },
+  pdfTranscriberTester: {
+    name: 'Transcritor PDF - Tester',
+    basePath: '/pdf-transcriber',
+    navIcon: DescriptionIcon,
+    navText: 'Transcritor PDF', // Adjusted navText for brevity if needed, or use full name
+    adminOnly: false,
+    routes: [
+      {
+        path: '/',
+        component: React.lazy(() => import('../modules/pdf_transcriber_tester/PdfTranscriberTesterPage')),
         exact: true,
       },
     ],

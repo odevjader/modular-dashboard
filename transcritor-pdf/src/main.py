@@ -3,7 +3,7 @@
 Main entry point for the Transcritor PDF API.
 """
 import logging
-from fastapi import FastAPI, File, UploadFile, HTTPException, Request
+from fastapi import FastAPI, File, UploadFile, HTTPException, Request, Form # Added Form
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY, HTTP_500_INTERNAL_SERVER_ERROR
@@ -175,10 +175,13 @@ async def health_check():
 
 # --- PDF Processing Endpoint ---
 @app.post("/process-pdf/")
-async def process_pdf_endpoint(file: UploadFile = File(...)):
+async def process_pdf_endpoint(
+    file: UploadFile = File(...),
+    document_id: int = Form(...) # Added document_id from form data
+):
     """
     Endpoint to upload and process a PDF file.
-    It reads the file, then calls the main processing pipeline.
+    It reads the file, then calls the main processing pipeline, passing the document_id.
     """
     from src.tasks import process_pdf_task
     
@@ -201,11 +204,15 @@ async def process_pdf_endpoint(file: UploadFile = File(...)):
             logger.warning(f"Uploaded file '{file.filename}' is empty.")
             raise HTTPException(status_code=400, detail="Uploaded file is empty.")
 
-        # Dispatch the processing to a Celery task
-        task = process_pdf_task.delay(file_content_bytes=file_bytes, filename=file.filename)
-        logger.info(f"File '{file.filename}' queued for processing with Task ID: {task.id}")
+        # Dispatch the processing to a Celery task, now including document_id
+        task = process_pdf_task.delay(
+            file_content_bytes=file_bytes,
+            filename=file.filename,
+            document_id=document_id
+        )
+        logger.info(f"File '{file.filename}' (Document ID: {document_id}) queued for processing with Task ID: {task.id}")
 
-        return {"task_id": task.id, "message": "PDF processing has been queued. You can check the status using the /process-pdf/status/{task_id} endpoint."}
+        return {"task_id": task.id, "document_id": document_id, "message": "PDF processing has been queued."}
 
     except HTTPException as http_exc:
         # Re-raise HTTPException so it's caught by its specific handler or FastAPI default

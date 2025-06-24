@@ -24,5 +24,11 @@ class DocumentChunk(Base):
     chunk_order: Mapped[int] = mapped_column(Integer, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
+    # New columns for storing embeddings and a logical chunk ID from the transcriber service
+    embedding: Mapped[Optional[str]] = mapped_column(Text, nullable=True) # Placeholder for embedding, ideally pgvector.VECTOR if used
+    logical_chunk_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, index=True) # For the ID like "doc1_p1_c1"
 
     document: Mapped["Document"] = relationship("Document", back_populates="chunks")
+
+    # Optional: Add a unique constraint for logical_chunk_id per document
+    # __table_args__ = (UniqueConstraint('document_id', 'logical_chunk_id', name='_document_logical_chunk_uc'),)
