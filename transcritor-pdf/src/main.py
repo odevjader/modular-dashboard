@@ -105,19 +105,26 @@ async def startup_db_event():
 
                     # Define and create documents table
                     # EMBEDDING_DIMENSIONS will be used from db_config
-                    create_table_query = f"""
-                    CREATE TABLE IF NOT EXISTS documents (
-                        chunk_id TEXT PRIMARY KEY,
-                        filename TEXT,
-                        page_number INTEGER,
-                        text_content TEXT,
-                        metadata JSONB,
-                        embedding VECTOR({EMBEDDING_DIMENSIONS}),
-                        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-                    );
-                    """
-                    await conn.execute(create_table_query)
-                    logger.info(f"Ensured 'documents' table exists with schema (chunk_id PK, embedding dimension {EMBEDDING_DIMENSIONS}).")
+                    # --- BEGINNING OF SECTION TO COMMENT OUT ---
+                    # The creation of the 'documents' table (for chunks, in the old design)
+                    # is now handled by Alembic migrations in the backend, which create
+                    # 'documents' (for metadata) and 'document_chunks' (for chunks and embeddings).
+                    # This old logic here can conflict or cause confusion.
+                    # create_table_query = f"""
+                    # CREATE TABLE IF NOT EXISTS documents (
+                    #     chunk_id TEXT PRIMARY KEY,
+                    #     filename TEXT,
+                    #     page_number INTEGER,
+                    #     text_content TEXT,
+                    #     metadata JSONB,
+                    #     embedding VECTOR({EMBEDDING_DIMENSIONS}),
+                    #     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                    # );
+                    # """
+                    # await conn.execute(create_table_query)
+                    # logger.info(f"Ensured 'documents' table exists with schema (chunk_id PK, embedding dimension {EMBEDDING_DIMENSIONS}).")
+                    # --- END OF SECTION TO COMMENT OUT ---
+                    logger.info("Schema setup for 'documents' table in transcritor-pdf/main.py startup is now disabled. Schema is managed by backend Alembic migrations.")
 
                     # Example: Create an index (optional, can also be managed via migrations)
                     # This is a basic index, refer to pgvector docs for IVFFlat or HNSW for larger datasets
