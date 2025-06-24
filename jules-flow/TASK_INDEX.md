@@ -11,7 +11,6 @@ Este arquivo rastreia todas as tarefas gerenciadas pelo sistema Jules-Flow.
 - [ ] **TASK-005**: [Entregar todas as alterações do Roadmap Completo (Fase 8)](./backlog/TASK-005_submit_roadmap_fase8.md)
 - [ ] **TASK-010**: [Configure OpenAI API Key for Transcriber PDF Service](./backlog/TASK-010_configure_openai_api_key_transcriber.md)
 - [ ] **TASK-011**: [Fix UndefinedColumnError (chunk_id) in Transcritor PDF Service](./backlog/TASK-011_fix_transcriber_db_undefined_column_chunk_id.md)
-- [ ] **TASK-012**: [Fix 404 Not Found for /api/documents/upload Endpoint](./backlog/TASK-012_fix_404_documents_upload_endpoint.md)
 
 ## Em Progresso
 
@@ -23,3 +22,4 @@ Este arquivo rastreia todas as tarefas gerenciadas pelo sistema Jules-Flow.
 - [x] **TASK-007**: [Develop Frontend Module for PDF Transcriber Testing (Transcritor PDF - Tester)](./done/TASK-007_develop_pdf_transcriber_frontend_tester.md)
 - [x] **TASK-008**: [Fix 307 Temporary Redirect Error on PDF Upload](./done/TASK-008_fix_307_redirect_pdf_upload.md)
 - [x] **TASK-009**: [Fix Backend Gateway Handling of Transcriber Service Redirect](./done/TASK-009_fix_backend_gateway_redirect_handling.md)
+- [x] **TASK-012**: [Fix 404 Not Found for /api/documents/upload Endpoint](./done/TASK-012_fix_404_documents_upload_endpoint.md)
