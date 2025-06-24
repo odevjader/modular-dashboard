@@ -35,7 +35,7 @@ def load_db_config() -> Dict[str, Optional[str]]:
     logger.info(f"DB Config Loaded: Host={config['host']}, Port={config['port']}, DB={config['database']}, User={config['user']}")
     return config
 
-async def add_chunks_to_vector_store(rag_chunks: List[Dict[str, Any]]):
+async def add_chunks_to_vector_store(document_id: int, rag_chunks: List[Dict[str, Any]]):
     """Adds or updates text chunks, metadata, and embeddings in PostgreSQL using asyncpg.
 
     Connects asynchronously, starts a transaction, and attempts to upsert each
@@ -71,9 +71,9 @@ async def add_chunks_to_vector_store(rag_chunks: List[Dict[str, Any]]):
         # For simplicity, direct usage in query string is preferred over maintaining these variables if fixed.
 
         insert_query = f"""
-            INSERT INTO {table_name} (chunk_id, text_content, metadata, embedding)
-            VALUES ($1, $2, $3, $4) ON CONFLICT (chunk_id) DO UPDATE SET
-            text_content=EXCLUDED.text_content, metadata=EXCLUDED.metadata, embedding=EXCLUDED.embedding;
+            INSERT INTO {table_name} (document_id, chunk_id, text_content, metadata, embedding)
+            VALUES ($1, $2, $3, $4, $5) ON CONFLICT (chunk_id) DO UPDATE SET
+            document_id=EXCLUDED.document_id, text_content=EXCLUDED.text_content, metadata=EXCLUDED.metadata, embedding=EXCLUDED.embedding;
         """
         logger.info(f"Preparing to insert/update data into table '{table_name}'...")
 
@@ -98,10 +98,10 @@ async def add_chunks_to_vector_store(rag_chunks: List[Dict[str, Any]]):
                 # --- Execute Query (Inner try removed) ---
                 # Let asyncpg.PostgresError propagate to the outer handler if execute fails
                 logger.debug(f"Executing upsert for chunk ID: {chunk_id}")
-                await conn.execute(insert_query, chunk_id, text_content, metadata_to_insert, embedding_to_insert)
+                await conn.execute(insert_query, document_id, chunk_id, text_content, metadata_to_insert, embedding_to_insert)
                 inserted_count += 1
             # Transaction commits automatically if loop finishes without error
-            logger.info(f"Transaction commit successful. Added/Updated {inserted_count} chunks.")
+            logger.info(f"Transaction commit successful. Added/Updated {inserted_count} chunks for document_id {document_id}.")
 
         if skipped_count > 0: logger.warning(f"Skipped {skipped_count} chunks due to validation/formatting.")
 
@@ -231,15 +231,16 @@ if __name__ == "__main__":
     logger.info("--- Running vector_store_handler.py (asyncpg) directly for testing ---")
     logger.warning("This test block WILL attempt to connect to and write to the database.")
     embedding_dim = 1536
+    sample_document_id = 999  # Example document_id for testing
     sample_rag_chunks_with_embeddings = [
         {"chunk_id": "async_test_001", "text_content": "Async test chunk 1.", "metadata": {"s": "t1a"}, "embedding": [0.5] * embedding_dim},
         {"chunk_id": "async_test_002", "text_content": "Async test chunk 2.", "metadata": {"s": "t2a"}, "embedding": [0.6] * embedding_dim}
     ]
-    logger.info(f"Sample Chunks to Add/Update: {len(sample_rag_chunks_with_embeddings)}")
+    logger.info(f"Sample Chunks to Add/Update: {len(sample_rag_chunks_with_embeddings)} for document_id {sample_document_id}")
     confirm = input("\nProceed with test database insertion/update? (yes/no): ")
     if confirm.lower() == 'yes':
         logger.info("Proceeding with test database operation...")
-        try: asyncio.run(add_chunks_to_vector_store(sample_rag_chunks_with_embeddings))
+        try: asyncio.run(add_chunks_to_vector_store(sample_document_id, sample_rag_chunks_with_embeddings))
         except ConnectionError as e: logger.error(f"Test failed due to connection error: {e}")
         except Exception as e: logger.error(f"An unexpected error occurred during testing: {e}", exc_info=True)
         else: logger.info("Test database operation process completed (check database).")
