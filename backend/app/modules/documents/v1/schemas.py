@@ -1,6 +1,6 @@
 # v1/schemas.py for the documents module
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Any # Added Any
 from datetime import datetime
 
 class PingResponse(BaseModel):
