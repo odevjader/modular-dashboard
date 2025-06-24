@@ -81,3 +81,16 @@ class GatewayDocumentUploadResponse(BaseModel):
     transcriber_data: TranscriberDataResponse
     original_filename: str
     uploader_user_id: int # Assuming user_id is int
+
+# Schema for the data part of the transcriber's query response
+class TranscriberQueryData(BaseModel):
+    document_id: str
+    query: str
+    answer: str
+
+# Schema for the overall /query/{document_id} endpoint response from the gateway
+class GatewayDocumentQueryResponse(BaseModel):
+    message: str
+    transcriber_data: TranscriberQueryData
+    original_document_id: str
+    queried_by_user_id: int

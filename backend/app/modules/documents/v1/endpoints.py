@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.dependencies import get_current_active_user, get_db
 from app.models.user import User
 from .. import services # services.py is one level up
-from .schemas import TaskStatusResponse, DocumentQueryRequest, GatewayDocumentUploadResponse, DocumentListResponse, DocumentRead # Added GatewayDocumentUploadResponse
+from .schemas import TaskStatusResponse, DocumentQueryRequest, GatewayDocumentUploadResponse, GatewayDocumentQueryResponse, DocumentListResponse, DocumentRead # Added GatewayDocumentQueryResponse
 
 router = APIRouter()
 
@@ -23,9 +24,9 @@ async def upload_document(
 ):
     return await services.handle_file_upload(file, current_user.id, db)
 
-@router.post("/query/{document_id}", summary="Query a processed document", tags=["Documents v1"], response_model=services.DocumentQueryResponse) # Assuming services.py defines this
+@router.post("/query/{document_id}", summary="Query a processed document", tags=["Documents v1"], response_model=GatewayDocumentQueryResponse)
 async def query_document_v1(
-    document_id: str, # Assuming document_id here is the hash or some identifier used by transcriber
+    document_id: str,
     request_data: DocumentQueryRequest,
     current_user: User = Depends(get_current_active_user)
 ):
