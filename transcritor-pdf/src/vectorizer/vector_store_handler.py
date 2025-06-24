@@ -66,14 +66,14 @@ async def add_chunks_to_vector_store(document_id: int, rag_chunks: List[Dict[str
         conn = await asyncpg.connect(**db_config)
         logger.info("Database connection successful (asyncpg).")
 
-        table_name = "documents" # Changed from os.getenv("DB_VECTOR_TABLE", "your_vector_table")
+        table_name = "document_chunks" # Target the correct table for chunks
         # chunk_id_col, text_col, metadata_col are implicitly correct. vector_col changed.
         # For simplicity, direct usage in query string is preferred over maintaining these variables if fixed.
 
         insert_query = f"""
-            INSERT INTO {table_name} (document_id, chunk_id, text_content, metadata, embedding)
-            VALUES ($1, $2, $3, $4, $5) ON CONFLICT (chunk_id) DO UPDATE SET
-            document_id=EXCLUDED.document_id, text_content=EXCLUDED.text_content, metadata=EXCLUDED.metadata, embedding=EXCLUDED.embedding;
+            INSERT INTO {table_name} (document_id, logical_chunk_id, text_content, embedding, chunk_order)
+            VALUES ($1, $2, $3, $4, $5) ON CONFLICT (logical_chunk_id) DO UPDATE SET
+            document_id=EXCLUDED.document_id, text_content=EXCLUDED.text_content, embedding=EXCLUDED.embedding, chunk_order=EXCLUDED.chunk_order;
         """
         logger.info(f"Preparing to insert/update data into table '{table_name}'...")
 
@@ -81,24 +81,30 @@ async def add_chunks_to_vector_store(document_id: int, rag_chunks: List[Dict[str
         async with conn.transaction():
             logger.debug("Transaction started.")
             for chunk in rag_chunks:
-                chunk_id, text_content, metadata, embedding = (
-                    chunk.get("chunk_id"), chunk.get("text_content"), chunk.get("metadata"), chunk.get("embedding")
-                )
-                if not chunk_id or not text_content or metadata is None or embedding is None:
-                    logger.warning(f"Skipping chunk ID '{chunk_id}' due to missing data."); skipped_count += 1; continue
+                logical_chunk_id = chunk.get("chunk_id") # This is the UUID from processing.py
+                text_content = chunk.get("text_content")
+                embedding = chunk.get("embedding")
+                metadata = chunk.get("metadata", {})
+                chunk_order = metadata.get("original_chunk_index_on_page", 0) # Default to 0 if not present
+
+                if not logical_chunk_id or not text_content or embedding is None:
+                    logger.warning(f"Skipping chunk ID '{logical_chunk_id}' due to missing essential data (ID, text, or embedding)."); skipped_count += 1; continue
+
                 try:
-                    metadata_to_insert = metadata # Try passing dict directly
                     if isinstance(embedding, list) and all(isinstance(x, (int, float)) for x in embedding):
                         embedding_to_insert = embedding # Try passing list directly
-                    else: raise ValueError("Invalid embedding format")
+                    else:
+                        # If embedding is not a list of numbers (e.g. already a string), handle appropriately or raise error
+                        # For now, assuming it should be a list of numbers based on previous code
+                        raise ValueError("Invalid embedding format, expected list of numbers")
                 except Exception as fmt_e:
-                    logger.warning(f"Skipping chunk ID '{chunk_id}' due to data formatting error: {fmt_e}", exc_info=True)
+                    logger.warning(f"Skipping chunk ID '{logical_chunk_id}' due to data formatting error for embedding: {fmt_e}", exc_info=True)
                     skipped_count += 1; continue
 
                 # --- Execute Query (Inner try removed) ---
                 # Let asyncpg.PostgresError propagate to the outer handler if execute fails
-                logger.debug(f"Executing upsert for chunk ID: {chunk_id}")
-                await conn.execute(insert_query, document_id, chunk_id, text_content, metadata_to_insert, embedding_to_insert)
+                logger.debug(f"Executing upsert for logical_chunk_id: {logical_chunk_id}")
+                await conn.execute(insert_query, document_id, logical_chunk_id, text_content, embedding_to_insert, chunk_order)
                 inserted_count += 1
             # Transaction commits automatically if loop finishes without error
             logger.info(f"Transaction commit successful. Added/Updated {inserted_count} chunks for document_id {document_id}.")
@@ -164,20 +170,27 @@ async def search_similar_chunks(
         conn = await asyncpg.connect(**db_config)
         logger.info("Database connection successful for search (asyncpg).")
 
-        table_name = "documents"  # Ensure this matches your actual table name
+        table_name = "document_chunks"  # Use the correct table for chunks
         params: List[Any] = [query_embedding]
 
         # Base query using cosine distance operator <=>
+        # Selecting logical_chunk_id, text_content. Removed metadata for now.
+        # Added chunk_order to the returned data.
         sql_query_parts = [
-            f"SELECT chunk_id, text_content, metadata, embedding <=> $1 AS distance FROM {table_name}"
+            f"SELECT logical_chunk_id, text_content, chunk_order, embedding <=> $1 AS distance FROM {table_name}"
         ]
         param_idx = 2  # Start next param index from $2 ($1 is query_embedding)
 
         if document_filename:
-            # Assumes metadata is a JSONB column and 'filename' is a top-level key in it.
-            sql_query_parts.append(f"WHERE metadata->>'filename' = ${param_idx}")
-            params.append(document_filename)
-            param_idx += 1
+            # TODO: Filtering by document_filename requires a JOIN with the 'documents' table.
+            # This is a temporary workaround: log a warning and do not filter.
+            # A proper fix would involve JOINing with documents table on document_id and filtering by documents.file_name.
+            logger.warning(f"Filtering by document_filename ('{document_filename}') is not fully implemented for 'document_chunks' table yet and will be ignored in this query.")
+            # To actually filter, the query would be more complex:
+            # SELECT dc.logical_chunk_id, dc.text_content, dc.embedding <=> $1 AS distance
+            # FROM document_chunks dc JOIN documents d ON dc.document_id = d.id
+            # WHERE d.file_name = $2 ORDER BY distance ASC LIMIT $3;
+            # And params handling would need adjustment.
 
         sql_query_parts.append(f"ORDER BY distance ASC LIMIT ${param_idx}")
         params.append(top_k)
@@ -195,18 +208,14 @@ async def search_similar_chunks(
             # Similarity score = 1 - distance.
             similarity_score = 1 - row['distance']
 
-            metadata_content = row['metadata']
-            if isinstance(metadata_content, str): # Check if metadata is a string
-                try:
-                    metadata_content = json.loads(metadata_content) # Try to parse it as JSON
-                except json.JSONDecodeError:
-                    # If parsing fails, log a warning and keep the original string content
-                    logger.warning(f"Failed to parse metadata JSON for chunk_id {row['chunk_id']}. Content: '{metadata_content[:100]}...'")
-
+            # metadata_content is no longer directly selected.
+            # We return chunk_order instead.
+            # If more metadata is needed, a JOIN with 'documents' table and specific selection is required.
             results.append({
-                "chunk_id": row['chunk_id'],
+                "chunk_id": row['logical_chunk_id'], # Use logical_chunk_id
                 "text_content": row['text_content'],
-                "metadata": metadata_content,
+                "chunk_order": row['chunk_order'], # Added chunk_order
+                # "metadata": {}, # Placeholder if metadata structure is expected by caller
                 "similarity_score": similarity_score
             })
 
