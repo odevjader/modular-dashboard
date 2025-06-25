@@ -9,6 +9,8 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql # Added for VECTOR type
+
 # Ensure this import path is correct for your project structure
 # It's needed if UserRole is defined relative to the models directory from where alembic runs
 try:
@@ -62,7 +64,7 @@ def upgrade() -> None:
     sa.Column('chunk_order', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), onupdate=sa.text('now()'), nullable=True),
-    sa.Column('embedding', sa.Text(), nullable=True),
+    sa.Column('embedding', postgresql.VECTOR(1536), nullable=True), # Changed to VECTOR(1536)
     sa.Column('logical_chunk_id', sa.String(length=255), nullable=True),
     sa.ForeignKeyConstraint(['document_id'], ['documents.id'], ),
     sa.PrimaryKeyConstraint('id')
