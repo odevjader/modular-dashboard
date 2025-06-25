@@ -155,7 +155,7 @@ const TranscritorPdfTesterPage: React.FC = () => {
     setQueryResult(null);
 
     try {
-      const payload: DocumentQueryPayload = { query_text: query };
+      const payload: DocumentQueryPayload = { user_query: query }; // Changed query_text to user_query
       // The documentId for postDocumentQuery is the filename, which is stored in processedFilename.
       // The backend /documents/query/{document_id} endpoint (proxied) ultimately maps to
       // transcritor-pdf's /query-document/{document_filename}
