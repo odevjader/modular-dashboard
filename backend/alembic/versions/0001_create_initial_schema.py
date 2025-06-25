@@ -72,6 +72,11 @@ def upgrade() -> None:
     op.create_index(op.f('ix_document_chunks_id'), 'document_chunks', ['id'], unique=False)
     # Explicitly creating a unique index for logical_chunk_id as per model unique=True
     op.create_index(op.f('ix_document_chunks_logical_chunk_id'), 'document_chunks', ['logical_chunk_id'], unique=True)
+
+    # Alter the 'embedding' column type to vector(1536) after table creation
+    # This assumes the 'vector' extension is enabled in PostgreSQL.
+    # The dimension 1536 is for text-embedding-3-small.
+    op.execute('ALTER TABLE document_chunks ALTER COLUMN embedding TYPE vector(1536);')
     # ### end Alembic commands ###
 
 
