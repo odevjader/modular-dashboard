@@ -175,23 +175,24 @@ async def search_similar_chunks(
         params: List[Any] = [query_embedding]
 
         # Base query using cosine distance operator <=>
-        # Selecting logical_chunk_id, chunk_text. Removed metadata for now.
-        # Added chunk_order to the returned data.
-        sql_query_parts = [
-            f"SELECT logical_chunk_id, chunk_text, chunk_order, embedding <=> $1 AS distance FROM {table_name}" # Changed text_content to chunk_text
-        ]
+        # Selecting logical_chunk_id, chunk_text, and chunk_order.
+        # The query now joins document_chunks with documents to filter by file_name.
+        
         param_idx = 2  # Start next param index from $2 ($1 is query_embedding)
-
+        
         if document_filename:
-            # TODO: Filtering by document_filename requires a JOIN with the 'documents' table.
-            # This is a temporary workaround: log a warning and do not filter.
-            # A proper fix would involve JOINing with documents table on document_id and filtering by documents.file_name.
-            logger.warning(f"Filtering by document_filename ('{document_filename}') is not fully implemented for 'document_chunks' table yet and will be ignored in this query.")
-            # To actually filter, the query would be more complex:
-            # SELECT dc.logical_chunk_id, dc.text_content, dc.embedding <=> $1 AS distance
-            # FROM document_chunks dc JOIN documents d ON dc.document_id = d.id
-            # WHERE d.file_name = $2 ORDER BY distance ASC LIMIT $3;
-            # And params handling would need adjustment.
+            sql_query_parts = [
+                f"SELECT dc.logical_chunk_id, dc.chunk_text, dc.chunk_order, dc.embedding <=> $1 AS distance",
+                f"FROM document_chunks dc",
+                f"JOIN documents d ON dc.document_id = d.id",
+                f"WHERE d.file_name = ${param_idx}",
+            ]
+            params.append(document_filename)
+            param_idx += 1
+        else:
+            sql_query_parts = [
+                f"SELECT logical_chunk_id, chunk_text, chunk_order, embedding <=> $1 AS distance FROM {table_name}"
+            ]
 
         sql_query_parts.append(f"ORDER BY distance ASC LIMIT ${param_idx}")
         params.append(top_k)
