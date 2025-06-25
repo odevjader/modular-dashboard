@@ -171,7 +171,7 @@ async def search_similar_chunks(
         logger.info("Database connection successful for search (asyncpg).")
 
         table_name = "document_chunks"  # Use the correct table for chunks
-        params: List[Any] = [query_embedding]
+        params: List[Any] = [json.dumps(query_embedding)]
 
         # Base query using cosine distance operator <=>
         # Selecting logical_chunk_id, chunk_text, and chunk_order.
