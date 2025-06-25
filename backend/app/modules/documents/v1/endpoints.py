@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.dependencies import get_current_active_user, get_db
 from app.models.user import User
 from .. import services # services.py is one level up
-from .schemas import TaskStatusResponse, DocumentQueryRequest, GatewayDocumentUploadResponse, GatewayDocumentQueryResponse, DocumentListResponse, DocumentRead # Added GatewayDocumentQueryResponse
+from .schemas import TaskStatusResponse, DocumentQueryRequest, GatewayDocumentUploadResponse, GatewayDocumentQueryResponse, DocumentListResponse, DocumentRead, TranscriberQueryData
 
 router = APIRouter()
 
