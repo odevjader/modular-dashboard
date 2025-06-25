@@ -112,6 +112,7 @@ def get_llm_client() -> ChatOpenAI:
     global _llm_client
     # Use a lock if thread safety becomes a concern, but likely not needed for this CLI tool
     if _llm_client is None:
+        load_dotenv(find_dotenv())
         logger.info("Initializing LLM client for the first time...")
         try:
             # Load configuration from environment variables
