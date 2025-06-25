@@ -9,7 +9,8 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql # Added for VECTOR type
+# from sqlalchemy.dialects import postgresql # No longer needed for VECTOR if using pgvector.sqlalchemy
+from pgvector.sqlalchemy import Vector # Import Vector for migration
 
 # Ensure this import path is correct for your project structure
 # It's needed if UserRole is defined relative to the models directory from where alembic runs
@@ -64,7 +65,7 @@ def upgrade() -> None:
     sa.Column('chunk_order', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), onupdate=sa.text('now()'), nullable=True),
-    sa.Column('embedding', postgresql.VECTOR(1536), nullable=True), # Changed to VECTOR(1536)
+    sa.Column('embedding', Vector(1536), nullable=True), # Changed to pgvector.sqlalchemy.Vector
     sa.Column('logical_chunk_id', sa.String(length=255), nullable=True),
     sa.ForeignKeyConstraint(['document_id'], ['documents.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -72,11 +73,7 @@ def upgrade() -> None:
     op.create_index(op.f('ix_document_chunks_id'), 'document_chunks', ['id'], unique=False)
     # Explicitly creating a unique index for logical_chunk_id as per model unique=True
     op.create_index(op.f('ix_document_chunks_logical_chunk_id'), 'document_chunks', ['logical_chunk_id'], unique=True)
-
-    # Alter the 'embedding' column type to vector(1536) after table creation
-    # This assumes the 'vector' extension is enabled in PostgreSQL.
-    # The dimension 1536 is for text-embedding-3-small.
-    op.execute('ALTER TABLE document_chunks ALTER COLUMN embedding TYPE vector(1536);')
+    # Removed op.execute('ALTER TABLE document_chunks ALTER COLUMN embedding TYPE vector(1536);')
     # ### end Alembic commands ###
 
 
