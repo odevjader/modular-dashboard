@@ -1,7 +1,7 @@
 """add_embedding_logical_id_to_chunks
 
 Revision ID: c583de4996a7
-Revises: 9d1910135b7c
+Revises: 5ae6f76c6288
 Create Date: 2025-06-24 00:00:00.000000
 
 """
