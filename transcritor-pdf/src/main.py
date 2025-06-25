@@ -284,11 +284,20 @@ async def query_document_endpoint(document_id: str, request_data: UserQueryReque
     """
     logger.info(f"Querying document_id: {document_id} with query: '{request_data.user_query}'")
     try:
-        answer = await get_llm_answer_with_context(
-            query_text=request_data.user_query,
+        # The function get_llm_answer_with_context expects 'user_query' as its first parameter name
+        llm_response_data = await get_llm_answer_with_context(
+            user_query=request_data.user_query, # Changed 'query_text' to 'user_query'
             document_filename=document_id
         )
-        if answer is None: # Or some other condition indicating no answer found or error
+        # get_llm_answer_with_context returns a dict: {"answer": str, "retrieved_context": list, "error": str|None}
+        if llm_response_data.get("error"):
+            logger.error(f"Error from get_llm_answer_with_context: {llm_response_data['error']}")
+            # Consider if this should be a 500 or a more specific error based on llm_response_data['error']
+            raise HTTPException(status_code=500, detail=llm_response_data.get("answer") or "Error processing query with LLM.")
+
+        answer = llm_response_data.get("answer")
+
+        if answer is None: # Should ideally not happen if error field is checked first
             logger.warning(f"No answer found or error in get_llm_answer_with_context for document_id: {document_id}, query: '{request_data.user_query}'")
             raise HTTPException(status_code=404, detail="Could not retrieve an answer for the given query and document.")
 
