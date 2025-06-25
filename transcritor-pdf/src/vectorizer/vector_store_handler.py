@@ -175,10 +175,10 @@ async def search_similar_chunks(
         params: List[Any] = [query_embedding]
 
         # Base query using cosine distance operator <=>
-        # Selecting logical_chunk_id, text_content. Removed metadata for now.
+        # Selecting logical_chunk_id, chunk_text. Removed metadata for now.
         # Added chunk_order to the returned data.
         sql_query_parts = [
-            f"SELECT logical_chunk_id, text_content, chunk_order, embedding <=> $1 AS distance FROM {table_name}"
+            f"SELECT logical_chunk_id, chunk_text, chunk_order, embedding <=> $1 AS distance FROM {table_name}" # Changed text_content to chunk_text
         ]
         param_idx = 2  # Start next param index from $2 ($1 is query_embedding)
 
@@ -214,7 +214,7 @@ async def search_similar_chunks(
             # If more metadata is needed, a JOIN with 'documents' table and specific selection is required.
             results.append({
                 "chunk_id": row['logical_chunk_id'], # Use logical_chunk_id
-                "text_content": row['text_content'],
+                "text_content": row['chunk_text'], # Changed from row['text_content'] to row['chunk_text']
                 "chunk_order": row['chunk_order'], # Added chunk_order
                 # "metadata": {}, # Placeholder if metadata structure is expected by caller
                 "similarity_score": similarity_score
