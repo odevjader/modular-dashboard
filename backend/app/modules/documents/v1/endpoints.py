@@ -24,7 +24,7 @@ async def upload_document(
 ):
     return await services.handle_file_upload(file, current_user.id, db)
 
-@router.post("/query/{document_id}", summary="Query a processed document", tags=["Documents v1"], response_model=GatewayDocumentQueryResponse)
+@router.post("/query/{document_id}", summary="Query a processed document", tags=["Documents v1"], response_model=TranscriberQueryData)
 async def query_document_v1(
     document_id: str,
     request_data: DocumentQueryRequest,
