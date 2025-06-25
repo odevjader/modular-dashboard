@@ -9,6 +9,7 @@ import asyncio
 import json
 import logging
 from typing import List, Dict, Any, Optional
+import json # Ensure json is imported
 try:
     import asyncpg
 except ImportError:
@@ -92,7 +93,7 @@ async def add_chunks_to_vector_store(document_id: int, rag_chunks: List[Dict[str
 
                 try:
                     if isinstance(embedding, list) and all(isinstance(x, (int, float)) for x in embedding):
-                        embedding_to_insert = embedding # Try passing list directly
+                        embedding_json_str = json.dumps(embedding) # Serialize list to JSON string
                     else:
                         # If embedding is not a list of numbers (e.g. already a string), handle appropriately or raise error
                         # For now, assuming it should be a list of numbers based on previous code
@@ -104,7 +105,7 @@ async def add_chunks_to_vector_store(document_id: int, rag_chunks: List[Dict[str
                 # --- Execute Query (Inner try removed) ---
                 # Let asyncpg.PostgresError propagate to the outer handler if execute fails
                 logger.debug(f"Executing upsert for logical_chunk_id: {logical_chunk_id}")
-                await conn.execute(insert_query, document_id, logical_chunk_id, text_content, embedding_to_insert, chunk_order)
+                await conn.execute(insert_query, document_id, logical_chunk_id, text_content, embedding_json_str, chunk_order)
                 inserted_count += 1
             # Transaction commits automatically if loop finishes without error
             logger.info(f"Transaction commit successful. Added/Updated {inserted_count} chunks for document_id {document_id}.")
