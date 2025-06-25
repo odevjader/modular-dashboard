@@ -94,10 +94,9 @@ async def add_chunks_to_vector_store(document_id: int, rag_chunks: List[Dict[str
                 try:
                     if not (isinstance(embedding, list) and all(isinstance(x, (int, float)) for x in embedding)):
                         # If embedding is not a list of numbers, raise error.
-                        # asyncpg expects a list of floats for a VECTOR column.
                         raise ValueError("Invalid embedding format, expected list of numbers for VECTOR column")
-                    # No longer need to json.dumps when column type is VECTOR
-                    embedding_to_insert = embedding
+                    # Convert the list to its string representation for asyncpg
+                    embedding_to_insert = str(embedding)
                 except Exception as fmt_e:
                     logger.warning(f"Skipping chunk ID '{logical_chunk_id}' due to data formatting error for embedding: {fmt_e}", exc_info=True)
                     skipped_count += 1; continue
