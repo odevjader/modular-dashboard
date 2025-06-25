@@ -71,9 +71,9 @@ async def add_chunks_to_vector_store(document_id: int, rag_chunks: List[Dict[str
         # For simplicity, direct usage in query string is preferred over maintaining these variables if fixed.
 
         insert_query = f"""
-            INSERT INTO {table_name} (document_id, logical_chunk_id, text_content, embedding, chunk_order)
+            INSERT INTO {table_name} (document_id, logical_chunk_id, chunk_text, embedding, chunk_order)
             VALUES ($1, $2, $3, $4, $5) ON CONFLICT (logical_chunk_id) DO UPDATE SET
-            document_id=EXCLUDED.document_id, text_content=EXCLUDED.text_content, embedding=EXCLUDED.embedding, chunk_order=EXCLUDED.chunk_order;
+            document_id=EXCLUDED.document_id, chunk_text=EXCLUDED.chunk_text, embedding=EXCLUDED.embedding, chunk_order=EXCLUDED.chunk_order;
         """
         logger.info(f"Preparing to insert/update data into table '{table_name}'...")
 
